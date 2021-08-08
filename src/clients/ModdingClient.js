@@ -11,5 +11,3 @@ class ModdingClient extends EventEmitter {
 }
 
 module.exports = ModdingClient
-
-console.log(new ModdingClient);
