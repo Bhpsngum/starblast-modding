@@ -5,9 +5,11 @@ class ModdingClient extends EventEmitter {
   constructor (options) {
     super();
     options = options || {}
-    for (let i of ["alien","asteroid","collectible"]) this[i+"s"] = new EntityManager(this, i);
+    for (let i of ["alien","asteroid","collectible"]) this[i + "s"] = new EntityManager(this, i);
     this.ships = new EntityManager(this, "ship", "disconnected", true);
   }
 }
 
 module.exports = ModdingClient
+
+console.log(new ModdingClient);

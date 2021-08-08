@@ -4,7 +4,7 @@ const MassRename = require("../utils/MassivePrototypeDefinition.js");
 
 class Alien extends Entity {
   constructor(game, options) {
-    super(game);
+    super(game, "alien");
     if (null == options) options = {};
     this.x = null != options.x ? options.x : 0;
     this.y = null != options.y ? options.y : 0;
@@ -16,11 +16,19 @@ class Alien extends Entity {
     this.weapon_drop = -1 != weapon_drop ? CollectibleCodes[weapon_drop] : null;
     this.crystal_drop = "number" == options.crystal_drop ? options.crystal_drop : 0
   }
-}
 
-Object.defineProperty(Alien.prototype, 'entityType', {
-  value: "alien"
-});
+  update (data) {
+    this.entityUpdate(data);
+    this.code = data.code;
+    let alien_type = this.types.get(this.code);
+    this.level = Math.max(data.level, alien_type.points.length - 1);
+    this.points = "number" == this.points ? this.points : alien_type.points[this.level]
+  }
+
+  kill () {
+    this.set({kill: true})
+  }
+}
 
 Alien.prototype.types = new Map([
   [10, {points: [10, 20, 50, 1000]}],
@@ -35,14 +43,6 @@ Alien.prototype.types = new Map([
   [19, {points: [1000, 2500, 4000]}],
   [20, {points: [5000, 10000]}]
 ]);
-
-Alien.prototype.update = function (data) {
-  this.entityUpdate(data);
-  this.code = data.code;
-  let alien_type = this.types.get(this.code);
-  this.level = Math.max(data.level, alien_type.points.length - 1);
-  this.points = "number" == this.points ? this.points : alien_type.points[this.level]
-}
 
 MassRename(Alien, ["shield", "regen", "damage", ["laserSpeed", "laser_speed"], "rate"]);
 

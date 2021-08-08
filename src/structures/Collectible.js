@@ -2,7 +2,7 @@ const Entity = require("./Entity.js");
 
 class Collectible extends Entity {
   constructor(game, options) {
-    super(game);
+    super(game, "collectible", true);
     if (null == options) options = {};
     this.code = null != options.code ? options.code : this.codes[0];
     this.x = null != options.x ? options.x : 0;
