@@ -1,0 +1,14 @@
+{
+  "name": "starblast-modding",
+  "version": "1.0.0",
+  "description": "A powerful library for interacting with the Starblast Modding API",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "Bhpsngum",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+}
