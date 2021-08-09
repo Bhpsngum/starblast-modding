@@ -3,6 +3,7 @@
 const Entity = require("./Entity.js");
 const CollectibleCodes = require("./Collectible.js").prototype.codes;
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 
 class Alien extends Entity {
   constructor(game, options) {
@@ -30,10 +31,15 @@ class Alien extends Entity {
   kill () {
     this.set({kill: true})
   }
+
+  toJSON () {
+    return limitedJSON(this, ["vx", "vy", "shield", "regen", "damage", "laser_speed", "rate", "code", "level", "weapon_drop", "crystal_drop"])
+  }
 }
 
-Object.defineProperty(Alien.prototype, 'entity_type', {
-  value: "alien"
+Object.defineProperties(Alien.prototype, {
+  entity_type: {value: "alien"},
+  inactive_field: {value: "killed"}
 });
 
 Alien.prototype.types = new Map([

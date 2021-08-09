@@ -8,8 +8,10 @@ class CollectibleManager extends EntityManager {
     super(game)
   }
 
-  update () {
-
+  update (onTick) {
+    if (onTick) this.forEach(collectible => collectible.isActive() && collectible.last_updated + 10 < this.game.step && collectible.markAsInactive());
+    this.active.splice(0);
+    this.active.push(...this.filter(collectible => collectible.isActive()))
   }
 }
 

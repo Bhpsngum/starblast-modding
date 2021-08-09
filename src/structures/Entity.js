@@ -9,6 +9,14 @@ class Entity {
     this.id = -1;
   }
 
+  markAsInactive () {
+    this[this.inactive_field] = true
+  }
+
+  isActive () {
+    return !this[this.inactive_field]
+  }
+
   set (data) {
     data = JSON.parse(JSON.stringify(data||{}));
     data.id = this.id;
@@ -32,6 +40,6 @@ class Entity {
   }
 }
 
-MassRename(Entity, ["x", "y", "vx", "vy"]);
+MassRename(Entity, ["x", "y"]);
 
 module.exports = Entity

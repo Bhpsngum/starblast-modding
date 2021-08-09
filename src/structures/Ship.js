@@ -75,12 +75,17 @@ class Ship extends Entity {
     this.game.modding.api.name("empty_weapons").prop("ship", this.id).send();
     return this
   }
+
+  toJSON () {
+    return limitedJSON(this, ["vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue"])
+  }
 }
 
-Object.defineProperty(Ship.prototype, 'entity_type', {
-  value: "ship"
+Object.defineProperties(Ship.prototype, {
+  entity_type: {value: "ship"},
+  inactive_field: {value: "destroyed"}
 });
 
-MassRename(Ship, ["type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
+MassRename(Ship, ["vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
 
 module.exports = Ship

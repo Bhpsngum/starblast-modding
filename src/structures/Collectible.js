@@ -18,10 +18,15 @@ class Collectible extends Entity {
   step () {
 
   }
+
+  toJSON () {
+    return limitedJSON(this, ["code"])
+  }
 }
 
-Object.defineProperty(Collectible.prototype, 'entity_type', {
-  value: "collectible"
+Object.defineProperties(Collectible.prototype, {
+  entity_type: {value: "collectible"},
+  inactive_field: {value: "picked"}
 });
 
 Collectible.prototype.codes = [10, 11, 12, 20, 21, 40, 41, 42, 90, 91];

@@ -38,7 +38,8 @@ class ModdingAPI {
   }
 
   data (...data) {
-    Object.assign(this.pending_request.data, ...data);
+    let pData = Object.assign(data[0]||{}, ...data.slice(1));
+    this.pending_request.data = pData;
     return this
   }
 
@@ -49,7 +50,7 @@ class ModdingAPI {
   }
 
   send () {
-    try { this.socket.send(JSON.stringify(this.pending_request)) } catch(e) {}
+    try { this.socket.send(JSON.stringify(this.pending_request)) } catch(e) { console.log(e)}
     this.clearPendingRequest();
     return this
   }

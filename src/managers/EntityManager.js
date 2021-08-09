@@ -9,16 +9,26 @@ class EntityManager extends Array {
     this.request_id = 0;
   }
 
+  create (data) {
+    return new this.EntityConstructor(this.game, data)
+  }
+
   add (data) {
-    data = data || {};
-    data.request_id = request_id++;
-    let entity = new this.EntityConstructor(this.game, data);
+    let entity = this.create(data);
+    entity.request_id = this.request_id++;
     this.pending.push(entity);
-    this.game.modding.api.name("add_"+this.manager_name).data(data).send()
+    let rawEntity = JSON.parse(JSON.stringify(entity));
+    Object.assign(rawEntity, {
+      sx: rawEntity.vx,
+      sy: rawEntity.vy
+    });
+    this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send()
   }
 
   update (onTick) {
-    this.active = this.filter(entity => !entity[this[inactiveField]])
+    if (onTick) this.active.forEach(entity => entity.step());
+    this.active.splice(0);
+    this.active.push(...this.filter(entity => entity.isActive()))
   }
 
   find (id, includeInactive) {
