@@ -1,3 +1,5 @@
+'use strict';
+
 class GameClient {
   constructor(options) {
     options = options || {}

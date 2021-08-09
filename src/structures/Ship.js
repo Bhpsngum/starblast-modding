@@ -1,10 +1,12 @@
+'use strict';
+
 const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const convertStats = require("../utils/convertStats.js");
 
 class Ship extends Entity {
   constructor(game) {
-    super(game, "ship");
+    super(game);
   }
 
   update (data, fromGameClient) {
@@ -74,6 +76,10 @@ class Ship extends Entity {
     return this
   }
 }
+
+Object.defineProperty(Ship.prototype, 'entity_type', {
+  value: "ship"
+});
 
 MassRename(Ship, ["type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
 

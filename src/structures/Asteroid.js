@@ -1,3 +1,5 @@
+'use strict';
+
 const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 
@@ -21,6 +23,10 @@ class Asteroid extends Entity {
     this.set({kill: true})
   }
 }
+
+Object.defineProperty(Asteroid.prototype, 'entity_type', {
+  value: "asteroid"
+});
 
 MassRename(Asteroid, ["size"]);
 

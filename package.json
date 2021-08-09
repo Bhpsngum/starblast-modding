@@ -9,6 +9,7 @@
   "author": "Bhpsngum",
   "license": "ISC",
   "dependencies": {
-    "ws": "^8.0.0"
+    "ws": "^8.0.0",
+    "xmlhttprequest-ssl": "^2.0.0"
   }
 }

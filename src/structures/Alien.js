@@ -1,3 +1,5 @@
+'use strict';
+
 const Entity = require("./Entity.js");
 const CollectibleCodes = require("./Collectible.js").prototype.codes;
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
@@ -29,6 +31,10 @@ class Alien extends Entity {
     this.set({kill: true})
   }
 }
+
+Object.defineProperty(Alien.prototype, 'entity_type', {
+  value: "alien"
+});
 
 Alien.prototype.types = new Map([
   [10, {points: [10, 20, 50, 1000]}],

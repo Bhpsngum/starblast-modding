@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(obj, array) {
   for (let i of array) {
     let prop = i, field;

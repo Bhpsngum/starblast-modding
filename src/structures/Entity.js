@@ -1,3 +1,5 @@
+'use strict';
+
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 
 class Entity {
@@ -5,14 +7,15 @@ class Entity {
     this.game = game;
     this.custom = {}
     this.id = -1;
-    if (!entityNotSettable) this.set = function (data) {
-      data = JSON.parse(JSON.stringify(data||{}));
-      data.id = this.id;
-      data.sx = data.vx;
-      data.sy = data.vy;
-      this.game.modding.api.name("set_"+name).data(data).send();
-      return this
-    }
+  }
+
+  set (data) {
+    data = JSON.parse(JSON.stringify(data||{}));
+    data.id = this.id;
+    data.sx = data.vx;
+    data.sy = data.vy;
+    this.game.modding.api.name("set_"+this.entity_type).data(data).send();
+    return this
   }
 
   entityUpdate (data) {

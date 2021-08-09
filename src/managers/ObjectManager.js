@@ -1,3 +1,5 @@
+'use strict';
+
 class ObjectManager extends Array {
   constructor() {
 

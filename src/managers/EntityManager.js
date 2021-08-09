@@ -1,23 +1,20 @@
+'use strict';
+
 class EntityManager extends Array {
-  constructor(game, name, inactiveField, entityNotCreateable) {
+  constructor(game) {
     super();
-    let request_id = 0;
-    Object.defineProperties(this, {
-      inactiveField: {value: inactiveField || "killed"},
-      EntityConstructor: {value: require("../structures/"+name[0].toUpperCase()+name.slice(1)+".js")}
-    });
-    if (!entityNotCreateable) {
-      this.add = function (data) {
-        data = data || {};
-        data.request_id = request_id++;
-        let entity = new this.EntityConstructor(this.game, data);
-        this.pending.push(entity);
-        this.game.modding.api.name("add_"+name).data(data).send()
-      }
-      this.pending = []
-    }
     this.active = [];
+    this.pending = [];
     this.game = game;
+    this.request_id = 0;
+  }
+
+  add (data) {
+    data = data || {};
+    data.request_id = request_id++;
+    let entity = new this.EntityConstructor(this.game, data);
+    this.pending.push(entity);
+    this.game.modding.api.name("add_"+this.manager_name).data(data).send()
   }
 
   update (onTick) {

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(data) {
   if (isNaN(data)) return 0;
   let stats = [];
