@@ -6,8 +6,10 @@ const getToken = require("../utils/getToken.js");
 const EventManager = require("../managers/EventManager.js");
 
 class ModdingAPI {
-  constructor(game) {
+  constructor(game, options) {
     this.game = game;
+    this.cacheECPKey = !!options.cacheECPKey;
+    this.clearPendingRequest()
   }
 
   clearPendingRequest () {
@@ -19,15 +21,14 @@ class ModdingAPI {
   start () {
     return new Promise(function (resolve, rejec) {
       let reject = function (e) {
-        this.emit('error', e);
+        this.game.emit('error', e, this.game);
         rejec(e)
       }.bind(this);
-      console.log(this);
       PrivateServerFinder(this.region).then(function (address) {
         getToken(address, this.ECPKey).then(function (token) {
-          EventManager.create(this, address, token).catch(function(api){resolve("https://starblast.io/#"+api.id+"@"+api.address+":"+api.port, api.game)}).catch(reject)
+          EventManager.create(this, address, token).then(resolve).catch(reject)
         }.bind(this)).catch(reject)
-      }.bind(this)).catch(reject)
+      }.bind(this))
     }.bind(this))
   }
 
@@ -48,7 +49,7 @@ class ModdingAPI {
   }
 
   send () {
-    try { this.socket.send(this.pending_request) } catch(e) {}
+    try { this.socket.send(JSON.stringify(this.pending_request)) } catch(e) {}
     this.clearPendingRequest();
     return this
   }

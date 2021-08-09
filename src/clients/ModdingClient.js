@@ -10,8 +10,11 @@ class ModdingClient extends EventEmitter {
     this.asteroids = new (require("../managers/AsteroidManager.js"))(this);
     this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
     this.ships = new (require("../managers/ShipManager.js"))(this);
+    this.started = false;
+    this.stopped = false;
+    this.link = null;
     this.modding = {
-      api: new (require("../rest/ModdingAPI.js"))(this)
+      api: new (require("../rest/ModdingAPI.js"))(this, options)
     }
   }
 
@@ -39,11 +42,9 @@ class ModdingClient extends EventEmitter {
   }
 
   stop () {
-    return this.modding.api.stop()
+    this.modding.api.name("stop").send()
   }
 
 }
 
 module.exports = ModdingClient
-
-console.log(new ModdingClient);

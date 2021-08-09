@@ -16,7 +16,7 @@ module.exports = function (address, ECPKey) {
     socket.onmessage = function (event) {
       event = event.data;
       if ("string" == typeof event) {
-        event = JSON.parse(event);
+        try { event = JSON.parse(event) } catch(e){}
         switch (event.name) {
           case "token": success = 1; socket.close(); resolve(event.data.token)
         }
