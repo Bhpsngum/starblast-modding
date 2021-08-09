@@ -12,6 +12,8 @@ class ModdingClient extends EventEmitter {
     this.ships = new (require("../managers/ShipManager.js"))(this);
     this.started = false;
     this.stopped = false;
+    this.custom = {}
+    this.on('error', function(){});
     this.link = null;
     this.modding = {
       api: new (require("../rest/ModdingAPI.js"))(this, options)
@@ -33,6 +35,16 @@ class ModdingClient extends EventEmitter {
     return this
   }
 
+  setOpen (value) {
+    this.modding.api.name("set_open").prop("value",!!value).send();
+    return this
+  }
+
+  setUIComponent (component) {
+    this.modding.api.clientMessage(null, "set_ui_component", {component: component}).send();
+    return this
+  }
+
   start (options) {
     options = options || {}
     if (options.hasOwnProperty('region')) this.setRegion(options.region);
@@ -42,9 +54,8 @@ class ModdingClient extends EventEmitter {
   }
 
   stop () {
-    this.modding.api.name("stop").send()
+    this.modding.api.stop()
   }
-
 }
 
 module.exports = ModdingClient

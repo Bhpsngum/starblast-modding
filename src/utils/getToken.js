@@ -23,10 +23,11 @@ module.exports = function (address, ECPKey) {
       }
     }
     socket.onerror = function () {
+      success = 1;
       reject(new Error("Failed to connect to the server"))
     }
     socket.onclose = function () {
-      if (!success) reject(new Error("Invalid ECP Key"))
+      if (!success) reject(new Error("Failed to validate the specified ECP key"))
     }
   })
 }

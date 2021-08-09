@@ -1,9 +1,7 @@
 'use strict';
 
 const GameSocket = require("../GameSocket.js");
-const PrivateServerFinder = require("../utils/PrivateServerFinder.js");
-const getToken = require("../utils/getToken.js");
-const EventManager = require("../managers/EventManager.js");
+const runMod = require("../utils/runMod.js");
 
 class ModdingAPI {
   constructor(game, options) {
@@ -19,27 +17,33 @@ class ModdingAPI {
     }
   }
   start () {
-    return new Promise(function (resolve, rejec) {
-      let reject = function (e) {
-        this.game.emit('error', e, this.game);
-        rejec(e)
-      }.bind(this);
-      PrivateServerFinder(this.region).then(function (address) {
-        getToken(address, this.ECPKey).then(function (token) {
-          EventManager.create(this, address, token).then(resolve).catch(reject)
-        }.bind(this)).catch(reject)
-      }.bind(this))
+    return new Promise(function (resolve, reject) {
+      try { this.options = JSON.parse(JSON.stringify(this.options)) ?? {} }
+      catch (e) {
+        this.options = {}
+        this.encodeOptionsError = true;
+      }
+      runMod(this).then(resolve).catch(reject)
     }.bind(this))
   }
 
+  stop () {
+    this.name("stop").send()
+  }
+
   name (name) {
-    this.pending_request.name = name;
+    this.prop("name", name);
+    return this
+  }
+
+  prop (name, data) {
+    this.pending_request[name] = data;
     return this
   }
 
   data (...data) {
     let pData = Object.assign(data[0]||{}, ...data.slice(1));
-    this.pending_request.data = pData;
+    this.prop("data", pData);
     return this
   }
 
@@ -50,7 +54,7 @@ class ModdingAPI {
   }
 
   send () {
-    try { this.socket.send(JSON.stringify(this.pending_request)) } catch(e) { console.log(e)}
+    try { this.socket.send(JSON.stringify(this.pending_request)) } catch(e) { console.log(e) }
     this.clearPendingRequest();
     return this
   }

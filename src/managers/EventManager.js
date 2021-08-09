@@ -3,6 +3,11 @@
 const GameSocket = require("../GameSocket.js");
 
 module.exports.create = function (api, address, token) {
+  if (api.encodeOptionsError) {
+    api.game.emit('error', new Error("Failed to encode game options"), api);
+    api.game.emit('error', new Error("Mod will be run with empty options instead"), api);
+    delete api.encodeOptionsError
+  }
   let socket = GameSocket.create(address.ip, address.port);
   socket.onopen = function() {
     this.send(JSON.stringify({
@@ -35,8 +40,8 @@ module.exports.create = function (api, address, token) {
               link: "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port,
               options: data.options
             });
-            this.emit('start', this.link, this);
             resolve(this.link);
+            this.emit('start', this.link, this);
             break;
           case "tick":
             this.step = data.step;
@@ -111,7 +116,7 @@ module.exports.create = function (api, address, token) {
               case "ship_spawned": {
                 let ship = this.ships.find(data.ship);
                 if (ship != null) {
-                  let event_name = "ship" + (ship.spawned?"Spawn":"Respawn");
+                  let event_name = "ship" + (ship.spawned ? "Spawn" : "Respawn");
                   if (!ship.spawned) {
                     /* TODO: set 3D Objects */
                     ship.spawned = true
@@ -129,6 +134,11 @@ module.exports.create = function (api, address, token) {
                 }
                 break;
               }
+              case "ui_component_clicked": {
+                let ship = this.ships.find(data.ship);
+                if (ship != null) this.emit('UIComponentClick', ship, data.id, this);
+                break;
+              }
             }
             break;
           default:
@@ -136,12 +146,12 @@ module.exports.create = function (api, address, token) {
         }
       }
     }.bind(this.game);
-    socket.onerror = function () {
-      var error = new Error("Failed to connect to the server");
-      this.emit('error', error, this);
-      reject(error)
+    socket.onerror = function (error) {
+      this.emit('error', error, this)
     }.bind(this.game);
     socket.onclose = function () {
+      let onstop = this.modding.api.onstop;
+      if (!this.started) reject(new Error("Failed to run the mod"));
       this.started = false;
       this.stopped = true;
       this.link = null;

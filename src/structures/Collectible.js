@@ -6,9 +6,9 @@ class Collectible extends Entity {
   constructor(game, options) {
     super(game, "collectible", true);
     if (null == options) options = {};
-    this.code = null != options.code ? options.code : this.codes[0];
-    this.x = null != options.x ? options.x : 0;
-    this.y = null != options.y ? options.y : 0
+    this.code = options.code ?? this.codes[0];
+    this.x = options.x ?? 0;
+    this.y = options.y ?? 0
   }
 
   set () {

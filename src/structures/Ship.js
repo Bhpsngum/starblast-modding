@@ -22,7 +22,7 @@ class Ship extends Entity {
       this.alive = data.alive;
       this.type = data.type;
       this.stats = convertStats(data.stats);
-      this.team = null != data.team ? data.team : null;
+      this.team = data.team ?? null;
       this.score = data.score;
       this.shield = data.shield;
       this.generator = data.generator;
@@ -77,7 +77,7 @@ class Ship extends Entity {
   }
 
   toJSON () {
-    return limitedJSON(this, ["vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue"])
+    return limitedJSON(this, ["name", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue"])
   }
 }
 
