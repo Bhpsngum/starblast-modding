@@ -41,7 +41,7 @@ module.exports.create = function (api, address, token) {
               link: "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port,
               options: data.options
             });
-            while (this.modding.api.preflight_requests > 0) this.modding.api.assign(this.modding.api.preflight_requests.shift()).send();
+            while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
             this.emit('start', this.link, this);
             break;
@@ -57,7 +57,7 @@ module.exports.create = function (api, address, token) {
           case "asteroid_created":
           case "collectible_created": {
             let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"];
-            let index = entityList.pending.findIndex(entity => entity.request_id === event.request_id);
+            let index = entityList.pending.findIndex(entity => entityList.isInstance(entity) && entity.request_id === event.request_id);
             let entity;
             if (index == -1) entity = entityList.create(event);
             else entity = entityList.pending.splice(index, 1)[0];

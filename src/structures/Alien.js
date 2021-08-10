@@ -7,8 +7,8 @@ const limitedJSON = require("../utils/limitedJSON.js");
 
 class Alien extends Entity {
   constructor(game, options) {
-    super(game, "alien");
-    if (null == options) options = {};
+    super(game);
+    options = Object.assign({}, options);
     this.x = options.x ?? 0;
     this.y = options.y ?? 0;
     this.vx = options.vx ?? 0;

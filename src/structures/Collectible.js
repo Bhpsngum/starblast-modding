@@ -4,8 +4,8 @@ const Entity = require("./Entity.js");
 
 class Collectible extends Entity {
   constructor(game, options) {
-    super(game, "collectible", true);
-    if (null == options) options = {};
+    super(game);
+    options = Object.assign({}, options);
     this.code = options.code ?? this.codes[0];
     this.x = options.x ?? 0;
     this.y = options.y ?? 0

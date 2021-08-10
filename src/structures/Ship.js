@@ -6,7 +6,7 @@ const convertStats = require("../utils/convertStats.js");
 
 class Ship extends Entity {
   constructor(game) {
-    super(game);
+    super(game)
   }
 
   update (data, fromGameClient) {
@@ -32,8 +32,7 @@ class Ship extends Entity {
   }
 
   kill () {
-    this.set({kill: true});
-    return this
+    return this.set({kill: true})
   }
 
   showInstructor () {

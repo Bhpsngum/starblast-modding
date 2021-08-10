@@ -29,7 +29,13 @@ class EntityManager extends Array {
     this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send()
   }
 
+  isInstance (entity) {
+    return entity instanceof this.EntityConstructor
+  }
+
   update (onTick = false) {
+    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
+    this.all.push(...x);
     if (onTick) this.all.forEach(entity => entity.isActive() && entity.step());
     this.splice(0);
     Array.prototype.push.call(this, ...this.all.filter(entity => entity.isActive()))

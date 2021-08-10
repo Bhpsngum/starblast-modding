@@ -11,6 +11,7 @@ class ModdingClient extends EventEmitter {
     this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
     this.ships = new (require("../managers/ShipManager.js"))(this);
     this.custom = {}
+    this.step = -1;
     this.on('error', function(){});
     this.link = null;
     this.modding = {

@@ -3,7 +3,7 @@
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 
 class Entity {
-  constructor (game, name, entityNotSettable) {
+  constructor (game) {
     this.game = game;
     this.custom = {}
     this.id = -1;
@@ -18,7 +18,7 @@ class Entity {
   }
 
   set (data) {
-    data = JSON.parse(JSON.stringify(data||{}));
+    data = Object.assign({}, data);
     data.id = this.id;
     data.sx = data.vx;
     data.sy = data.vy;
