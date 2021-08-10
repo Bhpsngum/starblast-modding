@@ -47,8 +47,8 @@ class ModdingClient extends EventEmitter {
     return this
   }
 
-  setUIComponent (component) {
-    this.modding.api.clientMessage(null, "set_ui_component", {component: component}).send();
+  setCustomMap (map) {
+    this.modding.api.name("set_custom_map").data(map).send();
     return this
   }
 
