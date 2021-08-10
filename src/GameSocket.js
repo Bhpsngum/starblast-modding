@@ -10,4 +10,6 @@ GameSocket.create = function(ip, port) {
   })
 }
 
+for (let i of ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED']) GameSocket[i] = WebSocket[i];
+
 module.exports = GameSocket

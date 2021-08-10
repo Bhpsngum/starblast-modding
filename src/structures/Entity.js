@@ -10,7 +10,7 @@ class Entity {
   }
 
   markAsInactive () {
-    this[this.inactive_field] = true
+    Object.defineProperty(this, this.inactive_field, {value: true})
   }
 
   isActive () {

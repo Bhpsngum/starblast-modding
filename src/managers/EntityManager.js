@@ -3,7 +3,7 @@
 class EntityManager extends Array {
   constructor(game) {
     super();
-    this.active = [];
+    this.all = [];
     this.pending = [];
     this.game = game;
     this.request_id = 0;
@@ -11,6 +11,10 @@ class EntityManager extends Array {
 
   create (data) {
     return new this.EntityConstructor(this.game, data)
+  }
+
+  push (...data) {
+    return this.all.push(...data)
   }
 
   add (data) {
@@ -25,15 +29,15 @@ class EntityManager extends Array {
     this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send()
   }
 
-  update (onTick) {
-    if (onTick) this.active.forEach(entity => entity.step());
-    this.active.splice(0);
-    this.active.push(...this.filter(entity => entity.isActive()))
+  update (onTick = false) {
+    if (onTick) this.all.forEach(entity => entity.isActive() && entity.step());
+    this.splice(0);
+    Array.prototype.push.call(this, ...this.all.filter(entity => entity.isActive()))
   }
 
-  find (id, includeInactive) {
-    let value = includeInactive ? this : this.active;
-    return value.find(entity => entity.id === id)
+  find (id, includeInactive = false) {
+    let value = includeInactive ? this.all : this;
+    return Array.prototype.find.call(value, entity => entity instanceof this.EntityConstructor && entity.id === id)
   }
 }
 

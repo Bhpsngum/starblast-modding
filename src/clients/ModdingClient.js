@@ -10,14 +10,20 @@ class ModdingClient extends EventEmitter {
     this.asteroids = new (require("../managers/AsteroidManager.js"))(this);
     this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
     this.ships = new (require("../managers/ShipManager.js"))(this);
-    this.started = false;
-    this.stopped = false;
     this.custom = {}
     this.on('error', function(){});
     this.link = null;
     this.modding = {
       api: new (require("../rest/ModdingAPI.js"))(this, options)
     }
+  }
+
+  get started () {
+    return !!this.modding.api.started
+  }
+
+  get stopped () {
+    return !!this.modding.api.stopped
   }
 
   setRegion (region) {

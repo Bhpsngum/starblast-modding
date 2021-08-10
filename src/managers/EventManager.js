@@ -1,6 +1,7 @@
 'use strict';
 
 const GameSocket = require("../GameSocket.js");
+const getEntity = require("../utils/getEntity.js");
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {
@@ -31,15 +32,16 @@ module.exports.create = function (api, address, token) {
               socket: socket,
               ip: address.ip,
               id: data.id,
-              port: address.port
+              port: address.port,
+              started: true,
+              stopped: false
             });
             delete this.modding.api.ECPKey;
             Object.assign(this, {
-              started: true,
-              stopped: false,
               link: "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port,
               options: data.options
             });
+            while (this.modding.api.preflight_requests > 0) this.modding.api.assign(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
             this.emit('start', this.link, this);
             break;
@@ -59,32 +61,28 @@ module.exports.create = function (api, address, token) {
             let entity;
             if (index == -1) entity = entityList.create(event);
             else entity = entityList.pending.splice(index, 1)[0];
-            entity.id = event.id;
+            Object.defineProperty(entity, 'id', {value: event.id});
             entity.last_updated = this.step;
             entityList.push(entity);
             entityList.update();
-            this.emit(entity_name + "Create", entity, this)
+            this.emit(entity_name + "Create", entity, this);
+            break;
+          }
+          case "ship_update": {
+            let ship = getEntity(event, this.ships);
+            // if (!ship.spawned) this.objects.setShip(ship.id);
+            ship.update(event);
             break;
           }
           case "alien_update":
-          case "ship_update":
-          case "asteroid_update": {
-            let entityList = this[event.name.split("_")[0] + "s"], entity = entityList.find(event.id);
-            if (entity == null) {
-              entity = entityList.create(event);
-              entity.id = event.id;
-              entityList.push(entity)
-            }
-            entity.update(event);
+          case "asteroid_update":
+            getEntity(event, this[event.name.split("_")[0] + "s"]).update(event);
             break;
-          }
           case "ship_disconnected": {
-            let ship = this.ships.find(event.id);
-            if (ship) {
-              ship.markAsInactive();
-              this.ships.update();
-              this.emit('shipDisconnect', ship, this)
-            }
+            let ship = getEntity(event, this.ships);
+            ship.markAsInactive();
+            this.ships.update();
+            this.emit('shipDisconnect', ship, this);
             break;
           }
           case "error":
@@ -93,56 +91,48 @@ module.exports.create = function (api, address, token) {
           case "event":
             switch (data.name) {
               case "ship_destroyed": {
-                let ship = this.ships.find(data.ship);
-                if (ship != null) {
-                  let killer = this.ships.find(data.killer);
-                  ship.alive = false;
-                  this.emit('shipDestroy', ship, killer, this)
-                }
+                data.id = data.ship;
+                let ship = getEntity(data, this.ships);
+                let killer = this.ships.find(data.killer, true);
+                ship.alive = false;
+                this.emit('shipDestroy', ship, killer, this);
                 break;
               }
               case "alien_destroyed":
               case "asteroid_destroyed": {
                 let entity_name = data.name.split("_")[0], entityList = this[entity_name + "s"];
-                let entity = entityList.find(data[entity_name]);
-                if (entity != null) {
-                  let killer = this.ships.find(data.killer);
-                  entity.markAsInactive();
-                  entityList.update();
-                  this.emit(entity_name + 'Destroy', entity, killer, this)
-                }
+                data.id = data[entity_name];
+                let entity = getEntity(data, entityList);
+                let killer = this.ships.find(data.killer, true);
+                entity.markAsInactive();
+                entityList.update();
+                this.emit(entity_name + 'Destroy', entity, killer, this);
                 break;
               }
               case "ship_spawned": {
-                let ship = this.ships.find(data.ship);
-                if (ship != null) {
-                  let event_name = "ship" + (ship.spawned ? "Spawn" : "Respawn");
-                  if (!ship.spawned) {
-                    /* TODO: set 3D Objects */
-                    ship.spawned = true
-                  }
-                  this.emit(event_name, ship, this)
-                }
+                data.id = data.ship;
+                let ship = getEntity(data, this.ships);
+                let event_name = "ship" + (ship.spawned ? "Spawn" : "Respawn");
+                if (!ship.spawned) Object.defineProperty(ship, 'spawned', {value: true});
+                this.emit(event_name, ship, this);
                 break;
               }
               case "collectible_picked": {
-                let collectible = this.collectibles.find(data.collectible);
-                if (collectible != null) {
-                  let ship = this.ships.find(data.ship);
-                  collectible.markAsInactive();
-                  this.emit("collectiblePick", collectible, ship, this)
-                }
+                data.id = data.collectible;
+                let collectible = getEntity(data, this.collectibles);
+                data.id = data.ship;
+                let ship = getEntity(data, this.ships);
+                collectible.markAsInactive();
+                this.emit("collectiblePick", collectible, ship, this);
                 break;
               }
-              case "ui_component_clicked": {
-                let ship = this.ships.find(data.ship);
-                if (ship != null) this.emit('UIComponentClick', ship, data.id, this);
+              case "ui_component_clicked":
+                let id = data.id;
+                data.id = data.ship;
+                this.emit('UIComponentClick', id, getEntity(data, this.ships), this);
                 break;
-              }
             }
             break;
-          default:
-            console.log(event);
         }
       }
     }.bind(this.game);
@@ -150,10 +140,9 @@ module.exports.create = function (api, address, token) {
       this.emit('error', error, this)
     }.bind(this.game);
     socket.onclose = function () {
-      let onstop = this.modding.api.onstop;
       if (!this.started) reject(new Error("Failed to run the mod"));
-      this.started = false;
-      this.stopped = true;
+      this.modding.api.started = false;
+      this.modding.api.stopped = true;
       this.link = null;
       this.emit('stop', this);
       if (this.modding.api.cacheECPKey) this.modding.api.ECPKey = ECPKey

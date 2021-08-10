@@ -1,13 +1,13 @@
 'use strict';
 
-const GameSocket = require("../GameSocket.js");
 const runMod = require("../utils/runMod.js");
 
 class ModdingAPI {
   constructor(game, options) {
     this.game = game;
     this.cacheECPKey = !!options.cacheECPKey;
-    this.clearPendingRequest()
+    this.clearPendingRequest();
+    this.preflight_requests = [];
   }
 
   clearPendingRequest () {
@@ -16,15 +16,13 @@ class ModdingAPI {
       data: {}
     }
   }
-  start () {
-    return new Promise(function (resolve, reject) {
-      try { this.options = JSON.parse(JSON.stringify(this.options)) ?? {} }
-      catch (e) {
-        this.options = {}
-        this.encodeOptionsError = true;
-      }
-      runMod(this).then(resolve).catch(reject)
-    }.bind(this))
+  async start () {
+    try { this.options = JSON.parse(JSON.stringify(this.options)) ?? {} }
+    catch (e) {
+      this.options = {}
+      this.encodeOptionsError = true;
+    }
+    return await runMod(this)
   }
 
   stop () {
@@ -33,6 +31,11 @@ class ModdingAPI {
 
   name (name) {
     this.prop("name", name);
+    return this
+  }
+
+  assign (data) {
+    this.pending_request = Object.assign({}, data);
     return this
   }
 
@@ -49,12 +52,15 @@ class ModdingAPI {
 
   clientMessage (id, name, data) {
     this.name("client_message");
-    this.data(data, {id: id, name: name});
+    data = Object.assign(data||{}, {name: name});
+    this.data({id: id, data: data});
     return this
   }
 
   send () {
-    try { this.socket.send(JSON.stringify(this.pending_request)) } catch(e) { console.log(e) }
+    if (this.game.started) try { this.socket.send(JSON.stringify(this.pending_request)) }
+    catch(e) { this.game.emit('error', new Error("Failed to encoding request"), this.game) }
+    else this.preflight_requests.push(this.pending_request);
     this.clearPendingRequest();
     return this
   }

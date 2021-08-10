@@ -83,7 +83,8 @@ class Ship extends Entity {
 
 Object.defineProperties(Ship.prototype, {
   entity_type: {value: "ship"},
-  inactive_field: {value: "destroyed"}
+  inactive_field: {value: "destroyed"},
+  spawned: {value: false}
 });
 
 MassRename(Ship, ["vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
