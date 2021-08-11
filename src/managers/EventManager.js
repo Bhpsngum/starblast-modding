@@ -2,7 +2,7 @@
 
 const GameSocket = require("../GameSocket.js");
 const getEntity = require("../utils/getEntity.js");
-const events = require("../Events.js");
+const events = require("../resources/Events.js");
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {

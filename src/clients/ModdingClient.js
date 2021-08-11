@@ -1,7 +1,6 @@
 'use strict';
 
 const EventEmitter = require("events");
-const EVENTS = require("../Events.js");
 
 class ModdingClient extends EventEmitter {
   constructor (options) {
@@ -18,7 +17,7 @@ class ModdingClient extends EventEmitter {
     this.link = null;
     this.modding = {
       api: new (require("../rest/ModdingAPI.js"))(this, options),
-      events: EVENTS
+      events: require("../resources/Events.js")
     }
   }
 
