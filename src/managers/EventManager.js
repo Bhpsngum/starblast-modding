@@ -146,7 +146,6 @@ module.exports.create = function (api, address, token) {
       if (!this.started) reject(new Error("Failed to run the mod"));
       this.modding.api.started = false;
       this.modding.api.stopped = true;
-      this.link = null;
       this.emit(events.MOD_STOPPED, this);
       this.reset();
       if (this.modding.api.cacheECPKey) this.modding.api.ECPKey = ECPKey

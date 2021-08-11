@@ -1,20 +1,13 @@
 'use strict';
 
+const Structure = require("./Structure.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 
-class Entity {
+class Entity extends Structure{
   constructor (game) {
     this.game = game;
     this.custom = {}
     this.id = -1;
-  }
-
-  markAsInactive () {
-    Object.defineProperty(this, this.inactive_field, {value: true})
-  }
-
-  isActive () {
-    return !this[this.inactive_field]
   }
 
   set (data) {

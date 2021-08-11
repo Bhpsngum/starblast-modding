@@ -9,6 +9,7 @@ class ObjectManager extends StructureManager {
   }
 
   set (data) {
+    data = Object.assign({}, data);
     this.game.modding.api.name("set_"+this.manager_name).data(rawEntity).send()
   }
 }
