@@ -19,9 +19,9 @@ class StructureManager extends Array {
     return entity instanceof this.EntityConstructor
   }
 
-  find (id, includeInactive = false) {
+  findById (id, includeInactive = false) {
     let value = includeInactive ? this.all : this;
-    return Array.prototype.find.call(value, entity => entity instanceof this.EntityConstructor && entity.id === id)
+    return value.find(entity => this.isInstance(entity) && Object.is(entity.id, id))
   }
 
   reset () {

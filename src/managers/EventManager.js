@@ -96,7 +96,7 @@ module.exports.create = function (api, address, token) {
               case "ship_destroyed": {
                 data.id = data.ship;
                 let ship = getEntity(data, this.ships);
-                let killer = this.ships.find(data.killer, true);
+                let killer = this.ships.findById(data.killer, true);
                 ship.alive = false;
                 this.emit(events.SHIP_DESTROYED, ship, killer, this);
                 break;
@@ -106,7 +106,7 @@ module.exports.create = function (api, address, token) {
                 let entity_name = data.name.split("_")[0], entityList = this[entity_name + "s"];
                 data.id = data[entity_name];
                 let entity = getEntity(data, entityList);
-                let killer = this.ships.find(data.killer, true);
+                let killer = this.ships.findById(data.killer, true);
                 entity.markAsInactive();
                 entityList.update();
                 this.emit(events[entity_name.toUpperCase()], entity, killer, this);
