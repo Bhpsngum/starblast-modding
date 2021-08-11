@@ -2,11 +2,12 @@
 
 const GameSocket = require("../GameSocket.js");
 const getEntity = require("../utils/getEntity.js");
+const events = require("../Events.js");
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {
-    api.game.emit('error', new Error("Failed to encode game options"), api);
-    api.game.emit('error', new Error("Mod will be run with empty options instead"), api);
+    api.game.emit(events.ERROR, new Error("Failed to encode game options"), api);
+    api.game.emit(events.ERROR, new Error("Mod will be run with empty options instead"), api);
     delete api.encodeOptionsError
   }
   let socket = GameSocket.create(address.ip, address.port);
@@ -43,7 +44,7 @@ module.exports.create = function (api, address, token) {
             });
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
-            this.emit('start', this.link, this);
+            this.emit(events.MOD_STARTED, this.link, this);
             break;
           case "tick":
             this.step = data.step;
@@ -51,7 +52,7 @@ module.exports.create = function (api, address, token) {
             this.asteroids.update(true);
             this.collectibles.update(true);
             this.ships.update(true);
-            this.emit('tick', data.step, this);
+            this.emit(events.TICK, data.step, this);
             break;
           case "alien_created":
           case "asteroid_created":
@@ -61,16 +62,18 @@ module.exports.create = function (api, address, token) {
             let entity;
             if (index == -1) entity = entityList.create(event);
             else entity = entityList.pending.splice(index, 1)[0];
-            Object.defineProperty(entity, 'id', {value: event.id});
-            entity.last_updated = this.step;
+            Object.defineProperties(entity, {
+              id: {value: event.id},
+              createdStep: {value: this.step}
+            });
             entityList.push(entity);
             entityList.update();
-            this.emit(entity_name + "Create", entity, this);
+            this.emit(events[event.name.toUpperCase()], entity, this);
             break;
           }
           case "ship_update": {
             let ship = getEntity(event, this.ships);
-            // if (!ship.spawned) this.objects.setShip(ship.id);
+            // if (!ship.spawned) this.objects.setShip(ship);
             ship.update(event);
             break;
           }
@@ -82,11 +85,11 @@ module.exports.create = function (api, address, token) {
             let ship = getEntity(event, this.ships);
             ship.markAsInactive();
             this.ships.update();
-            this.emit('shipDisconnect', ship, this);
+            this.emit(events.SHIP_DISCONNECTED, ship, this);
             break;
           }
           case "error":
-            this.emit('error', new Error(event.text), this);
+            this.emit(events.ERROR, new Error(event.text), this);
             break;
           case "event":
             switch (data.name) {
@@ -95,7 +98,7 @@ module.exports.create = function (api, address, token) {
                 let ship = getEntity(data, this.ships);
                 let killer = this.ships.find(data.killer, true);
                 ship.alive = false;
-                this.emit('shipDestroy', ship, killer, this);
+                this.emit(events.SHIP_DESTROYED, ship, killer, this);
                 break;
               }
               case "alien_destroyed":
@@ -106,13 +109,13 @@ module.exports.create = function (api, address, token) {
                 let killer = this.ships.find(data.killer, true);
                 entity.markAsInactive();
                 entityList.update();
-                this.emit(entity_name + 'Destroy', entity, killer, this);
+                this.emit(events[entity_name.toUpperCase()], entity, killer, this);
                 break;
               }
               case "ship_spawned": {
                 data.id = data.ship;
                 let ship = getEntity(data, this.ships);
-                let event_name = "ship" + (ship.spawned ? "Spawn" : "Respawn");
+                let event_name = ship.spawned ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
                 if (!ship.spawned) Object.defineProperty(ship, 'spawned', {value: true});
                 this.emit(event_name, ship, this);
                 break;
@@ -123,13 +126,13 @@ module.exports.create = function (api, address, token) {
                 data.id = data.ship;
                 let ship = getEntity(data, this.ships);
                 collectible.markAsInactive();
-                this.emit("collectiblePick", collectible, ship, this);
+                this.emit(events.COLLECTIBLE_PICKED, collectible, ship, this);
                 break;
               }
               case "ui_component_clicked":
                 let id = data.id;
                 data.id = data.ship;
-                this.emit('UIComponentClick', id, getEntity(data, this.ships), this);
+                this.emit(events.UI_COMPONENT_CLICKED, id, getEntity(data, this.ships), this);
                 break;
             }
             break;
@@ -137,14 +140,15 @@ module.exports.create = function (api, address, token) {
       }
     }.bind(this.game);
     socket.onerror = function (error) {
-      this.emit('error', error, this)
+      this.emit(events.ERROR, error, this)
     }.bind(this.game);
     socket.onclose = function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
       this.modding.api.started = false;
       this.modding.api.stopped = true;
       this.link = null;
-      this.emit('stop', this);
+      this.emit(events.MOD_STOPPED, this);
+      this.reset();
       if (this.modding.api.cacheECPKey) this.modding.api.ECPKey = ECPKey
     }.bind(this.game)
   }.bind(api))

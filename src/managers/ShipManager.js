@@ -13,12 +13,12 @@ class ShipManager extends EntityManager {
   }
 
   showInstructor () {
-    this.game.modding.api.clientMessage(null, "show_instructor").send();
+    this.game.modding.api.globalMessage("show_instructor").send();
     return this
   }
 
   instructorSays (text, character) {
-    this.game.modding.api.clientMessage(null, "instructor_says", {
+    this.game.modding.api.globalMessage("instructor_says", {
       text: text,
       character: character
     }).send();
@@ -26,24 +26,29 @@ class ShipManager extends EntityManager {
   }
 
   hideInstructor () {
-    this.game.modding.api.clientMessage(null, "hide_instructor").send();
+    this.game.modding.api.globalMessage("hide_instructor").send();
     return this
   }
 
   setUIComponent (component) {
-    this.game.modding.api.clientMessage(null, "set_ui_component", {component: component}).send();
+    this.game.modding.api.globalMessage("set_ui_component", {component: component}).send();
     return this
   }
 
-  intermission (data, gameover = false) {
-    data = data || {}
-    data.gameover = !!gameover;
-    this.game.modding.api.clientMessage(null, "intermission", {data: data}).send();
+  intermission (data) {
+    this.game.modding.api.globalMessage("intermission", {data: data}).send();
     return this
   }
 
   gameOver (data) {
-    this.intermission(data, true)
+    data = data || {}
+    data.gameover = true;
+    this.game.modding.api.globalMessage("intermission", {data: data}).send();
+    return this
+  }
+
+  setObject (data) {
+    this.game.modding.api.globalMessage("set_object", {data: data}).send();
   }
 }
 

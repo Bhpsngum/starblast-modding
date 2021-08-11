@@ -51,6 +51,10 @@ class ModdingAPI {
     return this.data({id: id, data: data})
   }
 
+  globalMessage (name, data) {
+    return this.clientMessage(null, name, data)
+  }
+
   send () {
     if (this.started) try { this.socket.send(JSON.stringify(this.pending_request)) }
     catch(e) { this.game.emit('error', new Error("Failed to encoding request"), this.game) }

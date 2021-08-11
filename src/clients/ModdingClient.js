@@ -1,6 +1,7 @@
 'use strict';
 
 const EventEmitter = require("events");
+const EVENTS = require("../Events.js");
 
 class ModdingClient extends EventEmitter {
   constructor (options) {
@@ -10,12 +11,14 @@ class ModdingClient extends EventEmitter {
     this.asteroids = new (require("../managers/AsteroidManager.js"))(this);
     this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
     this.ships = new (require("../managers/ShipManager.js"))(this);
+    this.objects = new (require("../managers/ObjectManager.js"))(this);
     this.custom = {}
     this.step = -1;
     this.on('error', function(){});
     this.link = null;
     this.modding = {
-      api: new (require("../rest/ModdingAPI.js"))(this, options)
+      api: new (require("../rest/ModdingAPI.js"))(this, options),
+      events: EVENTS
     }
   }
 
@@ -52,16 +55,27 @@ class ModdingClient extends EventEmitter {
     return this
   }
 
-  start (options) {
+  async start (options) {
     options = options || {}
     if (options.hasOwnProperty('region')) this.setRegion(options.region);
     if (options.hasOwnProperty('options')) this.setOptions(options.options);
     if (options.hasOwnProperty('ECPKey')) this.setECPKey(options.ECPKey);
-    return this.modding.api.start()
+    return await this.modding.api.start()
   }
 
   stop () {
     this.modding.api.stop()
+  }
+
+  reset () {
+    this.aliens.reset();
+    this.asteroids.reset();
+    this.collectibles.reset();
+    this.ships.reset();
+    this.objects.reset();
+    this.custom = {}
+    this.step = -1;
+    this.link = null;
   }
 }
 

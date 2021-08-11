@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(obj, array) {
-  for (let i of array) {
+  for (let i of array.concat("x", "y", "vx", "vy")) {
     let prop = i, field;
     if (typeof i != "string") [prop, field] = i;
     else field = i;

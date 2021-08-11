@@ -31,10 +31,6 @@ class Ship extends Entity {
     }
   }
 
-  kill () {
-    return this.set({kill: true})
-  }
-
   showInstructor () {
     this.game.modding.api.clientMessage(this.id, "show_instructor").send();
     return this
@@ -70,6 +66,10 @@ class Ship extends Entity {
     return this
   }
 
+  setObject (data) {
+    this.game.modding.api.clientMessage(this.id, "set_object", {data: data}).send();
+  }
+
   emptyWeapons () {
     this.game.modding.api.name("empty_weapons").prop("ship", this.id).send();
     return this
@@ -86,6 +86,6 @@ Object.defineProperties(Ship.prototype, {
   spawned: {value: false}
 });
 
-MassRename(Ship, ["vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
+MassRename(Ship, ["type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
 
 module.exports = Ship

@@ -26,12 +26,16 @@ class Entity {
     return this
   }
 
+  kill () {
+    return this.set({kill: true})
+  }
+
   entityUpdate (data) {
     this.x = data.x;
     this.y = data.y;
     this.vx = data.sx;
     this.vy = data.sy;
-    this.last_updated = this.game.step
+    this.lastUpdatedStep = this.game.step
   }
 
   step () {

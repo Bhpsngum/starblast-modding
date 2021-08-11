@@ -1,3 +1,5 @@
+'use strict';
+
 const PrivateServerFinder = require("./PrivateServerFinder.js");
 const EventManager = require("../managers/EventManager.js");
 const getToken = require("./getToken.js");

@@ -11,7 +11,7 @@ class CollectibleManager extends EntityManager {
   update (onTick) {
     let x = this.all.splice(0).filter(entity => this.isInstance(entity));
     this.all.push(...x);
-    if (onTick) this.all.forEach(collectible => collectible.isActive() && collectible.last_updated + 600 < this.game.step && collectible.markAsInactive());
+    if (onTick) this.all.forEach(collectible => collectible.isActive() && collectible.lastUpdatedStep + 600 < this.game.step && collectible.markAsInactive());
     this.splice(0);
     Array.prototype.push.call(this, ...this.filter(collectible => collectible.isActive()))
   }

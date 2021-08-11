@@ -19,6 +19,10 @@ class Collectible extends Entity {
 
   }
 
+  kill () {
+
+  }
+
   toJSON () {
     return limitedJSON(this, ["code"])
   }
@@ -26,9 +30,8 @@ class Collectible extends Entity {
 
 Object.defineProperties(Collectible.prototype, {
   entity_type: {value: "collectible"},
-  inactive_field: {value: "picked"}
+  inactive_field: {value: "picked"},
+  codes: {value: [10, 11, 12, 20, 21, 40, 41, 42, 90, 91]}
 });
-
-Collectible.prototype.codes = [10, 11, 12, 20, 21, 40, 41, 42, 90, 91];
 
 module.exports = Collectible
