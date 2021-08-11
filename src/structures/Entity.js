@@ -5,7 +5,7 @@ const MassRename = require("../utils/MassivePrototypeDefinition.js");
 
 class Entity extends Structure{
   constructor (game) {
-    this.game = game;
+    super(game);
     this.custom = {}
     this.id = -1;
   }

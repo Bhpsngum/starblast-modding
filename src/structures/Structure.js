@@ -1,8 +1,8 @@
 'use strict';
 
 class Structure {
-  constructor () {
-
+  constructor (game) {
+    this.game = game;
   }
 
   markAsInactive () {
