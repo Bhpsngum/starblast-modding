@@ -24,7 +24,7 @@ class Collectible extends Entity {
   }
 
   toJSON () {
-    return limitedJSON(this, ["code"])
+    return limitedJSON(this, ["x", "y", "request_id", "code"])
   }
 }
 

@@ -37,6 +37,4 @@ class Entity extends Structure{
   }
 }
 
-MassRename(Entity, ["x", "y"]);
-
 module.exports = Entity

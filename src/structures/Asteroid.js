@@ -21,7 +21,7 @@ class Asteroid extends Entity {
   }
 
   toJSON () {
-    return limitedJSON(this, ["vx", "vy", "size"])
+    return limitedJSON(this, ["x", "y", "request_id", "vx", "vy", "size"])
   }
 }
 
@@ -30,6 +30,6 @@ Object.defineProperties(Asteroid.prototype, {
   inactive_field: {value: "killed"}
 });
 
-MassRename(Asteroid, ["size"]);
+MassRename(Asteroid, ["x", "y", "vx", "vy", "size"]);
 
 module.exports = Asteroid

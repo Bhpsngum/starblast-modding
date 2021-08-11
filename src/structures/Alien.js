@@ -29,7 +29,7 @@ class Alien extends Entity {
   }
 
   toJSON () {
-    return limitedJSON(this, ["vx", "vy", "shield", "regen", "points", "damage", "laser_speed", "rate", "code", "level", "weapon_drop", "crystal_drop"])
+    return limitedJSON(this, ["x", "y", "request_id", "vx", "vy", "shield", "regen", "points", "damage", "laser_speed", "rate", "code", "level", "weapon_drop", "crystal_drop"])
   }
 }
 
@@ -51,6 +51,6 @@ Object.defineProperties(Alien.prototype, {
   ])}
 });
 
-MassRename(Alien, ["shield", "regen", "damage", ["laserSpeed", "laser_speed"], "rate"]);
+MassRename(Alien, ["x", "y", "vx", "vy", "shield", "regen", "damage", ["laserSpeed", "laser_speed"], "rate"]);
 
 module.exports = Alien
