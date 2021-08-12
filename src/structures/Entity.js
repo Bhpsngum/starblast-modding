@@ -7,7 +7,6 @@ class Entity extends Structure{
   constructor (game) {
     super(game);
     this.custom = {}
-    this.id = -1;
   }
 
   set (data) {
