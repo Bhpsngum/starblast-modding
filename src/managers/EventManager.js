@@ -66,14 +66,13 @@ module.exports.create = function (api, address, token) {
               id: {value: event.id},
               createdStep: {value: this.step}
             });
-            entityList.push(entity);
-            entityList.update();
+            entityList.insert(entity);
             this.emit(events[event.name.toUpperCase()], entity, this);
             break;
           }
           case "ship_update": {
             let ship = getEntity(event, this.ships);
-            // if (!ship.spawned) this.objects.setShip(ship);
+            if (!ship.spawned) this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send());
             ship.update(event);
             break;
           }

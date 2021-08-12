@@ -4,6 +4,7 @@ class StructureManager extends Array {
   constructor(game) {
     super();
     this.game = game;
+    this.all = [];
   }
 
   create (data) {
@@ -12,6 +13,11 @@ class StructureManager extends Array {
 
   isInstance (entity) {
     return entity instanceof this.EntityConstructor
+  }
+
+  insert (...data) {
+    this.all.push(...data);
+    this.update()
   }
 
   findById (id, includeInactive = false) {

@@ -20,12 +20,12 @@ class ObjectType extends Structure {
     this.emissiveColor = type.emissiveColor ?? 0x0;
     this.specularColor = type.specularColor ?? 0x0;
     this.bumpScale = "number" == typeof type.bumpScale ? type.bumpScale : 1;
-    this.transparent = !!type.transparent;
+    this.transparent = type.transparent === true;
     this.shininess = "number" == typeof type.shininess ? type.shininess : 0;
     this.physics = {
       mass: physics.mass ?? 0,
       shape: physics.shape ?? null,
-      autoShape: !!physics.autoShape
+      autoShape: physics.autoShape === true
     }
   }
 
@@ -38,7 +38,7 @@ class ObjectType extends Structure {
   }
 
   async getShape () {
-    this.obj = await getObjectShapeFromURL(this.obj)
+    return await getObjectShapeFromURL(this.obj)
   }
 
   toJSON () {

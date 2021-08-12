@@ -8,6 +8,6 @@ module.exports = function (data, manager) {
     id: {value: (data||{}).id},
     createdStep: {value: manager.game.step}
   });
-  manager.push(entity);
+  manager.insert(entity);
   return entity
 }
