@@ -1,12 +1,16 @@
 'use strict';
 
+const Structure = require("./Structure.js");
 const getObjectShapeFromURL = require("../utils/getObjectShapeFromURL.js");
+const toString = require("../utils/toString.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 
-class ObjectType {
-  constructor (type) {
+class ObjectType extends Structure {
+  constructor (game, type) {
+    super(game);
     type = Object.assign({}, type);
     let physics = type.physics ?? {}
-    this.id = type.id;
+    this.id = toString(type.id);
     this.obj =  type.obj ?? null;
     this.diffuse = type.diffuse ?? null;
     this.emissive = type.emissive ?? null;
@@ -25,8 +29,20 @@ class ObjectType {
     }
   }
 
+  markAsInactive () {
+
+  }
+
+  isActive () {
+    return true
+  }
+
   async getShape () {
-    return await getObjectShapeFromURL(this.obj)
+    this.obj = await getObjectShapeFromURL(this.obj)
+  }
+
+  toJSON () {
+    return limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess", "physics"])
   }
 }
 

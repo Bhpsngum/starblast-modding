@@ -1,6 +1,6 @@
 'use strict';
 
-const XMLHttpRequest = require("xmlhttprequest-ssl");
+const XMLHttpRequest = require("xhr2");
 
 module.exports = function(region) {
   let xhr = new XMLHttpRequest;

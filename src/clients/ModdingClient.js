@@ -72,6 +72,7 @@ class ModdingClient extends EventEmitter {
     this.collectibles.reset();
     this.ships.reset();
     this.objects.reset();
+    this.objects.types.reset();
     this.custom = {}
     this.step = -1;
     this.link = null;
