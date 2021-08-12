@@ -19,9 +19,10 @@ class Object3D extends Structure {
     options = Object.assign({}, options);
     if (forceAssign || options.type != null) {
       let objTypeManager = this.game.objects.types;
-      let type = objTypeManager.findById(toString(options.type.id), true);
+      let objType = objTypeManager.create(options.type);
+      let type = objTypeManager.findById(objType.id, true);
       if (type == null) {
-        type = objTypeManager.create(options.type);
+        type = objType;
         objTypeManager.insert(type)
       }
       this.type = type

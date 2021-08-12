@@ -1,6 +1,7 @@
 'use strict';
 
 const Entity = require("./Entity.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 
 class Collectible extends Entity {
   constructor(game, options) {

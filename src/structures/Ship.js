@@ -3,6 +3,7 @@
 const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const convertStats = require("../utils/convertStats.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 
 class Ship extends Entity {
   constructor(game) {
