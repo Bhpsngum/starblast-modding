@@ -83,7 +83,7 @@ class Ship extends Entity {
 
 Object.defineProperties(Ship.prototype, {
   entity_type: {value: "ship"},
-  inactive_field: {value: "destroyed"},
+  inactive_field: {value: "disconnected"},
   spawned: {value: false}
 });
 

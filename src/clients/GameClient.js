@@ -3,7 +3,7 @@
 const GameSocket = require("../GameSocket.js");
 const getEntity = require("../utils/getEntity.js");
 const readBinaries = function (data) {
-  let dataView = new DataView(data), eventID = dataView.getUint8(0), eventIDs = this.eventCodes;
+  let dataView = new DataView(data), eventID = dataView.getUint8(0);
   dataView = new DataView(data.slice(1));
   switch (eventID) {
     case eventIDs.STATION_UPDATE:
@@ -20,14 +20,14 @@ const readBinaries = function (data) {
       break;
   }
 }
+const eventIDs = {
+  STATION_UPDATE: 205
+}
 
 class GameClient {
   constructor(game, ip, id, port) {
     this.game = game;
-    this.ip = ip;
-    this.id = id;
-    this.port = port;
-    let socket = GameSocket.create(this.ip, this.port);
+    let socket = GameSocket.create(ip, port), interval;
     socket.onopen = function () {
       this.send('{"name":"join","data":{"player_name":"_","preferred":' +id +'}}')
     }
@@ -45,7 +45,7 @@ class GameClient {
             });
             this.game.teams = data.mode.teams ?? null;
             this.initTeamStats();
-            setInterval(function(){socket.send(0)}, 1000);
+            interval = setInterval(function(){socket.send(0)}, 1000);
             break;
           case "player_name":
             let custom = data.custom ?? {finish: "zinc", laser: "0"}, lasers = ["single", "double", "lightning", "digital"];
@@ -61,6 +61,9 @@ class GameClient {
         else readBinaries.call(this, event.buffer.slice(event.byteOffset, event.byteOffset + event.byteLength))
       }
     }.bind(this)
+    socket.onclose = function () {
+      if (interval != null) clearInterval(interval);
+    }
   }
 
   initTeamStats () {
@@ -72,11 +75,5 @@ class GameClient {
     }));
   }
 }
-
-Object.defineProperty(GameClient.prototype, 'eventCodes', {
-  value: {
-    STATION_UPDATE: 205
-  }
-})
 
 module.exports = GameClient

@@ -27,7 +27,7 @@ class Asteroid extends Entity {
 
 Object.defineProperties(Asteroid.prototype, {
   entity_type: {value: "asteroid"},
-  inactive_field: {value: "killed"}
+  inactive_field: {value: "destroyed"}
 });
 
 MassRename(Asteroid, ["x", "y", "vx", "vy", "size"]);
