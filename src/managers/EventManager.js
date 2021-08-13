@@ -62,20 +62,23 @@ module.exports.create = function (api, address, token) {
           case "asteroid_created":
           case "collectible_created": {
             let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"];
-            let index = entityList.pending.findIndex(entity => entityList.isInstance(entity) && entity.request_id === event.request_id);
-            let entity;
-            if (index == -1) entity = entityList.create(event);
-            else entity = entityList.pending.splice(index, 1)[0];
+            let entity = entityList.all.find(entity => entityList.isInstance(entity) && entity.request_id === event.request_id);
+            if (entity == null) {
+              entity = entityList.create(event);
+              entityList.insert(entity)
+            }
             Object.defineProperties(entity, {
               id: {value: event.id},
-              createdStep: {value: this.step}
+              createdStep: {value: Math.max(this.step, 0)},
+              spawned: {value: true}
             });
-            entityList.insert(entity);
+            entity.lastUpdatedStep = this.step;
+            entityList.update();
             this.emit(events[event.name.toUpperCase()], entity, this);
             break;
           }
           case "ship_update": {
-            let ship = getEntity(event, this.ships);
+            let ship = getEntity(event, this.ships, true);
             if (!ship.spawned) this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send());
             ship.update(event);
             break;
@@ -117,7 +120,7 @@ module.exports.create = function (api, address, token) {
               }
               case "ship_spawned": {
                 data.id = data.ship;
-                let ship = getEntity(data, this.ships);
+                let ship = getEntity(data, this.ships, true);
                 let event_name = ship.spawned ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
                 if (!ship.spawned) Object.defineProperty(ship, 'spawned', {value: true});
                 this.emit(event_name, ship, this);

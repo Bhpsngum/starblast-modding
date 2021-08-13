@@ -10,7 +10,7 @@ class Structure {
   }
 
   isActive () {
-    return !this[this.inactive_field]
+    return this.spawned && !this[this.inactive_field]
   }
 }
 

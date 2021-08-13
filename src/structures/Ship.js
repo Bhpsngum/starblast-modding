@@ -2,8 +2,16 @@
 
 const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
-const convertStats = require("../utils/convertStats.js");
 const limitedJSON = require("../utils/limitedJSON.js");
+const convertStats = function(data) {
+  if (isNaN(data)) return 0;
+  let stats = [];
+  for (let i = 0; i < 8; i++) {
+    stats.push(15 & data); // equivalent to data % 16
+    data = data >> 4 // equivalent to data = data / 16
+  }
+  return stats
+}
 
 class Ship extends Entity {
   constructor(game) {

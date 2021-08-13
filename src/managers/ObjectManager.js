@@ -3,12 +3,9 @@
 const StructureManager = require("./StructureManager.js");
 const ObjectTypeManager = require("./ObjectTypeManager.js");
 const Object3D = require("../structures/Object.js");
+const getEntity = require("../utils/getEntity.js");
 const setObject = function (data) {
-  let object = this.create(data);
-  let fObject = this.findById(object.id, true);
-  if (fObject == null) this.insert(object);
-  else object = fObject;
-  object.set(data)
+  getEntity(data, this).set(data)
 }
 
 class ObjectManager extends StructureManager {
