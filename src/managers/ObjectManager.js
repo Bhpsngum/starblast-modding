@@ -21,7 +21,7 @@ class ObjectManager extends StructureManager {
     return setObject.call(this, data)
   }
 
-  add (data) { // placeholder, same functionality of 'ObjectManager.set'
+  add (data) { // placeholder, same functionality as 'ObjectManager.set'
     return setObject.call(this, data)
   }
 
