@@ -1,6 +1,7 @@
 'use strict';
 
 const GameSocket = require("../GameSocket.js");
+const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js");
 
@@ -42,6 +43,9 @@ module.exports.create = function (api, address, token) {
               link: "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port,
               options: data.options
             });
+            this.teams = JSON.parse(JSON.stringify(this.options.teams ?? null));
+            this.modding.gameClient = new GameClient(this, address.ip, data.id, address.port);
+            this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
             this.emit(events.MOD_STARTED, this.link, this);
