@@ -56,6 +56,7 @@ module.exports.create = function (api, address, token) {
             this.asteroids.update(true);
             this.collectibles.update(true);
             this.ships.update(true);
+            this.objects.update();
             this.emit(events.TICK, data.step, this);
             break;
           case "alien_created":
@@ -78,8 +79,11 @@ module.exports.create = function (api, address, token) {
             break;
           }
           case "ship_update": {
-            let ship = getEntity(event, this.ships, true);
-            if (!ship.spawned) this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send());
+            let ship = getEntity(event, this.ships);
+            if (!ship.spawned) {
+              this.objects.update();
+              this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send())
+            }
             ship.update(event);
             break;
           }
@@ -120,9 +124,10 @@ module.exports.create = function (api, address, token) {
               }
               case "ship_spawned": {
                 data.id = data.ship;
-                let ship = getEntity(data, this.ships, true);
+                let ship = getEntity(data, this.ships);
                 let event_name = ship.spawned ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
                 if (!ship.spawned) Object.defineProperty(ship, 'spawned', {value: true});
+                this.ships.update();
                 this.emit(event_name, ship, this);
                 break;
               }

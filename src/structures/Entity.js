@@ -23,6 +23,12 @@ class Entity extends Structure{
   }
 
   entityUpdate (data) {
+    if (this.spawned) delete this.firstUpdate;
+    else if (this.firstUpdate) {
+      Object.defineProperty(this, 'spawned', {value: true});
+      delete this.firstUpdate
+    }
+    else this.firstUpdate = true;
     this.x = data.x;
     this.y = data.y;
     this.vx = data.sx;
