@@ -1,6 +1,7 @@
 'use strict';
 
 const GameSocket = require("../GameSocket.js");
+const Station = require("../structures/Station.js");
 const getEntity = require("../utils/getEntity.js");
 const readBinaries = function (data) {
   let dataView = new DataView(data), eventID = dataView.getUint8(0);
@@ -9,13 +10,14 @@ const readBinaries = function (data) {
     case eventIDs.STATION_UPDATE:
       let teams = this.game.teams, size = Math.round(dataView.byteLength/teams.length);
       for (let i = 0; i < teams.length; i++) {
-        let index = i * size, base_level = dataView.getUint8(index + 1);
-        Object.assign(teams[i], {
+        let team = teams[i], index = i * size, base_level = dataView.getUint8(index + 1);
+        team.station.updateInfo({
           open: dataView.getUint8(index) > 0,
           level: base_level + 1,
-          crystals_max: this.game.options.crystal_capacity[base_level],
           crystals: dataView.getUint32(index + 2, true)
-        })
+        });
+        let modules = team.station.modules;
+        for (let j = 0; j < modules.length; j++) modules[j].updateShield(dataView.getUint8(index + j + 7))
       }
       break;
   }
@@ -71,7 +73,8 @@ class GameClient {
       level: 1,
       crystals: 0,
       crystals_max: this.game.options.crystal_capacity[0],
-      open: true
+      open: true,
+      station: new Station(this.game, v.station)
     }));
   }
 }
