@@ -37,7 +37,7 @@ class Object3D extends Structure {
     let send = function () {
       this.game.modding.api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
     }.bind(this)
-    if (this.type.physics.autoShape === true && this.type.physics.shape == null) this.type.getShape().then(shape => (this.physics.shape == shape, send())).catch(send);
+    if (this.type.physics.autoShape === true && this.type.physics.shape == null) this.type.getShape().then(shape => (this.type.physics.shape = shape, send())).catch(send);
     else send();
     return this
   }
