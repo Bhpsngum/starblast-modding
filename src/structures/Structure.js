@@ -6,7 +6,10 @@ class Structure {
   }
 
   markAsInactive () {
-    Object.defineProperty(this, this.inactive_field, {value: true})
+    Object.defineProperties(this, {
+      [this.inactive_field]: {value: true},
+      [this.inactive_field + "Step"]: {value: this.game.step}
+    })
   }
 
   isActive () {

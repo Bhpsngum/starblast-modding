@@ -15,6 +15,16 @@ class Object3D extends Structure {
     this.assign(options, true)
   }
 
+  markAsActive () {
+    this[this.inactive_field] = false;
+    delete this[this.inactive_field + "Step"]
+  }
+
+  markAsInactive () {
+    this[this.inactive_field] = true
+    this[this.inactive_field + "Step"] = this.game.step
+  }
+
   assign(options, forceAssign = false) {
     options = Object.assign({}, options);
     if (forceAssign || options.type != null) {
@@ -39,6 +49,8 @@ class Object3D extends Structure {
     }.bind(this)
     if (this.type.physics.autoShape === true && this.type.physics.shape == null) this.type.getShape().then(shape => (this.type.physics.shape = shape, send())).catch(send);
     else send();
+    this.markAsActive();
+    this.game.objects.update();
     return this
   }
 

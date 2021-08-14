@@ -50,6 +50,14 @@ class ShipManager extends EntityManager {
   setObject (data) {
     this.game.modding.api.globalMessage("set_object", {data: data}).send();
   }
+
+  update (onTick = false) {
+    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
+    this.all.push(...x);
+    if (onTick) this.all.forEach(entity => entity.isActive() && entity.step());
+    this.splice(0);
+    this.push(...this.all.filter(entity => entity.isActive()))
+  }
 }
 
 Object.defineProperties(ShipManager.prototype, {
