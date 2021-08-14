@@ -11,8 +11,8 @@ const readBinaries = function (data) {
       let teams = this.game.teams, size = Math.round(dataView.byteLength/teams.length);
       for (let i = 0; i < teams.length; i++) {
         let team = teams[i], index = i * size, base_level = dataView.getUint8(index + 1);
+        team.open = dataView.getUint8(index) > 0;
         team.station.updateInfo({
-          open: dataView.getUint8(index) > 0,
           level: base_level + 1,
           crystals: dataView.getUint32(index + 2, true)
         });
@@ -70,9 +70,6 @@ class GameClient {
 
   initTeamStats () {
     if (this.game.teams) this.game.teams.forEach(v=>Object.assign(v, {
-      level: 1,
-      crystals: 0,
-      crystals_max: this.game.options.crystal_capacity[0],
       open: true,
       station: new Station(this.game, v.station)
     }));
