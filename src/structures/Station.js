@@ -1,7 +1,7 @@
 'use strict';
 
 const Structure = require("./Structure.js");
-const StationModule = require("./StationModule.js");
+const StationModuleManager = require("../managers/StationModuleManager.js");
 
 class Station extends Structure {
   constructor(game, name, options) {
@@ -10,13 +10,16 @@ class Station extends Structure {
     this.name = name;
     let size = Math.trunc(this.game.options.station_size);
     this.size = this.game.options.station_size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
-    this.modules = (Array.isArray(options.modules) ? options.modules : []).map(modul => new StationModule(game, this, modul));
+    let modules = new StationModuleManager(this.game);
+    (Array.isArray(options.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(this, modul)));
+    this.modules = modules;
     this.phase = options.phase * 180 / Math.PI;
     this.updateInfo({
       level: Math.max(Math.trunc(options.level), 1) || 1,
       crystals: Math.max(options.crystals, 0) || 0
     });
-    this.step()
+    this.update();
+    Object.defineProperty(this, 'spawned', {value: true})
   }
 
   updateInfo (data) {
@@ -31,6 +34,16 @@ class Station extends Structure {
     this.x = radius * Math.cos(phase);
     this.y = radius * Math.sin(phase)
   }
+
+  update () {
+    this.step();
+    this.modules.update()
+  }
 }
+
+Object.defineProperties(Station.prototype, {
+  entity_type: {value: "station"},
+  inactive_field: {value: "destroyed"}
+});
 
 module.exports = Station

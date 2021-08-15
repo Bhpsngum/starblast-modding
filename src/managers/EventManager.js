@@ -57,7 +57,7 @@ module.exports.create = function (api, address, token) {
             this.collectibles.update(true);
             this.ships.update(true);
             this.objects.update();
-            if (this.teams != null) this.teams.forEach(team => team.station.step());
+            if (this.teams != null) this.teams.forEach(team => team.station.update());
             this.emit(events.TICK, data.step, this);
             break;
           case "alien_created":

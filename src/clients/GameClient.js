@@ -16,8 +16,9 @@ const readBinaries = function (data) {
           level: base_level + 1,
           crystals: dataView.getUint32(index + 2, true)
         });
-        let modules = team.station.modules;
-        for (let j = 0; j < modules.length; j++) modules[j].updateShield(dataView.getUint8(index + j + 7))
+        let station = team.station, modules = station.modules;
+        for (let j = 0; j < modules.length; j++) modules[j].updateShield(dataView.getUint8(index + j + 7));
+        if (modules.find(modul => modul.alive) == null) station.markAsInactive()
       }
       break;
   }
