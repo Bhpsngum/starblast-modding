@@ -2,6 +2,7 @@
 
 const StructureManager = require("./StructureManager.js");
 const Team = require("../structures/Team.js");
+const getEntity = require("../utils/getEntity.js");
 
 class TeamManager extends StructureManager {
   constructor(game) {
@@ -11,7 +12,7 @@ class TeamManager extends StructureManager {
   socketUpdate (dataView) {
     let size = Math.round(dataView.byteLength/this.all.length);
     for (let i = 0; i < this.all.length; i++) {
-      let team = this.all[i], index = i * size;
+      let team = getEntity({id: i}, this), index = i * size;
       team.updateInfo({
         open: dataView.getUint8(index) > 0,
         station: {
@@ -21,6 +22,7 @@ class TeamManager extends StructureManager {
         }
       })
     }
+    this.update()
   }
 
   update () {

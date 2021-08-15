@@ -13,7 +13,7 @@ const setObject = function (data) {
 class ObjectManager extends StructureManager {
   constructor(game) {
     super(game);
-    this.types = new ObjectTypeManager(game);
+    Object.defineProperty(this, 'types', {value: new ObjectTypeManager(game)})
   }
 
   set (data) {

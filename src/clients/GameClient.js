@@ -18,7 +18,7 @@ const eventIDs = {
 
 class GameClient {
   constructor(game, ip, id, port) {
-    this.game = game;
+    Object.defineProperty(this, 'game', {value: game});
     let socket = GameSocket.create(ip, port), interval;
     socket.onopen = function () {
       this.send('{"name":"join","data":{"player_name":"_","preferred":' +id +'}}')

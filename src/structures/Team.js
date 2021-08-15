@@ -9,21 +9,21 @@ class Team extends Structure {
     Object.defineProperties(this, {
       id: {value: options.id},
       spawned: {value: true},
-      createdStep: {value: 0}
+      createdStep: {value: 0},
+      faction: {value: options.faction},
+      station: {value: new Station(this.game, Object.assign({}, options.station, {
+        name: options.base_name,
+        team_id: this.id
+      }))}
     });
-    this.faction = options.faction;
-    this.open = this.open ?? true;
-    this.station = new Station(this.game, Object.assign({}, options.station, {
-      name: options.base_name,
-      team_id: this.id
-    }));
+    this.open = this.open ?? true
   }
 
   updateInfo (data) {
     data = Object.assign({}, data);
     this.open = data.open;
     this.station.updateInfo(data.station);
-    if (!this.station.isActive()) this.markAsInactive()
+    if (this.isActive() && !this.station.isActive()) this.markAsInactive();
   }
 }
 

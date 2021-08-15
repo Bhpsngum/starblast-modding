@@ -3,7 +3,7 @@
 const GameSocket = require("../GameSocket.js");
 const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
-const events = require("../resources/Events.js");
+const events = require("../resources/Events.js")();
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {
@@ -39,10 +39,8 @@ module.exports.create = function (api, address, token) {
               stopped: false
             });
             delete this.modding.api.ECPKey;
-            Object.assign(this, {
-              link: "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port,
-              options: data.options
-            });
+            this.link = "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port;
+            Object.defineProperty(this, 'options', {value: data.options});
             this.teams = JSON.parse(JSON.stringify(this.options.teams ?? null));
             this.modding.gameClient = new GameClient(this, address.ip, data.id, address.port);
             this.modding.gameClient.initTeamStats();
@@ -158,6 +156,7 @@ module.exports.create = function (api, address, token) {
       if (!this.started) reject(new Error("Failed to run the mod"));
       this.modding.api.started = false;
       this.modding.api.stopped = true;
+      this.modding.api.preflight_requests.splice(0);
       this.emit(events.MOD_STOPPED, this);
       this.reset();
       if (this.modding.api.cacheECPKey) this.modding.api.ECPKey = ECPKey

@@ -4,10 +4,12 @@ const runMod = require("../utils/runMod.js");
 
 class ModdingAPI {
   constructor(game, options) {
-    this.game = game;
+    Object.defineProperties(this, {
+      game: {value: game},
+      preflight_requests: {value: []}
+    });
     this.cacheECPKey = !!options.cacheECPKey;
     this.clear();
-    this.preflight_requests = [];
   }
 
   clear () {

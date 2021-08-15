@@ -5,20 +5,14 @@ const EventEmitter = require("events");
 class ModdingClient extends EventEmitter {
   constructor (options) {
     super();
-    options = options || {}
-    this.aliens = new (require("../managers/AlienManager.js"))(this);
-    this.asteroids = new (require("../managers/AsteroidManager.js"))(this);
-    this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
-    this.ships = new (require("../managers/ShipManager.js"))(this);
-    this.objects = new (require("../managers/ObjectManager.js"))(this);
-    this.custom = {}
-    this.step = -1;
-    this.on('error', function(){});
-    this.link = null;
-    this.modding = {
-      api: new (require("../rest/ModdingAPI.js"))(this, options),
-      events: require("../resources/Events.js")
-    }
+    options = Object.assign({}, options);
+    var modding = {};
+    Object.defineProperties(modding, {
+      api: {value: new (require("../rest/ModdingAPI.js"))(this, options)},
+      events: {value: require("../resources/Events.js")()}
+    });
+    Object.defineProperty(this, 'modding', {value: modding})
+    this.reset()
   }
 
   get started () {
@@ -67,15 +61,14 @@ class ModdingClient extends EventEmitter {
   }
 
   reset () {
-    this.aliens.reset();
-    this.asteroids.reset();
-    this.collectibles.reset();
-    this.ships.reset();
-    this.objects.reset();
-    this.objects.types.reset();
     this.custom = {}
     this.step = -1;
     this.link = null;
+    this.aliens = new (require("../managers/AlienManager.js"))(this);
+    this.asteroids = new (require("../managers/AsteroidManager.js"))(this);
+    this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
+    this.ships = new (require("../managers/ShipManager.js"))(this);
+    this.objects = new (require("../managers/ObjectManager.js"))(this);
   }
 }
 

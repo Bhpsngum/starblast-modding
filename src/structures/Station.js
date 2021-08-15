@@ -11,7 +11,7 @@ class Station extends Structure {
     let size = Math.trunc(this.game.options.station_size);
     this.size = this.game.options.station_size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
     let modules = new StationModuleManager(this.game);
-    (Array.isArray(options.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(this, modul)));
+    (Array.isArray(options.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
     this.modules = modules;
     this.phase = options.phase * 180 / Math.PI;
     this.updateInfo({
@@ -32,7 +32,7 @@ class Station extends Structure {
     this.crystals = data.crystals;
     this.crystals_max = this.game.options.crystal_capacity[this.level - 1];
     this.modules.updateShield(data.modules_shield);
-    if (null == this.modules.find(modul => modul.isActive())) this.markAsInactive()
+    if (this.isActive() && null == this.modules.all.find(modul => modul.isActive())) this.markAsInactive()
   }
 
   step () {

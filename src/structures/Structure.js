@@ -2,7 +2,7 @@
 
 class Structure {
   constructor (game) {
-    this.game = game;
+    Object.defineProperty(this, 'game', {value: game})
   }
 
   markAsInactive () {

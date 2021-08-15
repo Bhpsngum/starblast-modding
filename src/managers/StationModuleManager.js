@@ -2,14 +2,15 @@
 
 const StructureManager = require("./StructureManager.js");
 const StationModule = require("../structures/StationModule.js");
+const getEntity = require("../utils/getEntity.js");
 
 class StationModuleManager extends StructureManager {
   constructor(game) {
     super(game)
   }
 
-  create (parent, data) {
-    return new this.EntityConstructor(this.game, parent, data)
+  create (data, parent) {
+    return new this.EntityConstructor(this.game, data, parent)
   }
 
   update () {
@@ -21,7 +22,8 @@ class StationModuleManager extends StructureManager {
   }
 
   updateShield (shield) {
-    if (shield) for (let i = 0; i < this.all.length; i++) this.all[i].updateShield(shield.getUint8(i))
+    if (shield) for (let i = 0; i < this.all.length; i++) getEntity({id: i}, this, false, this.parent).updateShield(shield.getUint8(i));
+    this.update()
   }
 }
 
