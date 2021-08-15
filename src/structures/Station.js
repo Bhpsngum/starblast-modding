@@ -4,10 +4,10 @@ const Structure = require("./Structure.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
 
 class Station extends Structure {
-  constructor(game, name, options) {
+  constructor(game, options) {
     super(game);
     options = Object.assign({}, options);
-    this.name = name;
+    this.name = options.name;
     let size = Math.trunc(this.game.options.station_size);
     this.size = this.game.options.station_size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
     let modules = new StationModuleManager(this.game);
@@ -19,14 +19,20 @@ class Station extends Structure {
       crystals: Math.max(options.crystals, 0) || 0
     });
     this.update();
-    Object.defineProperty(this, 'spawned', {value: true})
+    Object.defineProperties(this, {
+      spawned: {value: true},
+      createdStep: {value: 0},
+      team_id: {value: options.team_id}
+    })
   }
 
   updateInfo (data) {
     data = Object.assign({}, data);
     this.level = data.level;
     this.crystals = data.crystals;
-    this.crystals_max = this.game.options.crystal_capacity[this.level - 1]
+    this.crystals_max = this.game.options.crystal_capacity[this.level - 1];
+    this.modules.updateShield(data.modules_shield);
+    if (null == this.modules.find(modul => modul.isActive())) this.markAsInactive()
   }
 
   step () {
@@ -42,7 +48,7 @@ class Station extends Structure {
 }
 
 Object.defineProperties(Station.prototype, {
-  entity_type: {value: "station"},
+  structure_type: {value: "station"},
   inactive_field: {value: "destroyed"}
 });
 

@@ -47,7 +47,7 @@ class Alien extends Entity {
 }
 
 Object.defineProperties(Alien.prototype, {
-  entity_type: {value: "alien"},
+  structure_type: {value: "alien"},
   inactive_field: {value: "killed"}
 });
 

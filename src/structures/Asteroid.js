@@ -26,7 +26,7 @@ class Asteroid extends Entity {
 }
 
 Object.defineProperties(Asteroid.prototype, {
-  entity_type: {value: "asteroid"},
+  structure_type: {value: "asteroid"},
   inactive_field: {value: "destroyed"}
 });
 

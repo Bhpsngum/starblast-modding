@@ -1,25 +1,14 @@
 'use strict';
 
 const GameSocket = require("../GameSocket.js");
-const Station = require("../structures/Station.js");
+const TeamManager = require("../managers/TeamManager.js");
 const getEntity = require("../utils/getEntity.js");
 const readBinaries = function (data) {
   let dataView = new DataView(data), eventID = dataView.getUint8(0);
   dataView = new DataView(data.slice(1));
   switch (eventID) {
     case eventIDs.STATION_UPDATE:
-      let teams = this.game.teams, size = Math.round(dataView.byteLength/teams.length);
-      for (let i = 0; i < teams.length; i++) {
-        let team = teams[i], index = i * size, base_level = dataView.getUint8(index + 1);
-        team.open = dataView.getUint8(index) > 0;
-        team.station.updateInfo({
-          level: base_level + 1,
-          crystals: dataView.getUint32(index + 2, true)
-        });
-        let station = team.station, modules = station.modules;
-        for (let j = 0; j < modules.length; j++) modules[j].updateShield(dataView.getUint8(index + j + 7));
-        if (modules.find(modul => modul.alive) == null) station.markAsInactive()
-      }
+      this.game.teams.socketUpdate(dataView);
       break;
   }
 }
@@ -70,13 +59,11 @@ class GameClient {
   }
 
   initTeamStats () {
-    if (this.game.teams) this.game.teams.forEach(v => {
-      Object.assign(v, {
-        open: true,
-        station: new Station(this.game, v.base_name, v.station)
-      });
-      delete v.base_name
-    });
+    if (this.game.teams) {
+      let teamManager = new TeamManager(this.game);
+      teamManager.insert(...this.game.teams.map((team, i) => teamManager.create(Object.assign({}, team, {id: i}))));
+      this.game.teams = teamManager;
+    }
   }
 }
 

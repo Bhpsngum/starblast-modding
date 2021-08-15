@@ -31,7 +31,7 @@ class Collectible extends Entity {
 }
 
 Object.defineProperties(Collectible.prototype, {
-  entity_type: {value: "collectible"},
+  structure_type: {value: "collectible"},
   inactive_field: {value: "vaporized"}
 });
 

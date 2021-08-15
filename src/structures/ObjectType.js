@@ -46,4 +46,8 @@ class ObjectType extends Structure {
   }
 }
 
+Object.defineProperties(ObjectType.prototype, {
+  structure_type: {value: "object_type"}
+});
+
 module.exports = ObjectType

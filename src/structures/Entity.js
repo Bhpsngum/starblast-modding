@@ -14,7 +14,7 @@ class Entity extends Structure{
     data.id = this.id;
     data.sx = data.vx;
     data.sy = data.vy;
-    this.game.modding.api.name("set_"+this.entity_type).data(data).send();
+    this.game.modding.api.name("set_"+this.structure_type).data(data).send();
     return this
   }
 

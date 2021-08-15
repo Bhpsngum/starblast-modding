@@ -67,7 +67,7 @@ class Object3D extends Structure {
 }
 
 Object.defineProperties(Object3D.prototype, {
-  entity_type: {value: "object"},
+  structure_type: {value: "object"},
   inactive_field: {value: "removed"}
 });
 
