@@ -10,9 +10,10 @@ class Station extends Structure {
     this.modules = (Array.isArray(options.modules) ? options.modules : []).map(modul => new StationModule(game, this, modul));
     this.phase = options.phase * 180 / Math.PI;
     this.updateInfo({
-      level: 1,
-      crystals: 0
+      level: Math.max(options.level, 1) || 1,
+      crystals: Math.max(options.crystals, 0) || 0
     });
+    this.size = Math.max(this.game.options.station_size, 1) || 2
     this.step()
   }
 
