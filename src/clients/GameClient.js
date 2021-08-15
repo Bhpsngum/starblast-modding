@@ -69,10 +69,13 @@ class GameClient {
   }
 
   initTeamStats () {
-    if (this.game.teams) this.game.teams.forEach(v=>Object.assign(v, {
-      open: true,
-      station: new Station(this.game, v.station)
-    }));
+    if (this.game.teams) this.game.teams.forEach(v => {
+      Object.assign(v, {
+        open: true,
+        station: new Station(this.game, v.base_name, v.station)
+      });
+      delete v.base_name
+    });
   }
 }
 

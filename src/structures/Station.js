@@ -4,16 +4,18 @@ const Structure = require("./Structure.js");
 const StationModule = require("./StationModule.js");
 
 class Station extends Structure {
-  constructor(game, options) {
+  constructor(game, name, options) {
     super(game);
     options = Object.assign({}, options);
+    this.name = name;
+    let size = Math.trunc(this.game.options.station_size);
+    this.size = this.game.options.station_size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
     this.modules = (Array.isArray(options.modules) ? options.modules : []).map(modul => new StationModule(game, this, modul));
     this.phase = options.phase * 180 / Math.PI;
     this.updateInfo({
-      level: Math.max(options.level, 1) || 1,
+      level: Math.max(Math.trunc(options.level), 1) || 1,
       crystals: Math.max(options.crystals, 0) || 0
     });
-    this.size = Math.max(this.game.options.station_size, 1) || 2
     this.step()
   }
 
