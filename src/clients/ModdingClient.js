@@ -49,6 +49,7 @@ class ModdingClient extends EventEmitter {
   }
 
   async start (options) {
+    if (this.started) throw new Error("Mod already started");
     options = options || {}
     if (options.hasOwnProperty('region')) this.setRegion(options.region);
     if (options.hasOwnProperty('options')) this.setOptions(options.options);
@@ -57,7 +58,7 @@ class ModdingClient extends EventEmitter {
   }
 
   stop () {
-    this.modding.api.stop()
+    if (!this.stopped) this.modding.api.stop()
   }
 
   reset () {

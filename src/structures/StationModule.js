@@ -53,9 +53,10 @@ class StationModule extends Structure {
   }
 
   step () {
-    // let phase = (this.parent.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI;
-    // this.offsetX = 20 * this._x * Math.cos(phase);
-    // this.offsetY = 20 * this._y * Math.sin(phase);
+    let phase = Math.atan2(this._y, this._x) - (this.parent.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI, radius = 10 * Math.sqrt(this._x ** 2 + this._y ** 2) * this.parent.level;
+    this.offsetX = radius * Math.cos(phase);
+    this.offsetY = radius * Math.sin(phase);
+    this.angle = ((phase / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
   }
 }
 
