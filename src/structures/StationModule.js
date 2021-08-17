@@ -26,7 +26,7 @@ class StationModule extends Structure {
       spawned: {value: true},
       createdStep: {value: 0},
       _x: {value: "number" == typeof options.x ? options.x : 0},
-      _y: {value: "number" == typeof options.x ? options.x : 0},
+      _y: {value: "number" == typeof options.y ? options.y : 0},
       _dir: {value: options.dir}
     })
   }
