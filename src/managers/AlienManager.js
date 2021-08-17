@@ -11,7 +11,7 @@ class AlienManager extends EntityManager {
 
 Object.defineProperties(AlienManager.prototype, {
   manager_name: {value: "alien"},
-  EntityConstructor: {value: Alien}
+  StructureConstructor: {value: Alien}
 });
 
 module.exports = AlienManager

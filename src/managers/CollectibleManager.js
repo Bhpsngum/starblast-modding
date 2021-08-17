@@ -19,7 +19,7 @@ class CollectibleManager extends EntityManager {
 
 Object.defineProperties(CollectibleManager.prototype, {
   manager_name: {value: "collectible"},
-  EntityConstructor: {value: Collectible}
+  StructureConstructor: {value: Collectible}
 });
 
 module.exports = CollectibleManager

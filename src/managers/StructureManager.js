@@ -10,15 +10,18 @@ class StructureManager extends Array {
   }
 
   create (data) {
-    return new this.EntityConstructor(this.game, data)
+    return new this.StructureConstructor(this.game, data)
   }
 
   isInstance (entity) {
-    return entity instanceof this.EntityConstructor
+    return entity instanceof this.StructureConstructor
   }
 
   insert (...data) {
-    this.all.push(...data);
+    for (let option of data) {
+      let p = this.isInstance(option) ? option : this.create(option);
+      this.all.push(p)
+    }
     this.update()
   }
 

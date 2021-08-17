@@ -9,7 +9,7 @@ class ObjectTypeManager extends StructureManager {
   }
 
   update () {
-    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
+    let x = this.all.splice(0).filter(objectType => this.isInstance(objectType));
     this.all.push(...x);
     this.splice(0);
     this.push(...this.all)
@@ -19,7 +19,7 @@ class ObjectTypeManager extends StructureManager {
 
 Object.defineProperties(ObjectTypeManager.prototype, {
   manager_name: {value: "object_type"},
-  EntityConstructor: {value: ObjectType}
+  StructureConstructor: {value: ObjectType}
 });
 
 module.exports = ObjectTypeManager

@@ -11,7 +11,7 @@ class AsteroidManager extends EntityManager {
 
 Object.defineProperties(AsteroidManager.prototype, {
   manager_name: {value: "asteroid"},
-  EntityConstructor: {value: Asteroid}
+  StructureConstructor: {value: Asteroid}
 });
 
 module.exports = AsteroidManager

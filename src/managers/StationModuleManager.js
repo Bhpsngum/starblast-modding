@@ -10,7 +10,7 @@ class StationModuleManager extends StructureManager {
   }
 
   create (data, parent) {
-    return new this.EntityConstructor(this.game, data, parent)
+    return new this.StructureConstructor(this.game, data, parent)
   }
 
   update () {
@@ -29,7 +29,7 @@ class StationModuleManager extends StructureManager {
 
 Object.defineProperties(StationModuleManager.prototype, {
   manager_name: {value: "station_module"},
-  EntityConstructor: {value: StationModule}
+  StructureConstructor: {value: StationModule}
 });
 
 module.exports = StationModuleManager

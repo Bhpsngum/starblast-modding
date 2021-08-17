@@ -49,6 +49,7 @@ class StationModule extends Structure {
       if (this.alive) this.markAsActive();
       else this.markAsInactive()
     }
+    this.lastUpdatedStep = this.game.step
   }
 
   step () {

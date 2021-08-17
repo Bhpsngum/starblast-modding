@@ -52,17 +52,17 @@ class ShipManager extends EntityManager {
   }
 
   update (onTick = false) {
-    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
+    let x = this.all.splice(0).filter(ship => this.isInstance(ship));
     this.all.push(...x);
-    if (onTick) this.all.forEach(entity => entity.isActive() && entity.step());
+    if (onTick) this.all.forEach(ship => ship.isActive() && ship.step());
     this.splice(0);
-    this.push(...this.all.filter(entity => entity.isActive()))
+    this.push(...this.all.filter(ship => ship.isActive()))
   }
 }
 
 Object.defineProperties(ShipManager.prototype, {
   manager_name: {value: "ship"},
-  EntityConstructor: {value: Ship}
+  StructureConstructor: {value: Ship}
 });
 
 module.exports = ShipManager

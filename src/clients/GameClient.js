@@ -59,9 +59,10 @@ class GameClient {
   }
 
   initTeamStats () {
-    if (this.game.teams) {
+    let teams = this.game.teams;
+    if (Array.isArray(teams)) {
       let teamManager = new TeamManager(this.game);
-      teamManager.insert(...this.game.teams.map((team, i) => teamManager.create(Object.assign({}, team, {id: i}))));
+      teamManager.insert(...teams.map((team, i) => Object.assign({}, team, {id: i})));
       this.game.teams = teamManager;
     }
   }

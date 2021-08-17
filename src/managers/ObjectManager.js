@@ -25,16 +25,16 @@ class ObjectManager extends StructureManager {
   }
 
   update () {
-    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
+    let x = this.all.splice(0).filter(object => this.isInstance(object));
     this.all.push(...x);
     this.splice(0);
-    this.push(...this.all.filter(entity => entity.isActive()))
+    this.push(...this.all.filter(object => object.isActive()))
   }
 }
 
 Object.defineProperties(ObjectManager.prototype, {
   manager_name: {value: "object"},
-  EntityConstructor: {value: Object3D}
+  StructureConstructor: {value: Object3D}
 });
 
 module.exports = ObjectManager

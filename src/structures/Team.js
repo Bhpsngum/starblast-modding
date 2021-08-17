@@ -10,20 +10,18 @@ class Team extends Structure {
       id: {value: options.id},
       spawned: {value: true},
       createdStep: {value: 0},
-      faction: {value: options.faction},
-      station: {value: new Station(this.game, Object.assign({}, options.station, {
-        name: options.base_name,
-        team_id: this.id
-      }))}
+      faction: {value: options.faction}
     });
     this.open = this.open ?? true
   }
 
   updateInfo (data) {
     data = Object.assign({}, data);
-    this.open = data.open;
-    this.station.updateInfo(data.station);
-    if (this.isActive() && !this.station.isActive()) this.markAsInactive();
+    this.open = data.open
+  }
+
+  update () {
+    this.stations.update()
   }
 }
 
