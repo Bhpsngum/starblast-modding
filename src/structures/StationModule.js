@@ -13,6 +13,7 @@ class StationModule extends Structure {
     super(game);
     this.shield = 0;
     this.alive = true;
+    this.finish = this.skin = "alloy";
     let type, subtype_id;
     (options.type||"").replace(/^(sp|st|d)(\d+)$/, function(v, mType, id) {
       type = typeMap.get(mType);
@@ -53,7 +54,9 @@ class StationModule extends Structure {
   }
 
   step () {
-    let init_phase = Math.atan2(this._y, this._x), phase = init_phase - (this.parent.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI, radius = 10 * Math.sqrt(this._x ** 2 + this._y ** 2);// * this.parent.level;
+    let init_phase = Math.atan2(this._y, this._x), phase = init_phase - (this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI;
+    // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
+    let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
     this.offsetX = radius * Math.cos(phase);
     this.offsetY = radius * Math.sin(phase);
     this.angle = (((phase - init_phase) / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180

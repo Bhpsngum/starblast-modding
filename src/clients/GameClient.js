@@ -43,6 +43,7 @@ class GameClient {
             let custom = data.custom ?? {finish: "zinc", laser: "0"}, lasers = ["single", "double", "lightning", "digital"];
             custom.badge = "string" == typeof custom.badge ? custom.badge.replace(/^https{0,1}\:\/\/starblast\.io\/ecp\/([^.]+).+$/,"$1") : null;
             custom.laser = lasers[custom.laser] ?? lasers[0];
+            custom.skin = custom.finish;
             data.customization = custom;
             getEntity(data, this.game.ships).update(data, true)
             break;
