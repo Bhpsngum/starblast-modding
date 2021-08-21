@@ -11,9 +11,10 @@ class StationModule extends Structure {
   constructor(game, options, parent) {
     options = Object.assign({}, options);
     super(game);
-    this.shield = 0;
+    this.shield = 1;
     this.alive = true;
     this.finish = this.skin = "alloy";
+    this.offsetX = this.offsetY = 0;
     let type, subtype_id;
     (options.type||"").replace(/^(sp|st|d)(\d+)$/, function(v, mType, id) {
       type = typeMap.get(mType);
@@ -60,6 +61,14 @@ class StationModule extends Structure {
     this.offsetX = radius * Math.cos(phase);
     this.offsetY = radius * Math.sin(phase);
     this.angle = (((phase - init_phase) / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
+  }
+
+  get x () {
+    return this.parent.x + this.offsetX
+  }
+
+  get y () {
+    return this.parent.y + this.offsetY
   }
 }
 
