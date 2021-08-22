@@ -19,7 +19,8 @@ class StationModuleManager extends StructureManager {
     this.all.push(...x);
     this.all.forEach(modul => modul.isActive() && modul.step());
     this.splice(0);
-    this.push(...this.all.filter(modul => modul.isActive()))
+    this.push(...this.all.filter(modul => modul.isActive()));
+    return this
   }
 
   updateShield (shield) {

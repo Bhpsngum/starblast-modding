@@ -8,13 +8,6 @@ class ObjectTypeManager extends StructureManager {
   constructor(game) {
     super(game);
   }
-
-  update () {
-    let x = this.all.splice(0).filter(objectType => this.isInstance(objectType));
-    this.all.push(...x);
-    this.splice(0);
-    this.push(...this.all)
-  }
 }
 
 

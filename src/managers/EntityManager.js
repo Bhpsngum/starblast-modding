@@ -31,7 +31,8 @@ class EntityManager extends StructureManager {
       }
     });
     this.splice(0);
-    this.push(...this.all.filter(entity => entity.isActive()))
+    this.push(...this.all.filter(entity => entity.isActive()));
+    return this
   }
 }
 

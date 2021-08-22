@@ -29,7 +29,8 @@ class ObjectManager extends StructureManager {
     let x = this.all.splice(0).filter(object => this.isInstance(object));
     this.all.push(...x);
     this.splice(0);
-    this.push(...this.all.filter(object => object.isActive()))
+    this.push(...this.all.filter(object => object.isActive()));
+    return this
   }
 }
 

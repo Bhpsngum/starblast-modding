@@ -66,23 +66,23 @@ class ModdingClient extends EventEmitter {
   }
 
   get ships () {
-    return this.modding.api.ships
+    return this.modding.api.ships.update()
   }
 
   get aliens () {
-    return this.modding.api.aliens
+    return this.modding.api.aliens.update()
   }
 
   get asteroids () {
-    return this.modding.api.asteroids
+    return this.modding.api.asteroids.update()
   }
 
   get collectibles () {
-    return this.modding.api.collectibles
+    return this.modding.api.collectibles.update()
   }
 
   get objects () {
-    return this.modding.api.objects
+    return this.modding.api.objects.update()
   }
 
   reset () {

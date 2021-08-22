@@ -57,7 +57,8 @@ class ShipManager extends EntityManager {
     this.all.push(...x);
     if (onTick) this.all.forEach(ship => ship.isActive() && ship.alive && ship.step());
     this.splice(0);
-    this.push(...this.all.filter(ship => ship.isActive()))
+    this.push(...this.all.filter(ship => ship.isActive()));
+    return this
   }
 }
 

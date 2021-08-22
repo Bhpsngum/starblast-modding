@@ -14,7 +14,8 @@ class StationManager extends StructureManager {
     this.all.push(...x);
     this.all.forEach(station => station.isActive() && station.update());
     this.splice(0);
-    this.push(...this.all.filter(station => station.isActive()))
+    this.push(...this.all.filter(station => station.isActive()));
+    return this
   }
 }
 
