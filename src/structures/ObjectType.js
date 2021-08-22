@@ -10,24 +10,28 @@ class ObjectType extends Structure {
   constructor (game, type) {
     super(game);
     type = Object.assign({}, type);
-    let physics = type.physics ?? {}
-    this.id = toString(type.id);
-    this.obj =  type.obj ?? null;
-    this.diffuse = type.diffuse ?? null;
-    this.emissive = type.emissive ?? null;
-    this.specular = type.specular ?? null;
-    this.bump = type.bump ?? null;
-    this.diffuseColor = type.diffuseColor ?? 0x0;
-    this.emissiveColor = type.emissiveColor ?? 0x0;
-    this.specularColor = type.specularColor ?? 0x0;
-    this.bumpScale = "number" == typeof type.bumpScale ? type.bumpScale : 1;
-    this.transparent = type.transparent === true;
-    this.shininess = "number" == typeof type.shininess ? type.shininess : 0;
-    this.physics = {
-      mass: physics.mass ?? 0,
-      shape: physics.shape ?? null,
-      autoShape: physics.autoShape === true
-    }
+    let pysics = type.physics ?? {}
+    let physics = {}
+    defineProperties(physics, {
+      mass: pysics.mass ?? 0,
+      autoShape: pysics.autoShape === true
+    });
+    if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape});
+    defineProperties(this, {
+      id: toString(type.id),
+      obj:  type.obj ?? null,
+      diffuse: type.diffuse ?? null,
+      emissive: type.emissive ?? null,
+      specular: type.specular ?? null,
+      bump: type.bump ?? null,
+      diffuseColor: type.diffuseColor ?? 0x0,
+      emissiveColor: type.emissiveColor ?? 0x0,
+      specularColor: type.specularColor ?? 0x0,
+      bumpScale: "number" == typeof type.bumpScale ? type.bumpScale : 1,
+      transparent: type.transparent === true,
+      shininess: "number" == typeof type.shininess ? type.shininess : 0,
+      physics
+    });
   }
 
   markAsInactive () {

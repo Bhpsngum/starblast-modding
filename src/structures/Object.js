@@ -48,7 +48,9 @@ class Object3D extends Structure {
     let send = function () {
       this.game.modding.api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
     }.bind(this)
-    if (this.type.physics.autoShape === true && this.type.physics.shape == null) this.type.getShape().then(shape => (this.type.physics.shape = shape, send())).catch(send);
+    if (this.type.physics.autoShape === true && this.type.physics.shape == null) this.type.getShape()
+    .then(shape => defineProperties(this.type.physics, {shape}, send()))
+    .catch(e => defineProperties(this.type.physics, {shape: []}, send()));
     else send();
     this.markAsActive();
     this.game.objects.update();
