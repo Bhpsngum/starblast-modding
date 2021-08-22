@@ -4,16 +4,17 @@ const StructureManager = require("./StructureManager.js");
 const ObjectTypeManager = require("./ObjectTypeManager.js");
 const Object3D = require("../structures/Object.js");
 const getEntity = require("../utils/getEntity.js");
+const defineProperties = require("../utils/defineProperties.js");
 const setObject = function (data) {
   let object = getEntity(data, this);
-  if (!object.spawned) Object.defineProperty(object, 'spawned', {value: true});
+  if (!object.spawned) defineProperties(object, {spawned: true});
   object.set(data)
 }
 
 class ObjectManager extends StructureManager {
   constructor(game) {
     super(game);
-    Object.defineProperty(this, 'types', {value: new ObjectTypeManager(game)})
+    defineProperties(this, {types: new ObjectTypeManager(game)})
   }
 
   set (data) {
@@ -32,9 +33,9 @@ class ObjectManager extends StructureManager {
   }
 }
 
-Object.defineProperties(ObjectManager.prototype, {
-  manager_name: {value: "object"},
-  StructureConstructor: {value: Object3D}
+defineProperties(ObjectManager.prototype, {
+  manager_name: "object",
+  StructureConstructor: Object3D
 });
 
 module.exports = ObjectManager

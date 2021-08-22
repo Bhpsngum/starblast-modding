@@ -4,11 +4,12 @@ const StructureManager = require("./StructureManager.js");
 const StationManager = require("./StationManager.js");
 const Team = require("../structures/Team.js");
 const getEntity = require("../utils/getEntity.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class TeamManager extends StructureManager {
   constructor(game) {
     super(game);
-    Object.defineProperty(this, 'stations', {value: new StationManager(this.game)});
+    defineProperties(this, {stations: new StationManager(this.game)});
   }
 
   insert (...data) {
@@ -46,9 +47,9 @@ class TeamManager extends StructureManager {
   }
 }
 
-Object.defineProperties(TeamManager.prototype, {
-  manager_name: {value: "team"},
-  StructureConstructor: {value: Team}
+defineProperties(TeamManager.prototype, {
+  manager_name: "team",
+  StructureConstructor: Team
 });
 
 module.exports = TeamManager

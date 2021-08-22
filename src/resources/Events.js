@@ -1,5 +1,7 @@
 'use strict';
 
+const defineProperties = require("../utils/defineProperties.js");
+
 module.exports = function() {
   let obj = {}, EVENTS = {
     // General Modding events
@@ -23,6 +25,6 @@ module.exports = function() {
     COLLECTIBLE_CREATED: "collectibleCreate",
     COLLECTIBLE_PICKED: "collectiblePick"
   }
-  for (let key in EVENTS) Object.defineProperty(obj, key, {value: EVENTS[key]});
+  defineProperties(obj, EVENTS);
   return obj
 }

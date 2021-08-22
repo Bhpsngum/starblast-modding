@@ -6,12 +6,13 @@ const getObjectShapeFromURL = require("../utils/getObjectShapeFromURL.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const toString = require("../utils/toString.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class Object3D extends Structure {
   constructor (game, options) {
     super(game);
     options = Object.assign({}, options);
-    Object.defineProperty(this, 'id', {value: toString(options.id)});
+    defineProperties(this, {id: toString(options.id)});
     this.assign(options, true)
   }
 
@@ -66,9 +67,9 @@ class Object3D extends Structure {
   }
 }
 
-Object.defineProperties(Object3D.prototype, {
-  structure_type: {value: "object"},
-  inactive_field: {value: "removed"}
+defineProperties(Object3D.prototype, {
+  structure_type: "object",
+  inactive_field: "removed"
 });
 
 MassRename(Object3D, ["type", "position", "rotation", "scale"]);

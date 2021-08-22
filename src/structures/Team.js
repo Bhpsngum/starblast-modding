@@ -2,15 +2,16 @@
 
 const Structure = require("./Structure.js");
 const Station = require("./Station.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class Team extends Structure {
   constructor(game, options) {
     super(game);
-    Object.defineProperties(this, {
-      id: {value: options.id},
-      spawned: {value: true},
-      createdStep: {value: 0},
-      faction: {value: options.faction}
+    defineProperties(this, {
+      id: options.id,
+      spawned: true,
+      createdStep: 0,
+      faction: "string" == typeof options.faction ? options.faction : "Unknown"
     });
     this.open = this.open ?? true
   }
@@ -25,9 +26,9 @@ class Team extends Structure {
   }
 }
 
-Object.defineProperties(Team.prototype, {
-  structure_type: {value: "team"},
-  inactive_field: {value: "eliminated"}
+defineProperties(Team.prototype, {
+  structure_type: "team",
+  inactive_field: "eliminated"
 });
 
 module.exports = Team

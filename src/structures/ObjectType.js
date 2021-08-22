@@ -4,6 +4,7 @@ const Structure = require("./Structure.js");
 const getObjectShapeFromURL = require("../utils/getObjectShapeFromURL.js");
 const toString = require("../utils/toString.js");
 const limitedJSON = require("../utils/limitedJSON.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class ObjectType extends Structure {
   constructor (game, type) {
@@ -46,8 +47,8 @@ class ObjectType extends Structure {
   }
 }
 
-Object.defineProperties(ObjectType.prototype, {
-  structure_type: {value: "object_type"}
+defineProperties(ObjectType.prototype, {
+  structure_type: "object_type"
 });
 
 module.exports = ObjectType

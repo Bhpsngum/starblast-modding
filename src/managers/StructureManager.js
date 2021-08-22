@@ -1,11 +1,13 @@
 'use strict';
 
+const defineProperties = require("../utils/defineProperties.js");
+
 class StructureManager extends Array {
   constructor(game) {
     super();
-    Object.defineProperties(this, {
-      game: {value: game},
-      all: {value: []}
+    defineProperties(this, {
+      game,
+      all: []
     })
   }
 

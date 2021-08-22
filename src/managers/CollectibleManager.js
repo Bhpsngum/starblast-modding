@@ -2,6 +2,7 @@
 
 const EntityManager = require("./EntityManager.js");
 const Collectible = require("../structures/Collectible.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class CollectibleManager extends EntityManager {
   constructor(game) {
@@ -17,9 +18,9 @@ class CollectibleManager extends EntityManager {
   }
 }
 
-Object.defineProperties(CollectibleManager.prototype, {
-  manager_name: {value: "collectible"},
-  StructureConstructor: {value: Collectible}
+defineProperties(CollectibleManager.prototype, {
+  manager_name: "collectible",
+  StructureConstructor: Collectible
 });
 
 module.exports = CollectibleManager

@@ -3,6 +3,7 @@
 const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
+const defineProperties = require("../utils/defineProperties.js");
 const convertStats = function(data) {
   if (isNaN(data)) return 0;
   let stats = [];
@@ -89,10 +90,9 @@ class Ship extends Entity {
   }
 }
 
-Object.defineProperties(Ship.prototype, {
-  structure_type: {value: "ship"},
-  inactive_field: {value: "disconnected"},
-  spawned: {value: false}
+defineProperties(Ship.prototype, {
+  structure_type: "ship",
+  inactive_field: "disconnected"
 });
 
 MassRename(Ship, ["x", "y", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);

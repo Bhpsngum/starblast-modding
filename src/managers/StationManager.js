@@ -2,6 +2,7 @@
 
 const StructureManager = require("./StructureManager.js");
 const Station = require("../structures/Station.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class StationManager extends StructureManager {
   constructor (game) {
@@ -17,9 +18,9 @@ class StationManager extends StructureManager {
   }
 }
 
-Object.defineProperties(StationManager.prototype, {
-  manager_name: {value: "station"},
-  StructureConstructor: {value: Station}
+defineProperties(StationManager.prototype, {
+  manager_name: "station",
+  StructureConstructor: Station
 });
 
 module.exports = StationManager;

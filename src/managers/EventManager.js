@@ -4,6 +4,7 @@ const GameSocket = require("../GameSocket.js");
 const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js")();
+const defineProperties = require("../utils/defineProperties.js");
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {
@@ -40,7 +41,9 @@ module.exports.create = function (api, address, token) {
             });
             delete this.modding.api.ECPKey;
             this.link = "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port;
-            Object.defineProperty(this, 'options', {value: data.options});
+            for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
+            let options = defineProperties({}, data.options);
+            defineProperties(this, {options});
             this.teams = JSON.parse(JSON.stringify(this.options.teams ?? null));
             this.modding.gameClient = new GameClient(this, address.ip, data.id, address.port);
             this.modding.gameClient.initTeamStats();
@@ -67,10 +70,10 @@ module.exports.create = function (api, address, token) {
               entity = entityList.create(event);
               entityList.insert(entity)
             }
-            Object.defineProperties(entity, {
-              id: {value: event.id},
-              createdStep: {value: Math.max(this.step, 0)},
-              spawned: {value: true}
+            defineProperties(entity, {
+              id: event.id,
+              createdStep: Math.max(this.step, 0),
+              spawned: true
             });
             entity.lastUpdatedStep = this.step;
             entityList.update();

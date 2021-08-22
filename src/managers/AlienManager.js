@@ -2,6 +2,7 @@
 
 const EntityManager = require("./EntityManager.js");
 const Alien = require("../structures/Alien.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class AlienManager extends EntityManager {
   constructor(game) {
@@ -9,9 +10,9 @@ class AlienManager extends EntityManager {
   }
 }
 
-Object.defineProperties(AlienManager.prototype, {
-  manager_name: {value: "alien"},
-  StructureConstructor: {value: Alien}
+defineProperties(AlienManager.prototype, {
+  manager_name: "alien",
+  StructureConstructor: Alien
 });
 
 module.exports = AlienManager

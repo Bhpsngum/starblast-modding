@@ -3,6 +3,7 @@
 const Entity = require("./Entity.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const CollectibleCodes = require("../utils/collectibleCodes.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class Collectible extends Entity {
   constructor(game, options) {
@@ -30,9 +31,9 @@ class Collectible extends Entity {
   }
 }
 
-Object.defineProperties(Collectible.prototype, {
-  structure_type: {value: "collectible"},
-  inactive_field: {value: "vaporized"}
+defineProperties(Collectible.prototype, {
+  structure_type: "collectible",
+  inactive_field: "vaporized"
 });
 
 module.exports = Collectible

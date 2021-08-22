@@ -1,11 +1,15 @@
 'use strict';
 
+const defineProperties = require("../utils/defineProperties.js");
+
 class Coordinate {
   constructor (position) {
     position = Object.assign({}, position);
-    this.x = position.x ?? 0;
-    this.y = position.y ?? 0;
-    this.z = position.z ?? 0;
+    defineProperties(this, {
+      x: "number" == typeof position.x ? position.x : 0,
+      y: "number" == typeof position.y ? position.y : 0,
+      z: "number" == typeof position.z ? position.z : 0,
+    })
   }
 }
 

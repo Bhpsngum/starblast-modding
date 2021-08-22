@@ -1,14 +1,16 @@
 'use strict';
 
+const defineProperties = require("../utils/defineProperties.js");
+
 class Structure {
   constructor (game) {
-    Object.defineProperty(this, 'game', {value: game})
+    defineProperties(this, {game})
   }
 
   markAsInactive () {
-    Object.defineProperties(this, {
-      [this.inactive_field]: {value: true},
-      [this.inactive_field + "Step"]: {value: this.game.step}
+    defineProperties(this, {
+      [this.inactive_field]: true,
+      [this.inactive_field + "Step"]: this.game.step
     })
   }
 

@@ -2,22 +2,23 @@
 
 const Structure = require("./Structure.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class Station extends Structure {
   constructor(game, options) {
     super(game);
     options = Object.assign({}, options);
     let size = Math.trunc(this.game.options.station_size);
-    this.size = this.game.options.station_size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
+    this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
     let modules = new StationModuleManager(this.game);
     (Array.isArray(options.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
-    Object.defineProperties(this, {
-      name: {value: options.name},
-      spawned: {value: true},
-      id: {value: options.id},
-      team: {value: options.id},
-      modules: {value: modules},
-      phase: {value: options.phase * 180 / Math.PI}
+    defineProperties(this, {
+      name: "string" == typeof options.name ? options.name : "Unknown",
+      spawned: true,
+      id: options.id,
+      team: options.id,
+      modules,
+      phase: options.phase * 180 / Math.PI
     });
     this.updateInfo({
       level: Math.max(Math.trunc(options.level), 1) || 1,
@@ -48,9 +49,9 @@ class Station extends Structure {
   }
 }
 
-Object.defineProperties(Station.prototype, {
-  structure_type: {value: "station"},
-  inactive_field: {value: "destroyed"}
+defineProperties(Station.prototype, {
+  structure_type: "station",
+  inactive_field: "destroyed"
 });
 
 module.exports = Station

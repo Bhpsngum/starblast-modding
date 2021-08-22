@@ -2,6 +2,7 @@
 
 const Structure = require("./Structure.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class Entity extends Structure{
   constructor (game) {
@@ -25,7 +26,7 @@ class Entity extends Structure{
   entityUpdate (data) {
     if (this.spawned) delete this.firstUpdate;
     else if (this.firstUpdate) {
-      Object.defineProperty(this, 'spawned', {value: true});
+      defineProperties(this, {spawned: true});
       delete this.firstUpdate
     }
     else this.firstUpdate = true;

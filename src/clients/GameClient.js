@@ -3,6 +3,7 @@
 const GameSocket = require("../GameSocket.js");
 const TeamManager = require("../managers/TeamManager.js");
 const getEntity = require("../utils/getEntity.js");
+const defineProperties = require("../utils/defineProperties.js");
 const readBinaries = function (data) {
   let dataView = new DataView(data), eventID = dataView.getUint8(0);
   dataView = new DataView(data.slice(1));
@@ -18,7 +19,7 @@ const eventIDs = {
 
 class GameClient {
   constructor(game, ip, id, port) {
-    Object.defineProperty(this, 'game', {value: game});
+    defineProperties(this, {game});
     let socket = GameSocket.create(ip, port), interval;
     socket.onopen = function () {
       this.send('{"name":"join","data":{"player_name":" ","preferred":' +id +'}}')
@@ -31,7 +32,7 @@ class GameClient {
         let data = parsed.data
         switch (parsed.name) {
           case "welcome":
-            Object.assign(this.game.options, {
+            defineProperties(this.game.options, {
               map_name: data.name,
               map_id: data.seed
             });

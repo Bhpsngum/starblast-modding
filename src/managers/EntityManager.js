@@ -1,6 +1,7 @@
 'use strict';
 
 const StructureManager = require("./StructureManager.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class EntityManager extends StructureManager {
   constructor(game) {
@@ -10,7 +11,7 @@ class EntityManager extends StructureManager {
 
   add (data) {
     let entity = this.create(data);
-    Object.defineProperty(entity, 'request_id', {value: this.request_id++});
+    defineProperties(entity, {request_id: this.request_id++});
     this.insert(entity);
     let rawEntity = JSON.parse(JSON.stringify(entity));
     Object.assign(rawEntity, {

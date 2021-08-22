@@ -2,6 +2,7 @@
 
 const StructureManager = require("./StructureManager.js");
 const ObjectType = require("../structures/ObjectType.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class ObjectTypeManager extends StructureManager {
   constructor(game) {
@@ -17,9 +18,9 @@ class ObjectTypeManager extends StructureManager {
 }
 
 
-Object.defineProperties(ObjectTypeManager.prototype, {
-  manager_name: {value: "object_type"},
-  StructureConstructor: {value: ObjectType}
+defineProperties(ObjectTypeManager.prototype, {
+  manager_name: "object_type",
+  StructureConstructor: ObjectType
 });
 
 module.exports = ObjectTypeManager

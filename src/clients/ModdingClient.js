@@ -1,17 +1,21 @@
 'use strict';
 
 const EventEmitter = require("events");
+const defineProperties = require("../utils/defineProperties.js");
 
 class ModdingClient extends EventEmitter {
   constructor (options) {
     super();
     options = Object.assign({}, options);
     var modding = {};
-    Object.defineProperties(modding, {
-      api: {value: new (require("../rest/ModdingAPI.js"))(this, options)},
-      events: {value: require("../resources/Events.js")()}
+    defineProperties(modding, {
+      api: new (require("../rest/ModdingAPI.js"))(this, options),
+      events: require("../resources/Events.js")()
     });
-    Object.defineProperty(this, 'modding', {value: modding})
+    defineProperties(this, {
+      modding,
+      client_custom: {}
+    });
     this.reset()
   }
 

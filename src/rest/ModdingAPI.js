@@ -1,12 +1,13 @@
 'use strict';
 
 const runMod = require("../utils/runMod.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class ModdingAPI {
   constructor(game, options) {
-    Object.defineProperties(this, {
-      game: {value: game},
-      preflight_requests: {value: []}
+    defineProperties(this, {
+      game,
+      preflight_requests: []
     });
     this.cacheECPKey = !!options.cacheECPKey;
     this.clear();

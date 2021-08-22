@@ -3,6 +3,7 @@
 const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
+const defineProperties = require("../utils/defineProperties.js");
 
 class Asteroid extends Entity {
   constructor(game, options) {
@@ -25,9 +26,9 @@ class Asteroid extends Entity {
   }
 }
 
-Object.defineProperties(Asteroid.prototype, {
-  structure_type: {value: "asteroid"},
-  inactive_field: {value: "destroyed"}
+defineProperties(Asteroid.prototype, {
+  structure_type: "asteroid",
+  inactive_field: "destroyed"
 });
 
 MassRename(Asteroid, ["x", "y", "vx", "vy", "size"]);

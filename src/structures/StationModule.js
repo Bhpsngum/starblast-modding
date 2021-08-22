@@ -1,6 +1,7 @@
 'use strict';
 
 const Structure = require("./Structure.js");
+const defineProperties = require("../utils/defineProperties.js");
 const typeMap = new Map([
   ["st", "structure"],
   ["d", "deposit"],
@@ -20,16 +21,16 @@ class StationModule extends Structure {
       type = typeMap.get(mType);
       subtype_id = Number(id)
     }.bind(this));
-    Object.defineProperties(this, {
-      parent: {value: parent},
-      id: {value: options.id},
-      type: {value: type},
-      subtype_id: {value: subtype_id},
-      spawned: {value: true},
-      createdStep: {value: 0},
-      _x: {value: "number" == typeof options.x ? options.x : 0},
-      _y: {value: "number" == typeof options.y ? options.y : 0},
-      _dir: {value: options.dir}
+    defineProperties(this, {
+      parent,
+      id: options.id,
+      type,
+      subtype_id,
+      spawned: true,
+      createdStep: 0,
+      _x: "number" == typeof options.x ? options.x : 0,
+      _y: "number" == typeof options.y ? options.y : 0,
+      _dir: "number" == typeof options.dir ? options.dir : 0
     })
   }
 
@@ -72,9 +73,9 @@ class StationModule extends Structure {
   }
 }
 
-Object.defineProperties(StationModule.prototype, {
-  structure_type: {value: "station_module"},
-  inactive_field: {value: "destroyed"}
+defineProperties(StationModule.prototype, {
+  structure_type: "station_module",
+  inactive_field: "destroyed"
 });
 
 module.exports = StationModule
