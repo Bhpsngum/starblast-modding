@@ -65,15 +65,31 @@ class ModdingClient extends EventEmitter {
     if (!this.stopped) this.modding.api.stop()
   }
 
+  get ships () {
+    return this.modding.api.ships
+  }
+
+  get aliens () {
+    return this.modding.api.aliens
+  }
+
+  get asteroids () {
+    return this.modding.api.asteroids
+  }
+
+  get collectibles () {
+    return this.modding.api.collectibles
+  }
+
+  get objects () {
+    return this.modding.api.objects
+  }
+
   reset () {
     this.custom = {}
     this.step = -1;
     this.link = null;
-    this.aliens = new (require("../managers/AlienManager.js"))(this);
-    this.asteroids = new (require("../managers/AsteroidManager.js"))(this);
-    this.collectibles = new (require("../managers/CollectibleManager.js"))(this);
-    this.ships = new (require("../managers/ShipManager.js"))(this);
-    this.objects = new (require("../managers/ObjectManager.js"))(this);
+    this.modding.api.resetManagers();
   }
 }
 

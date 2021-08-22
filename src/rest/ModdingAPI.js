@@ -64,6 +64,14 @@ class ModdingAPI {
     else this.preflight_requests.push(this.pending_request);
     return this.clear()
   }
+
+  resetManagers () {
+    this.aliens = new (require("../managers/AlienManager.js"))(this.game);
+    this.asteroids = new (require("../managers/AsteroidManager.js"))(this.game);
+    this.collectibles = new (require("../managers/CollectibleManager.js"))(this.game);
+    this.ships = new (require("../managers/ShipManager.js"))(this.game);
+    this.objects = new (require("../managers/ObjectManager.js"))(this.game);
+  }
 }
 
 module.exports = ModdingAPI

@@ -44,7 +44,6 @@ module.exports.create = function (api, address, token) {
             for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
             let options = defineProperties({}, data.options);
             defineProperties(this, {options});
-            this.teams = JSON.parse(JSON.stringify(this.options.teams ?? null));
             this.modding.gameClient = new GameClient(this, address.ip, data.id, address.port);
             this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();

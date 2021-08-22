@@ -36,8 +36,6 @@ class GameClient {
               map_name: data.name,
               map_id: data.seed
             });
-            this.game.teams = data.mode.teams ?? null;
-            this.initTeamStats();
             interval = setInterval(function(){socket.send(0)}, 1000);
             break;
           case "player_name":
@@ -61,11 +59,11 @@ class GameClient {
   }
 
   initTeamStats () {
-    let teams = this.game.teams;
+    let teams = JSON.parse(JSON.stringify(this.game.options.teams ?? null));
     if (Array.isArray(teams)) {
       let teamManager = new TeamManager(this.game);
       teamManager.insert(...teams.map((team, i) => Object.assign({}, team, {id: i})));
-      this.game.teams = teamManager;
+      defineProperties(this.game, {teams: teamManager})
     }
   }
 }
