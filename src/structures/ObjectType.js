@@ -9,8 +9,7 @@ const defineProperties = require("../utils/defineProperties.js");
 class ObjectType extends Structure {
   constructor (game, type) {
     super(game);
-    type = Object.assign({}, type);
-    let pysics = type.physics ?? {}
+    let pysics = type?.physics ?? {}
     let physics = {}
     defineProperties(physics, {
       mass: pysics.mass ?? 0,
@@ -18,18 +17,18 @@ class ObjectType extends Structure {
     });
     if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape});
     defineProperties(this, {
-      id: toString(type.id),
-      obj:  type.obj ?? null,
-      diffuse: type.diffuse ?? null,
-      emissive: type.emissive ?? null,
-      specular: type.specular ?? null,
-      bump: type.bump ?? null,
-      diffuseColor: type.diffuseColor ?? 0x0,
-      emissiveColor: type.emissiveColor ?? 0x0,
-      specularColor: type.specularColor ?? 0x0,
-      bumpScale: "number" == typeof type.bumpScale ? type.bumpScale : 1,
-      transparent: type.transparent === true,
-      shininess: "number" == typeof type.shininess ? type.shininess : 0,
+      id: toString(type?.id),
+      obj:  type?.obj ?? null,
+      diffuse: type?.diffuse ?? null,
+      emissive: type?.emissive ?? null,
+      specular: type?.specular ?? null,
+      bump: type?.bump ?? null,
+      diffuseColor: type?.diffuseColor ?? 0x0,
+      emissiveColor: type?.emissiveColor ?? 0x0,
+      specularColor: type?.specularColor ?? 0x0,
+      bumpScale: "number" == typeof type?.bumpScale ? type.bumpScale : 1,
+      transparent: type?.transparent === true,
+      shininess: "number" == typeof type?.shininess ? type.shininess : 0,
       physics
     });
   }

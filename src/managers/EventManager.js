@@ -40,24 +40,18 @@ module.exports.create = function (api, address, token) {
               stopped: false
             });
             delete this.modding.api.ECPKey;
-            this.link = "https://starblast.io/#" + data.id + "@" + address.ip + ":" + address.port;
             for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
             let options = defineProperties({}, data.options);
             defineProperties(this, {options});
-            this.modding.gameClient = new GameClient(this, address.ip, data.id, address.port);
+            defineProperties(this.modding, {gameClient: new GameClient(this, address.ip, data.id, address.port)});
             this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
             this.emit(events.MOD_STARTED, this.link, this);
             break;
           case "tick":
-            this.step = data.step;
-            this.aliens.update(true);
-            this.asteroids.update(true);
-            this.collectibles.update(true);
-            this.ships.update(true);
-            this.objects.update();
-            if (this.teams != null) this.teams.update();
+            this.modding.api.step = data.step;
+            for (let key of ["aliens", "asteroids", "collectibles", "ships", "objects", "teams"]) this.modding.data[key]?.update?.(true);
             this.emit(events.TICK, data.step, this);
             break;
           case "alien_created":

@@ -6,11 +6,11 @@ const defineProperties = require("../utils/defineProperties.js");
 class ModdingClient extends EventEmitter {
   constructor (options) {
     super();
-    options = Object.assign({}, options);
     var modding = {};
     defineProperties(modding, {
       api: new (require("../rest/ModdingAPI.js"))(this, options),
-      events: require("../resources/Events.js")()
+      events: require("../resources/Events.js")(),
+      data: {}
     });
     defineProperties(this, {
       modding,
@@ -54,10 +54,9 @@ class ModdingClient extends EventEmitter {
 
   async start (options) {
     if (this.started) throw new Error("Mod already started");
-    options = options || {}
-    if (options.hasOwnProperty('region')) this.setRegion(options.region);
-    if (options.hasOwnProperty('options')) this.setOptions(options.options);
-    if (options.hasOwnProperty('ECPKey')) this.setECPKey(options.ECPKey);
+    if (options.hasOwnProperty('region')) this.setRegion(options?.region);
+    if (options.hasOwnProperty('options')) this.setOptions(options?.options);
+    if (options.hasOwnProperty('ECPKey')) this.setECPKey(options?.ECPKey);
     return await this.modding.api.start()
   }
 
@@ -66,30 +65,49 @@ class ModdingClient extends EventEmitter {
   }
 
   get ships () {
-    return this.modding.api.ships.update()
+    return this.modding.data.ships.update()
   }
 
   get aliens () {
-    return this.modding.api.aliens.update()
+    return this.modding.data.aliens.update()
   }
 
   get asteroids () {
-    return this.modding.api.asteroids.update()
+    return this.modding.data.asteroids.update()
   }
 
   get collectibles () {
-    return this.modding.api.collectibles.update()
+    return this.modding.data.collectibles.update()
   }
 
   get objects () {
-    return this.modding.api.objects.update()
+    return this.modding.data.objects.update()
+  }
+
+  get teams () {
+    return this.modding.data.teams?.update?.() ?? null
+  }
+
+  get step () {
+    return this.modding.data.step
+  }
+
+  get link () {
+    let api = this.modding.api;
+    return (api.id != null) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
   }
 
   reset () {
     this.custom = {}
-    this.step = -1;
-    this.link = null;
-    this.modding.api.resetManagers();
+    Object.assign(this.modding.data, {
+      aliens: new (require("../managers/AlienManager.js"))(this),
+      asteroids: new (require("../managers/AsteroidManager.js"))(this),
+      collectibles: new (require("../managers/CollectibleManager.js"))(this),
+      ships: new (require("../managers/ShipManager.js"))(this),
+      objects: new (require("../managers/ObjectManager.js"))(this),
+      teams: null,
+      step: -1
+    })
   }
 }
 

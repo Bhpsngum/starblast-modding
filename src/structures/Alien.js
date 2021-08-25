@@ -22,16 +22,15 @@ const alien_types = new Map([
 class Alien extends Entity {
   constructor(game, options) {
     super(game);
-    options = Object.assign({}, options);
-    this.x = options.x ?? 0;
-    this.y = options.y ?? 0;
-    this.vx = options.vx ?? 0;
-    this.vy = options.vy ?? 0;
-    this.code = options.code ?? [...alien_types.keys()][0];
-    this.level = options.level ?? 0;
-    let weapon_drop = CollectibleCodes.indexOf(options.weapon_drop);
+    this.x = options?.x ?? 0;
+    this.y = options?.y ?? 0;
+    this.vx = options?.vx ?? 0;
+    this.vy = options?.vy ?? 0;
+    this.code = options?.code ?? [...alien_types.keys()][0];
+    this.level = options?.level ?? 0;
+    let weapon_drop = CollectibleCodes.indexOf(options?.weapon_drop);
     this.weapon_drop = CollectibleCodes[weapon_drop] ?? null;
-    this.crystal_drop = "number" == options.crystal_drop ? options.crystal_drop : 0
+    this.crystal_drop = "number" == options?.crystal_drop ? options.crystal_drop : 0
   }
 
   update (data) {

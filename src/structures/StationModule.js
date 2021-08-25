@@ -10,27 +10,26 @@ const typeMap = new Map([
 
 class StationModule extends Structure {
   constructor(game, options, parent) {
-    options = Object.assign({}, options);
     super(game);
     this.shield = 1;
     this.alive = true;
     this.finish = this.skin = "alloy";
     this.offsetX = this.offsetY = 0;
     let type, subtype_id;
-    (options.type||"").replace(/^(sp|st|d)(\d+)$/, function(v, mType, id) {
+    (options?.type||"").replace(/^(sp|st|d)(\d+)$/, function(v, mType, id) {
       type = typeMap.get(mType);
       subtype_id = Number(id)
     }.bind(this));
     defineProperties(this, {
       parent,
-      id: options.id,
+      id: options?.id,
       type,
       subtype_id,
       spawned: true,
       createdStep: 0,
-      _x: "number" == typeof options.x ? options.x : 0,
-      _y: "number" == typeof options.y ? options.y : 0,
-      _dir: "number" == typeof options.dir ? options.dir : 0
+      _x: "number" == typeof options?.x ? options.x : 0,
+      _y: "number" == typeof options?.y ? options.y : 0,
+      _dir: "number" == typeof options?.dir ? options.dir : 0
     })
   }
 

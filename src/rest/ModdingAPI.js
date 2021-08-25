@@ -9,7 +9,7 @@ class ModdingAPI {
       game,
       preflight_requests: []
     });
-    this.cacheECPKey = !!options.cacheECPKey;
+    this.cacheECPKey = options?.cacheECPKey === true;
     this.clear();
   }
 
@@ -44,13 +44,13 @@ class ModdingAPI {
   }
 
   data (...data) {
-    let pData = Object.assign(data[0]||{}, ...data.slice(1));
+    let pData = Object.assign({}, ...data);
     return this.prop("data", pData)
   }
 
   clientMessage (id, name, data) {
     this.name("client_message");
-    data = Object.assign(data||{}, {name: name});
+    data = Object.assign({}, data, {name: name});
     return this.data({id: id, data: data})
   }
 
@@ -63,14 +63,6 @@ class ModdingAPI {
     catch(e) { this.game.emit('error', new Error("Failed to encoding request"), this.game) }
     else this.preflight_requests.push(this.pending_request);
     return this.clear()
-  }
-
-  resetManagers () {
-    this.aliens = new (require("../managers/AlienManager.js"))(this.game);
-    this.asteroids = new (require("../managers/AsteroidManager.js"))(this.game);
-    this.collectibles = new (require("../managers/CollectibleManager.js"))(this.game);
-    this.ships = new (require("../managers/ShipManager.js"))(this.game);
-    this.objects = new (require("../managers/ObjectManager.js"))(this.game);
   }
 }
 
