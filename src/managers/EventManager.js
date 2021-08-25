@@ -50,7 +50,7 @@ module.exports.create = function (api, address, token) {
             this.emit(events.MOD_STARTED, this.link, this);
             break;
           case "tick":
-            this.modding.api.step = data.step;
+            this.modding.data.step = data.step;
             for (let key of ["aliens", "asteroids", "collectibles", "ships", "objects", "teams"]) this.modding.data[key]?.update?.(true);
             this.emit(events.TICK, data.step, this);
             break;

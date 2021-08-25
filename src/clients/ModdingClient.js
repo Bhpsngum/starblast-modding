@@ -12,10 +12,7 @@ class ModdingClient extends EventEmitter {
       events: require("../resources/Events.js")(),
       data: {}
     });
-    defineProperties(this, {
-      modding,
-      client_custom: {}
-    });
+    defineProperties(this, {modding});
     this.reset()
   }
 
