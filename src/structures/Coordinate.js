@@ -10,6 +10,14 @@ class Coordinate {
       z: "number" == typeof position?.z ? position.z : 0,
     })
   }
+
+  toJSON () {
+    return {
+      x: this.x,
+      y: this.y,
+      z: this.z
+    }
+  }
 }
 
 module.exports = Coordinate

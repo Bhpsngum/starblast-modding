@@ -48,9 +48,9 @@ class Object3D extends Structure {
     }.bind(this);
     this.type = this.game.objects.types.findById(toString(this.type?.id));
     if (this.type.physics.autoShape === true && this.type.physics.shape == null) this.type.getShape()
-    .then(shape => defineProperties(this.type.physics, {shape}, send()))
-    .catch(e => defineProperties(this.type.physics, {shape: []}, send()));
-    else send();
+    .then(shape => (defineProperties(this.type.physics, {shape}), send()))
+    .catch(e => (defineProperties(this.type.physics, {shape: []}), send()));
+    else send()
     this.markAsActive();
     this.game.objects.update();
     return this

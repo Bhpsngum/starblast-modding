@@ -12,7 +12,7 @@ module.exports.create = function (api, address, token) {
     api.game.emit(events.ERROR, new Error("Mod will be run with empty options instead"), api);
     delete api.encodeOptionsError
   }
-  let socket = GameSocket.create(address.ip, address.port);
+  let socket = GameSocket.create(address.ip, address.port, "https://starblast.data.neuronality.com");
   socket.onopen = function() {
     this.send(JSON.stringify({
       name: "run_mod",

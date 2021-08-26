@@ -16,6 +16,7 @@ class ObjectType extends Structure {
       autoShape: pysics.autoShape === true
     });
     if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape});
+    else if (!physics.autoShape) defineProperties(physics, {shape: []});
     defineProperties(this, {
       id: toString(type?.id),
       obj:  type?.obj ?? null,
@@ -46,7 +47,7 @@ class ObjectType extends Structure {
   }
 
   toJSON () {
-    return limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess", "physics"])
+    return Object.assign(limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess"]), {physics: limitedJSON(this.physics, ["mass", "shape"])})
   }
 }
 
