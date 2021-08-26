@@ -13,12 +13,12 @@ class Station extends Structure {
     (Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
     defineProperties(this, {
       name: "string" == typeof options?.name ? options.name : "Unknown",
-      spawned: true,
       id: options?.id,
       team: options?.id,
       modules,
       phase: options?.phase * 180 / Math.PI
     });
+    this.markAsSpawned();
     this.updateInfo({
       level: Math.max(Math.trunc(options?.level), 1) || 1,
       crystals: Math.max(options?.crystals, 0) || 0
@@ -31,7 +31,10 @@ class Station extends Structure {
     this.crystals = data?.crystals;
     this.crystals_max = this.game.options.crystal_capacity[this.level - 1];
     this.modules.updateShield(data?.modules_shield);
-    if (this.isActive() && null == this.modules.all.find(modul => modul.isActive())) this.markAsInactive();
+    if (this.isActive() && null == this.modules.all.find(modul => modul.isActive() && modul.isAlive())) {
+      this.markAsInactive();
+      this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive())
+    }
     this.lastUpdatedStep = this.game.step
   }
 

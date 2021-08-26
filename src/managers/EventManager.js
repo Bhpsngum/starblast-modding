@@ -41,8 +41,7 @@ module.exports.create = function (api, address, token) {
             });
             delete this.modding.api.ECPKey;
             for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
-            let options = defineProperties({}, data.options);
-            defineProperties(this, {options});
+            this.modding.data.options = defineProperties({}, data.options);
             defineProperties(this.modding, {gameClient: new GameClient(this, address.ip, data.id, address.port)});
             this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
@@ -66,8 +65,8 @@ module.exports.create = function (api, address, token) {
             defineProperties(entity, {
               id: event.id,
               createdStep: Math.max(this.step, 0),
-              spawned: true
             });
+            entity.markAsSpawned();
             entity.lastUpdatedStep = this.step;
             entityList.update();
             this.emit(events[event.name.toUpperCase()], entity, this);
@@ -75,7 +74,7 @@ module.exports.create = function (api, address, token) {
           }
           case "ship_update": {
             let ship = getEntity(event, this.ships);
-            if (!ship.spawned) {
+            if (!ship.isSpawned()) {
               this.objects.update();
               this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send())
             }
@@ -120,8 +119,8 @@ module.exports.create = function (api, address, token) {
               case "ship_spawned": {
                 data.id = data.ship;
                 let ship = getEntity(data, this.ships);
-                let event_name = ship.spawned ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
-                if (!ship.spawned) Object.defineProperty(ship, 'spawned', {value: true});
+                let event_name = ship.isSpawned() ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
+                if (!ship.isSpawned()) ship.markAsSpawned();
                 this.ships.update();
                 this.emit(event_name, ship, this);
                 break;

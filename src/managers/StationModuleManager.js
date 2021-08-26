@@ -17,14 +17,14 @@ class StationModuleManager extends StructureManager {
   update () {
     let x = this.all.splice(0).filter(entity => this.isInstance(entity));
     this.all.push(...x);
-    this.all.forEach(modul => modul.isActive() && modul.step());
+    this.all.forEach(modul => modul.isActive() && modul.isAlive() && modul.step());
     this.splice(0);
     this.push(...this.all.filter(modul => modul.isActive()));
     return this
   }
 
   updateShield (shield) {
-    if (shield) for (let i = 0; i < this.all.length; i++) getEntity({id: i}, this, false, this.parent).updateShield(shield.getUint8(i));
+    if (shield) for (let i = 0; i < this.all.length; i++) getEntity({id: i}, this, this.parent).updateShield(shield.getUint8(i));
     this.update()
   }
 }

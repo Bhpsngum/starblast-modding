@@ -7,7 +7,7 @@ const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
 const setObject = function (data) {
   let object = getEntity(data, this);
-  if (!object.spawned) defineProperties(object, {spawned: true});
+  if (!object.spawned) object.markAsSpawned();
   object.set(data)
 }
 

@@ -24,9 +24,9 @@ class Entity extends Structure{
   }
 
   entityUpdate (data) {
-    if (this.spawned) delete this.firstUpdate;
+    if (this.isSpawned()) delete this.firstUpdate;
     else if (this.firstUpdate) {
-      defineProperties(this, {spawned: true});
+      this.markAsSpawned();
       delete this.firstUpdate
     }
     else this.firstUpdate = true;

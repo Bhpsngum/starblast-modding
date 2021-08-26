@@ -7,9 +7,9 @@ const defineProperties = require("../utils/defineProperties.js");
 class Team extends Structure {
   constructor(game, options) {
     super(game);
+    this.markAsSpawned(true);
     defineProperties(this, {
       id: options.id,
-      spawned: true,
       createdStep: 0,
       faction: "string" == typeof options.faction ? options.faction : "Unknown"
     });

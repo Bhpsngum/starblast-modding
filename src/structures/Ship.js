@@ -19,6 +19,10 @@ class Ship extends Entity {
     super(game)
   }
 
+  isAlive () {
+    return this.alive === true
+  }
+
   update (data, fromGameClient) {
     if (fromGameClient) {
       this.customization = data.customization;

@@ -20,12 +20,12 @@ class StationModule extends Structure {
       type = typeMap.get(mType);
       subtype_id = Number(id)
     }.bind(this));
+    this.markAsSpawned();
     defineProperties(this, {
       parent,
       id: options?.id,
       type,
       subtype_id,
-      spawned: true,
       createdStep: 0,
       _x: "number" == typeof options?.x ? options.x : 0,
       _y: "number" == typeof options?.y ? options.y : 0,
@@ -33,24 +33,14 @@ class StationModule extends Structure {
     })
   }
 
-  markAsActive () {
-    this[this.inactive_field] = false;
-    delete this[this.inactive_field + "Step"]
-  }
-
-  markAsInactive () {
-    this[this.inactive_field] = true
-    this[this.inactive_field + "Step"] = this.game.step
+  isAlive () {
+    return this.alive === true
   }
 
   updateShield (shield) {
     let oldAlive = this.alive;
     this.alive = shield > 0;
     this.shield = Math.max(0, shield - 1) / 254 * this.game.options[this.type + "_shield"][this.parent.level - 1];
-    if (oldAlive != this.alive) {
-      if (this.alive) this.markAsActive();
-      else this.markAsInactive()
-    }
     this.lastUpdatedStep = this.game.step
   }
 

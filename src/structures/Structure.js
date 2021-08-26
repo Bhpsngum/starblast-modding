@@ -14,8 +14,18 @@ class Structure {
     })
   }
 
+  markAsSpawned () {
+    defineProperties(this, {spawned: true})
+  }
+
   isActive () {
-    return this.spawned && !this[this.inactive_field]
+    try { this[this.inactive_field] = false } catch(e) {}
+    return this.isSpawned() && this[this.inactive_field] === false
+  }
+
+  isSpawned () {
+    try { this.spawned = false } catch(e) {}
+    return this.spawned === true
   }
 }
 

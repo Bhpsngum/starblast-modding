@@ -85,13 +85,17 @@ class ModdingClient extends EventEmitter {
     return this.modding.data.teams?.update?.() ?? null
   }
 
+  get options () {
+    return this.modding.data.options
+  }
+
   get step () {
     return this.modding.data.step
   }
 
   get link () {
     let api = this.modding.api;
-    return (api.id != null) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
+    return (api.started && !api.stopped) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
   }
 
   reset () {
