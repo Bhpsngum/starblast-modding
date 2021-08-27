@@ -11,6 +11,7 @@ class ModdingAPI {
     });
     this.cacheECPKey = options?.cacheECPKey === true;
     this.clear();
+    this.request_id = 0;
   }
 
   clear () {

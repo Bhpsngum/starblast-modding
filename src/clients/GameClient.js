@@ -47,7 +47,6 @@ class GameClient {
             getEntity(data, this.game.ships).update(data, true)
             break;
         }
-        console.log(parsed);
       }
       else {
         if ("function" == typeof event.arrayBuffer) event.arrayBuffer().then(readBinaries.bind(this));

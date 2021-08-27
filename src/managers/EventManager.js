@@ -50,6 +50,7 @@ module.exports.create = function (api, address, token) {
             break;
           case "tick":
             this.modding.data.step = data.step;
+            this.modding.api.request_id = 0;
             for (let key of ["aliens", "asteroids", "collectibles", "ships", "objects", "teams"]) this.modding.data[key]?.update?.(true);
             this.emit(events.TICK, data.step, this);
             break;
@@ -57,7 +58,13 @@ module.exports.create = function (api, address, token) {
           case "asteroid_created":
           case "collectible_created": {
             let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"];
-            let entity = entityList.all.find(entity => entityList.isInstance(entity) && entity.request_id === event.request_id);
+            let entity = entityList.all.find(entity => {
+              if (entityList.isInstance(entity)) {
+                try { entity.id = null} catch(e) {}
+                return entity.id == null && entity.request_id === event.request_id
+              }
+              return false
+            });
             if (entity == null) {
               entity = entityList.create(event);
               entityList.insert(entity)
@@ -151,6 +158,7 @@ module.exports.create = function (api, address, token) {
       if (!this.started) reject(new Error("Failed to run the mod"));
       this.modding.api.started = false;
       this.modding.api.stopped = true;
+      this.modding.api.request_id = 0;
       this.modding.api.preflight_requests.splice(0);
       this.emit(events.MOD_STOPPED, this);
       this.reset();

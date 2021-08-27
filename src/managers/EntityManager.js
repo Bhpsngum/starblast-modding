@@ -5,13 +5,12 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class EntityManager extends StructureManager {
   constructor(game) {
-    super(game);
-    this.request_id = 0;
+    super(game)
   }
 
   add (data) {
     let entity = this.create(data);
-    defineProperties(entity, {request_id: this.request_id++});
+    defineProperties(entity, {request_id: [this.manager_name, Math.max(this.game.step, 0), this.game.modding.api.request_id++].join("-")});
     this.insert(entity);
     let rawEntity = JSON.parse(JSON.stringify(entity));
     Object.assign(rawEntity, {
