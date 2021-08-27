@@ -1,6 +1,6 @@
 'use strict';
 
-const WebSocket = require("ws");
+const { WebSocket } = require("ws");
 const GameSocket = {};
 
 GameSocket.create = function(ip, port, origin) {
