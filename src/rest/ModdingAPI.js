@@ -18,10 +18,13 @@ class ModdingAPI {
     return this.set({});
   }
   async start () {
-    try { this.options = JSON.parse(JSON.stringify(this.options)) ?? {} }
+    try {
+      this.options = JSON.parse(JSON.stringify(this.options ?? {}));
+      this.encodeOptionsError = false
+    }
     catch (e) {
       this.options = {}
-      this.encodeOptionsError = true;
+      this.encodeOptionsError = true
     }
     return await runMod(this)
   }

@@ -8,6 +8,12 @@ class ObjectTypeManager extends StructureManager {
   constructor(game) {
     super(game);
   }
+
+  update () {
+    this.filterList().splice(0);
+    this.push(...this.all);
+    return this
+  }
 }
 
 

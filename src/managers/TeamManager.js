@@ -40,9 +40,7 @@ class TeamManager extends StructureManager {
 
   update () {
     this.stations.update();
-    let x = this.all.splice(0).filter(team => this.isInstance(team));
-    this.all.push(...x);
-    this.splice(0);
+    this.filterList().splice(0);
     this.push(...this.all.filter(team => team.isActive()));
     return this
   }

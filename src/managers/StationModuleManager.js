@@ -10,14 +10,8 @@ class StationModuleManager extends StructureManager {
     super(game)
   }
 
-  create (data, parent) {
-    return new this.StructureConstructor(this.game, data, parent)
-  }
-
   update () {
-    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
-    this.all.push(...x);
-    this.all.forEach(modul => modul.isActive() && modul.isAlive() && modul.step());
+    this.filterList().all.forEach(modul => modul.isActive() && modul.isAlive() && modul.step());
     this.splice(0);
     this.push(...this.all.filter(modul => modul.isActive()));
     return this

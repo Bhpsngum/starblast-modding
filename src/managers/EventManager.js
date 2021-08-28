@@ -13,7 +13,7 @@ module.exports.create = function (api, address, token) {
     delete api.encodeOptionsError
   }
   let socket = GameSocket.create(address.ip, address.port, "https://starblast.data.neuronality.com");
-  socket.onopen = function() {
+  socket.on("open", function() {
     this.send(JSON.stringify({
       name: "run_mod",
       data: {
@@ -21,13 +21,12 @@ module.exports.create = function (api, address, token) {
         options: api.options
       }
     }))
-  }
+  });
   return new Promise(function (resolve, reject) {
     let ECPKey = this.ECPKey;
-    socket.onmessage = function(event) {
-      event = event.data;
-      if ("string" == typeof event) {
-        try { event = JSON.parse(event) } catch (e) {}
+    socket.on("message", function(event, isBinary) {
+      if (!isBinary) {
+        try { event = JSON.parse(event.toString()) ?? {} } catch (e) { event = {} }
         let data = event.data;
         switch (event.name) {
           case "mod_started":
@@ -60,7 +59,7 @@ module.exports.create = function (api, address, token) {
             let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"];
             let entity = entityList.all.find(entity => {
               if (entityList.isInstance(entity)) {
-                try { entity.id = null} catch(e) {}
+                try { entity.id = null } catch(e) {}
                 return entity.id == null && entity.request_id === event.request_id
               }
               return false
@@ -81,10 +80,7 @@ module.exports.create = function (api, address, token) {
           }
           case "ship_update": {
             let ship = getEntity(event, this.ships);
-            if (!ship.isSpawned()) {
-              this.objects.update();
-              this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send())
-            }
+            if (!ship.isSpawned()) this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send())
             ship.update(event);
             break;
           }
@@ -150,11 +146,8 @@ module.exports.create = function (api, address, token) {
             break;
         }
       }
-    }.bind(this.game);
-    socket.onerror = function (error) {
-      this.emit(events.ERROR, error, this)
-    }.bind(this.game);
-    socket.onclose = function () {
+    }.bind(this.game));
+    socket.on("close", function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
       this.modding.api.started = false;
       this.modding.api.stopped = true;
@@ -163,6 +156,6 @@ module.exports.create = function (api, address, token) {
       this.emit(events.MOD_STOPPED, this);
       this.reset();
       if (this.modding.api.cacheECPKey) this.modding.api.ECPKey = ECPKey
-    }.bind(this.game)
+    }.bind(this.game))
   }.bind(api))
 }

@@ -26,9 +26,7 @@ class ObjectManager extends StructureManager {
   }
 
   update () {
-    let x = this.all.splice(0).filter(object => this.isInstance(object));
-    this.all.push(...x);
-    this.splice(0);
+    this.filterList().splice(0);
     this.push(...this.all.filter(object => object.isActive()));
     return this
   }

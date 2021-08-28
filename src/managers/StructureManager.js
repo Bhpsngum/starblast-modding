@@ -11,8 +11,8 @@ class StructureManager extends Array {
     })
   }
 
-  create (data) {
-    return new this.StructureConstructor(this.game, data)
+  create (data, ...additionalValues) {
+    return new this.StructureConstructor(this.game, data, ...additionalValues)
   }
 
   isInstance (entity) {
@@ -32,11 +32,9 @@ class StructureManager extends Array {
     return value.find(entity => this.isInstance(entity) && Object.is(entity.id, id)) ?? null
   }
 
-  update () {
+  filterList () {
     let x = this.all.splice(0).filter(structure => this.isInstance(structure));
     this.all.push(...x);
-    this.splice(0);
-    this.push(...this.all);
     return this
   }
 }

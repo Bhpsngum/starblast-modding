@@ -21,9 +21,7 @@ class EntityManager extends StructureManager {
   }
 
   update (onTick = false) {
-    let x = this.all.splice(0).filter(entity => this.isInstance(entity));
-    this.all.push(...x);
-    this.all.forEach(entity => {
+    this.filterList().forEach(entity => {
       if (entity.isActive()) {
         if (onTick) entity.step();
         if (entity.lastUpdatedStep + 90 < this.game.step) entity.markAsInactive()

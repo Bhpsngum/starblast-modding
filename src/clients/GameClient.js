@@ -21,14 +21,13 @@ class GameClient {
   constructor(game, ip, id, port) {
     defineProperties(this, {game});
     let socket = GameSocket.create(ip, port), interval;
-    socket.onopen = function () {
+    socket.on("open", function () {
       this.send('{"name":"join","data":{"player_name":" ","preferred":' +id +'}}')
-    }
-    socket.onmessage = function (event) {
-      event = event.data;
-      if (typeof event == "string") {
+    });
+    socket.on("message", function (event, isBinary) {
+      if (!isBinary) {
         let parsed;
-        try { parsed = JSON.parse(event) } catch(e) { parsed = event }
+        try { parsed = JSON.parse(event.toString()) ?? {} } catch (e) { parsed = {} }
         let data = parsed.data
         switch (parsed.name) {
           case "welcome":
@@ -48,14 +47,14 @@ class GameClient {
             break;
         }
       }
-      else {
+      else try {
         if ("function" == typeof event.arrayBuffer) event.arrayBuffer().then(readBinaries.bind(this));
         else readBinaries.call(this, event.buffer.slice(event.byteOffset, event.byteOffset + event.byteLength))
-      }
-    }.bind(this)
-    socket.onclose = function () {
-      if (interval != null) clearInterval(interval);
-    }
+      } catch (e) {}
+    }.bind(this));
+    socket.on("close", function () {
+      if (interval != null) clearInterval(interval)
+    })
   }
 
   initTeamStats () {
