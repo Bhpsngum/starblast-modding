@@ -9,6 +9,7 @@ class ModdingClient extends EventEmitter {
     var modding = {};
     defineProperties(modding, {
       api: new (require("../rest/ModdingAPI.js"))(this, options),
+      gameClient: new (require("./GameClient.js"))(this),
       events: require("../resources/Events.js")(),
       data: {}
     });
@@ -24,18 +25,33 @@ class ModdingClient extends EventEmitter {
     return !!this.modding.api.stopped
   }
 
+  error (message) {
+    return this.emit('error', new Error(message), this)
+  }
+
   setRegion (region) {
-    this.modding.api.region = region;
+    if (this.started) return this.error("Could not set region while the mod is running");
+    this.modding.api.configuration.region = region;
     return this
   }
 
   setOptions (options) {
-    this.modding.api.options = options;
+    if (this.started) return this.error("Could not set options while the mod is running");
+    this.modding.api.configuration.options = options;
     return this
   }
 
   setECPKey (ECPKey) {
-    this.modding.api.ECPKey = ECPKey;
+    if (this.started) return this.error("Could not set ECPKey while the mod is running");
+    this.modding.api.configuration.ECPKey = ECPKey;
+    return this
+  }
+
+  configurate (options) {
+    if (this.started) return this.error("Could not configurate while the mod is running");
+    if (options?.hasOwnProperty?.('region')) this.setRegion(options.region);
+    if (options?.hasOwnProperty?.('options')) this.setOptions(options.options);
+    if (options?.hasOwnProperty?.('ECPKey')) this.setECPKey(options.ECPKey);
     return this
   }
 
@@ -51,14 +67,12 @@ class ModdingClient extends EventEmitter {
 
   async start (options) {
     if (this.started) throw new Error("Mod already started");
-    if (options.hasOwnProperty('region')) this.setRegion(options?.region);
-    if (options.hasOwnProperty('options')) this.setOptions(options?.options);
-    if (options.hasOwnProperty('ECPKey')) this.setECPKey(options?.ECPKey);
-    return await this.modding.api.start()
+    return await this.configurate(options).modding.api.start()
   }
 
   stop () {
-    if (!this.stopped) this.modding.api.stop()
+    if (this.stopped) this.error("Mod already stopped");
+    this.modding.api.stop()
   }
 
   get ships () {
@@ -108,7 +122,8 @@ class ModdingClient extends EventEmitter {
       objects: new (require("../managers/ObjectManager.js"))(this),
       teams: null,
       step: -1
-    })
+    });
+    if (!this.modding.api.cacheConfiguration) this.modding.api.configuration = {}
   }
 }
 

@@ -4,6 +4,18 @@
 const THREE = require("three");
 const OBJLoader = require("three-obj-loader");
 OBJLoader(THREE);
+THREE.OBJLoader.prototype.load = function load(url, onLoad, onProgress, onError) {
+
+  var scope = this;
+  this.onError = onError || defaultOnError;
+
+  var loader = new THREE.FileLoader(scope.manager);
+  loader.setPath(this.path);
+  loader.load(url, function (text) {
+
+    onLoad(scope.parse(text, false));
+  }, onProgress, onError);
+}
 global.XMLHttpRequest = require("xhr2");
 
 var gF = function(f) {

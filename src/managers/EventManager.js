@@ -8,22 +8,24 @@ const defineProperties = require("../utils/defineProperties.js");
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {
-    api.game.emit(events.ERROR, new Error("Failed to encode game options"), api);
-    api.game.emit(events.ERROR, new Error("Mod will be run with empty options instead"), api);
-    delete api.encodeOptionsError
+    api.game.error("Failed to encode game options");
+    api.game.error("Mod will be run with empty options instead")
   }
+  delete api.encodeOptionsError
   let socket = GameSocket.create(address.ip, address.port, "https://starblast.data.neuronality.com");
   socket.on("open", function() {
     this.send(JSON.stringify({
       name: "run_mod",
       data: {
         token: token,
-        options: api.options
+        options: api.configuration.options
       }
     }))
   });
+  socket.on('connection', function (ws, req) {
+    console.log(req.headers);
+  });
   return new Promise(function (resolve, reject) {
-    let ECPKey = this.ECPKey;
     socket.on("message", function(event, isBinary) {
       if (!isBinary) {
         try { event = JSON.parse(event.toString()) ?? {} } catch (e) { event = {} }
@@ -41,7 +43,7 @@ module.exports.create = function (api, address, token) {
             delete this.modding.api.ECPKey;
             for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
             this.modding.data.options = defineProperties({}, data.options);
-            defineProperties(this.modding, {gameClient: new GameClient(this, address.ip, data.id, address.port)});
+            this.modding.gameClient.connect(address.ip, data.id, address.port);
             this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
@@ -96,7 +98,7 @@ module.exports.create = function (api, address, token) {
             break;
           }
           case "error":
-            this.emit(events.ERROR, new Error(event.text), this);
+            this.error(event.text);
             break;
           case "event":
             switch (data.name) {
@@ -155,7 +157,6 @@ module.exports.create = function (api, address, token) {
       this.modding.api.preflight_requests.splice(0);
       this.emit(events.MOD_STOPPED, this);
       this.reset();
-      if (this.modding.api.cacheECPKey) this.modding.api.ECPKey = ECPKey
     }.bind(this.game))
   }.bind(api))
 }

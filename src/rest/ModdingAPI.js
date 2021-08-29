@@ -7,23 +7,24 @@ class ModdingAPI {
   constructor(game, options) {
     defineProperties(this, {
       game,
-      preflight_requests: []
+      preflight_requests: [],
+      cacheConfiguration: options?.cacheConfiguration === true
     });
-    this.cacheECPKey = options?.cacheECPKey === true;
     this.clear();
+    this.configuration = {};
     this.request_id = 0;
   }
 
   clear () {
-    return this.set({});
+    return this.set({})
   }
   async start () {
     try {
-      this.options = JSON.parse(JSON.stringify(this.options ?? {}));
+      this.data.options = JSON.parse(JSON.stringify(this.data.options ?? {}));
       this.encodeOptionsError = false
     }
     catch (e) {
-      this.options = {}
+      this.data.options = {}
       this.encodeOptionsError = true
     }
     return await runMod(this)
