@@ -48,7 +48,7 @@ class ModdingClient extends EventEmitter {
   }
 
   configure (options) {
-    if (this.started) return this.error("Could not configurate while the mod is running");
+    if (this.started) return this.error("Could not configure while the mod is running");
     if (options?.hasOwnProperty?.('region')) this.setRegion(options.region);
     if (options?.hasOwnProperty?.('options')) this.setOptions(options.options);
     if (options?.hasOwnProperty?.('ECPKey')) this.setECPKey(options.ECPKey);
