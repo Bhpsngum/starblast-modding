@@ -47,7 +47,7 @@ class ModdingClient extends EventEmitter {
     return this
   }
 
-  configurate (options) {
+  configure (options) {
     if (this.started) return this.error("Could not configurate while the mod is running");
     if (options?.hasOwnProperty?.('region')) this.setRegion(options.region);
     if (options?.hasOwnProperty?.('options')) this.setOptions(options.options);
@@ -67,7 +67,7 @@ class ModdingClient extends EventEmitter {
 
   async start (options) {
     if (this.started) throw new Error("Mod already started");
-    return await this.configurate(options).modding.api.start()
+    return await this.configure(options).modding.api.start()
   }
 
   stop () {
