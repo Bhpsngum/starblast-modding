@@ -28,8 +28,9 @@ class StructureManager extends Array {
   }
 
   findById (id, includeInactive = false) {
+    this.update();
     let value = includeInactive ? this.all : this;
-    return value.find(entity => this.isInstance(entity) && Object.is(entity.id, id)) ?? null
+    return value.find(entity => Object.is(entity.id, id)) ?? null
   }
 
   filterList () {
