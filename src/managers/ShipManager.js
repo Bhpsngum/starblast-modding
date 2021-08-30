@@ -36,20 +36,15 @@ class ShipManager extends EntityManager {
     return this
   }
 
-  intermission (data) {
+  intermission (data, gameOver) {
+    data = Object.assign({}, data);
+    data.gameover = !!gameOver;
     this.game.modding.api.globalMessage("intermission", {data: data}).send();
     return this
   }
 
   gameOver (data) {
-    data = data || {}
-    data.gameover = true;
-    this.game.modding.api.globalMessage("intermission", {data: data}).send();
-    return this
-  }
-
-  setObject (data) {
-    this.game.modding.api.globalMessage("set_object", {data: data}).send();
+    return this.intermission(data, true)
   }
 
   update (onTick = false) {

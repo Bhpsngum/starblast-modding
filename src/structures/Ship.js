@@ -68,16 +68,15 @@ class Ship extends Entity {
     return this
   }
 
-  intermission (data) {
+  intermission (data, gameOver) {
+    data = Object.assign({}, data);
+    data.gameover = !!gameOver;
     this.game.modding.api.clientMessage(this.id, "intermission", {data: data}).send();
     return this
   }
 
   gameOver (data) {
-    data = data || {}
-    data.gameover = true;
-    this.game.modding.api.clientMessage(this.id, "intermission", {data: data}).send();
-    return this
+    return this.intermission(data, true)
   }
 
   setObject (data) {
