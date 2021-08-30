@@ -13,7 +13,7 @@ class ObjectType extends Structure {
     let physics = {}
     defineProperties(physics, {
       mass: pysics.mass ?? 0,
-      autoShape: pysics.autoShape === true
+      autoShape: !!pysics.autoShape
     });
     if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape});
     else if (!physics.autoShape) defineProperties(physics, {shape: []});
@@ -28,7 +28,7 @@ class ObjectType extends Structure {
       emissiveColor: type?.emissiveColor ?? 0x0,
       specularColor: type?.specularColor ?? 0x0,
       bumpScale: "number" == typeof type?.bumpScale ? type.bumpScale : 1,
-      transparent: type?.transparent === true,
+      transparent: !!type?.transparent,
       shininess: "number" == typeof type?.shininess ? type.shininess : 0,
       physics
     });

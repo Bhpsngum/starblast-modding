@@ -8,7 +8,7 @@ class ModdingAPI {
     defineProperties(this, {
       game,
       preflight_requests: [],
-      cacheConfiguration: options?.cacheConfiguration === true
+      cacheConfiguration: !!options?.cacheConfiguration
     });
     this.clear();
     this.configuration = {};

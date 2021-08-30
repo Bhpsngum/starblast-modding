@@ -17,7 +17,7 @@ class Team extends Structure {
   }
 
   updateInfo (data) {
-    this.open = data?.open === true
+    this.open = !!data?.open
   }
 
   update () {

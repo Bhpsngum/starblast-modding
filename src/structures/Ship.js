@@ -20,7 +20,7 @@ class Ship extends Entity {
   }
 
   isAlive () {
-    return this.alive === true
+    return !!this.alive
   }
 
   update (data, fromGameClient) {

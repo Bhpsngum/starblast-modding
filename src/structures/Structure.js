@@ -20,12 +20,12 @@ class Structure {
 
   isActive () {
     try { this[this.inactive_field] = false } catch(e) {}
-    return this.isSpawned() && this[this.inactive_field] === false
+    return this.isSpawned() && !this[this.inactive_field]
   }
 
   isSpawned () {
     try { this.spawned = false } catch(e) {}
-    return this.spawned === true
+    return !!this.spawned
   }
 }
 

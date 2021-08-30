@@ -56,7 +56,7 @@ class ModdingClient extends EventEmitter {
   }
 
   setOpen (value) {
-    this.modding.api.name("set_open").prop("value",!!value).send();
+    this.modding.api.name("set_open").prop("value", value).send();
     return this
   }
 

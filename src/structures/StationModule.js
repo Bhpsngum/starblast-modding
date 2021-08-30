@@ -34,7 +34,7 @@ class StationModule extends Structure {
   }
 
   isAlive () {
-    return this.alive === true
+    return !!this.alive
   }
 
   updateShield (shield) {
