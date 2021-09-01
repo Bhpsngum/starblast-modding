@@ -21,10 +21,7 @@ class Entity extends Structure{
 
   kill () {
     return new Promise(function(resolve, reject) {
-      this.game.modding.handlers.destroy.set(this.uuid, {
-        resolve: resolve,
-        reject: reject
-      });
+      this.game.modding.handlers.destroy.set(this.uuid, {resolve, reject});
       this.game.modding.api.name("set_"+this.structure_type).data({id: this.id, kill: true}).send(this.uuid, "destroy")
     }.bind(this))
   }

@@ -18,10 +18,7 @@ class EntityManager extends StructureManager {
       sy: rawEntity.vy
     });
     return new Promise(function(resolve, reject){
-      this.game.modding.handlers.create.set(entity.uuid, {
-        resolve: resolve,
-        reject: reject
-      });
+      this.game.modding.handlers.create.set(entity.uuid, {resolve, reject});
       this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.uuid, "create")
     }.bind(this))
   }

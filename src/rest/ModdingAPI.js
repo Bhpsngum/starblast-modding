@@ -30,7 +30,7 @@ class ModdingAPI {
     this.clear();
     if (!this.cacheConfiguration) this.configuration = {};
     let onstops = this.onstop.splice(0);
-    onstops.forEach(onstop => "function" == typeof onstop?.resolve && onstop.resolve(this.game))
+    onstops.forEach(onstop => onstop?.resolve?.(this.game))
   }
 
   async start () {
@@ -82,29 +82,32 @@ class ModdingAPI {
   }
 
   send (uuid, action) {
-    if (this.started) try { this.socket.send(JSON.stringify(this.pending_request)) }
+    let pr = this.pending_request;
+    if (this.started) try {
+      this.socket.send(JSON.stringify(pr));
+      if ("string" == typeof pr.name && pr.name.match(/^add_(alien|asteroid|collectible)$/)) this.game.modding.create_requests.push(pr.data.uuid)
+    }
     catch(e) {
       if (arguments.length > 0) {
-        let error = new Error("Failed to encoding request");
+        let error = new Error("Failed to encoding request"), globalMessage;
         switch (action) {
           case "create":
           case "destroy": {
-            let hanlder = this.game.modding.handlers[action]?.get?.(uuid), reject = handler?.reject;
+            let hanlder = this.game.modding.handlers[action], reject = handler.get(uuid)?.reject;
             handler.delete(uuid);
-            if ("function" == typeof reject) reject(error);
+            reject?.(error);
             break
           }
-          case "stop": {
-            let rejectonstop = this.onstop[0]?.reject;
-            if ("function" == typeof rejectonstop) rejectonstop(error);
-            this.onstop.splice(0, 1);
-            break
-          }
+          case "stop":
+            this.onstop.shift()?.[0]?.reject?.(error);
+            break;
+          default:
+            globalMessage = 1;
         }
+        if (globalMessage) this.game.emit('error', error, this.game)
       }
-      this.game.emit('error', error, this.game)
     }
-    else this.preflight_requests.push(this.pending_request);
+    else this.preflight_requests.push(pr);
     return this.clear()
   }
 }

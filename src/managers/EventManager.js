@@ -77,9 +77,11 @@ module.exports.create = function (api, address, token) {
             entity.markAsSpawned();
             entity.modding.data.lastUpdatedStep = this.step;
             entityList.update();
+            let createReqs = this.modding.create_requests.splice(0);
+            this.modding.create_requests.push(...createReqs.filter(uid => !Object.is(uid, uuid)));
             let resolve = this.modding.handlers.create.get(uuid)?.resolve;
             this.modding.handlers.create.delete(uuid);
-            if ("function" == typeof resolve) resolve(entity);
+            resolve?.(entity);
             this.emit(events[event.name.toUpperCase()], entity, this);
             break;
           }
@@ -100,9 +102,21 @@ module.exports.create = function (api, address, token) {
             this.emit(events.SHIP_DISCONNECTED, ship, this);
             break;
           }
-          case "error":
-            this.error(event.text);
-            break;
+          case "error": {
+            let error = new Error(event.text);
+            switch(event.text) {
+              case "Incorrect data":
+                let uuid = this.modding.create_requests.shift();
+                let handler = this.modding.handlers.create;
+                let reject = handler.get(uuid)?.reject
+                handler.delete(uuid);
+                reject?.(error);
+                break;
+              default:
+                this.error(event.text)
+            }
+            break
+          }
           case "event":
             switch (data.name) {
               case "ship_destroyed": {
@@ -110,9 +124,9 @@ module.exports.create = function (api, address, token) {
                 let ship = getEntity(data, this.ships);
                 let killer = this.ships.findById(data.killer, true);
                 ship.alive = false;
-                let uuid = ship.uuid, resolve = this.modding.handlers.destroy.get(uuid)?.resolve;
-                this.modding.handlers.destroy.delete(uuid);
-                if ("function" == typeof resolve) resolve(ship);
+                let uuid = ship.uuid, handler = this.modding.handlers.destroy, resolve = handler.get(uuid)?.resolve;
+                handler.delete(uuid);
+                resolve?.(ship);
                 this.emit(events.SHIP_DESTROYED, ship, killer, this);
                 break;
               }
@@ -124,9 +138,9 @@ module.exports.create = function (api, address, token) {
                 let killer = this.ships.findById(data.killer, true);
                 entity.markAsInactive();
                 entityList.update();
-                let uuid = entity.uuid, resolve = this.modding.handlers.destroy.get(uuid)?.resolve;
-                this.modding.handlers.destroy.delete(uuid);
-                if ("function" == typeof resolve) resolve(entity);
+                let uuid = entity.uuid, handler = this.modding.handlers.destroy, resolve = handler.get(uuid)?.resolve;
+                handler.delete(uuid);
+                resolve?.(entity);
                 this.emit(events[entity_name.toUpperCase()], entity, killer, this);
                 break;
               }
@@ -160,8 +174,8 @@ module.exports.create = function (api, address, token) {
     }.bind(this.game));
     socket.on("close", function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
+      else this.emit(events.MOD_STOPPED, this);
       if (GameSocket.OPEN === this.modding.gameClient.socket?.readyState) this.modding.gameClient.socket.close();
-      this.emit(events.MOD_STOPPED, this);
       this.reset();
     }.bind(this.game))
   }.bind(api))

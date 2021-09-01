@@ -16,6 +16,7 @@ class ModdingClient extends EventEmitter {
         create: new Map(),
         destroy: new Map()
       }),
+      create_requests: [],
       data: {}
     });
     defineProperties(this, {modding});
@@ -32,6 +33,10 @@ class ModdingClient extends EventEmitter {
 
   error (message) {
     return this.emit('error', new Error(message), this)
+  }
+
+  log (...data) {
+    return this.emit('log', ...data, this)
   }
 
   setRegion (region) {
@@ -148,13 +153,11 @@ class ModdingClient extends EventEmitter {
     this.custom = {};
     let stopError = new Error("Mod had stopped before the action could be completed");
     for (let key of ["create", "destroy"]) {
-      let handlers = this.modding.handlers[key].entries();
-      this.modding.handlers[key].clear()
-      for (let handler of handlers) {
-        let reject = handler[1]?.reject;
-        if ("function" == typeof reject) reject(error)
-      }
+      let handlers = [...this.modding.handlers[key].entries()];
+      this.modding.handlers[key].clear();
+      for (let handler of handlers) handler[1]?.reject?.(stopError)
     }
+    this.modding.create_requests.splice(0);
     Object.assign(this.modding.data, {
       aliens: new (require("../managers/AlienManager.js"))(this),
       asteroids: new (require("../managers/AsteroidManager.js"))(this),
