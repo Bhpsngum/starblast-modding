@@ -9,8 +9,10 @@ class Collectible extends Entity {
   constructor(game, options) {
     super(game);
     this.code = options?.code ?? CollectibleCodes[0];
-    this.x = options?.x ?? 0;
-    this.y = options?.y ?? 0
+    let _this = this.modding.data;
+    _this.x = options?.x ?? 0;
+    _this.y = options?.y ?? 0;
+    _this.vx = _this.vy = 0
   }
 
   set () {

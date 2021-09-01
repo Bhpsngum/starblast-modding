@@ -11,10 +11,11 @@ const typeMap = new Map([
 class StationModule extends Structure {
   constructor(game, options, parent) {
     super(game);
-    this.shield = 1;
-    this.alive = true;
-    this.finish = this.skin = "alloy";
-    this.offsetX = this.offsetY = 0;
+    let _this = this.modding.data;
+    _this.shield = 1;
+    _this.alive = true;
+    _this.finish = _this.skin = "alloy";
+    _this.offsetX = _this.offsetY = 0;
     let type, subtype_id;
     (options?.type||"").replace(/^(sp|st|d)(\d+)$/, function(v, mType, id) {
       type = typeMap.get(mType);
@@ -38,19 +39,20 @@ class StationModule extends Structure {
   }
 
   updateShield (shield) {
-    let oldAlive = this.alive;
-    this.alive = shield > 0;
-    this.shield = Math.max(0, shield - 1) / 254 * this.game.options[this.type + "_shield"][this.parent.level - 1];
-    this.lastUpdatedStep = this.game.step
+    let _this = this.modding.data;
+    _this.alive = shield > 0;
+    _this.shield = Math.max(0, shield - 1) / 254 * this.game.options[this.type + "_shield"][this.parent.level - 1];
+    _this.lastUpdatedStep = this.game.step
   }
 
   step () {
     let init_phase = Math.atan2(this._y, this._x), phase = init_phase - (this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI;
     // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
     let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
-    this.offsetX = radius * Math.cos(phase);
-    this.offsetY = radius * Math.sin(phase);
-    this.angle = (((phase - init_phase) / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
+    let _this = this.modding.data;
+    _this.offsetX = radius * Math.cos(phase);
+    _this.offsetY = radius * Math.sin(phase);
+    _this.angle = (((phase - init_phase) / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
   }
 
   get x () {
@@ -59,6 +61,34 @@ class StationModule extends Structure {
 
   get y () {
     return this.parent.y + this.offsetY
+  }
+
+  get offsetX () {
+    return this.modding.data.offsetX
+  }
+
+  get offsetY () {
+    return this.modding.data.offsetY
+  }
+
+  get shield () {
+    return this.modding.data.shield
+  }
+
+  get alive () {
+    return this.modding.data.alive
+  }
+
+  get finish () {
+    return this.modding.data.finish
+  }
+
+  get skin () {
+    return this.modding.data.skin
+  }
+
+  get lastUpdatedStep () {
+    return this.modding.data.lastUpdatedStep
   }
 }
 

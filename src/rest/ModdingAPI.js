@@ -11,13 +11,25 @@ class ModdingAPI {
       cacheConfiguration: !!options?.cacheConfiguration
     });
     this.clear();
-    this.configuration = {};
+    this.started = false;
+    this.stopped = false;
     this.request_id = 0;
+    this.configuration = {}
   }
 
   clear () {
     return this.set({})
   }
+
+  reset () {
+    this.started = false;
+    this.stopped = true;
+    this.request_id = 0;
+    this.preflight_requests.splice(0);
+    this.clear();
+    if (!this.cacheConfiguration) this.configuration = {}
+  }
+
   async start () {
     try {
       this.data.options = JSON.parse(JSON.stringify(this.data.options ?? {}));

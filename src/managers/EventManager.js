@@ -75,7 +75,7 @@ module.exports.create = function (api, address, token) {
               createdStep: Math.max(this.step, 0),
             });
             entity.markAsSpawned();
-            entity.lastUpdatedStep = this.step;
+            entity.modding.data.lastUpdatedStep = this.step;
             entityList.update();
             this.emit(events[event.name.toUpperCase()], entity, this);
             break;
@@ -152,10 +152,6 @@ module.exports.create = function (api, address, token) {
     socket.on("close", function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
       if (GameSocket.OPEN === this.modding.gameClient.socket?.readyState) this.modding.gameClient.socket.close();
-      this.modding.api.started = false;
-      this.modding.api.stopped = true;
-      this.modding.api.request_id = 0;
-      this.modding.api.preflight_requests.splice(0);
       this.emit(events.MOD_STOPPED, this);
       this.reset();
     }.bind(this.game))

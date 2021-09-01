@@ -10,7 +10,7 @@ module.exports = function (data, manager, ...additionalValues) {
       id: data?.id,
       createdStep: Math.max(manager.game.step, 0)
     });
-    entity.lastUpdatedStep = Math.max(manager.game.step, 0);
+    entity.modding.data.lastUpdatedStep = Math.max(manager.game.step, 0);
     manager.insert(entity)
   }
   return entity

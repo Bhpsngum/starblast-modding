@@ -8,16 +8,22 @@ const defineProperties = require("../utils/defineProperties.js");
 class Asteroid extends Entity {
   constructor(game, options) {
     super(game);
-    this.size = options?.size ?? 30;
-    this.x = options?.x ?? 0;
-    this.y = options?.y ?? 0;
-    this.vx = options?.vx ?? 0;
-    this.vy = options?.vy ?? 0
+    let _this = this.modding.data;
+    _this.size = options?.size ?? 30;
+    _this.x = options?.x ?? 0;
+    _this.y = options?.y ?? 0;
+    _this.vx = options?.vx ?? 0;
+    _this.vy = options?.vy ?? 0
   }
 
   update (data) {
     this.entityUpdate(data);
-    this.size = data.size
+    let _this = this.modding.data;
+    _this.size = data.size
+  }
+
+  get size () {
+    return this.modding.data.size
   }
 
   toJSON () {

@@ -14,7 +14,7 @@ class ModdingClient extends EventEmitter {
       data: {}
     });
     defineProperties(this, {modding});
-    this.reset()
+    this.reset(true)
   }
 
   get started () {
@@ -112,7 +112,7 @@ class ModdingClient extends EventEmitter {
     return (api.started && !api.stopped) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
   }
 
-  reset () {
+  reset (init) {
     this.custom = {}
     Object.assign(this.modding.data, {
       aliens: new (require("../managers/AlienManager.js"))(this),
@@ -121,9 +121,10 @@ class ModdingClient extends EventEmitter {
       ships: new (require("../managers/ShipManager.js"))(this),
       objects: new (require("../managers/ObjectManager.js"))(this),
       teams: null,
+      options: null,
       step: -1
     });
-    if (!this.modding.api.cacheConfiguration) this.modding.api.configuration = {}
+    if (!init) this.modding.api.reset()
   }
 }
 

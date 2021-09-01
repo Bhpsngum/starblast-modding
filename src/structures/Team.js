@@ -13,15 +13,21 @@ class Team extends Structure {
       createdStep: 0,
       faction: "string" == typeof options.faction ? options.faction : "Unknown"
     });
-    this.open = this.open ?? true
+    let _this = this.modding.data;
+    _this.open = true
   }
 
   updateInfo (data) {
-    this.open = !!data?.open
+    let _this = this.modding.data;
+    _this.open = !!data?.open
   }
 
   update () {
     this.stations.update()
+  }
+
+  get open () {
+    return this.modding.data.open
   }
 }
 

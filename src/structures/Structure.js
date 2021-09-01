@@ -4,7 +4,8 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class Structure {
   constructor (game) {
-    defineProperties(this, {game})
+    let modding = defineProperties({}, {data: {}});
+    defineProperties(this, {game, modding})
   }
 
   markAsInactive () {

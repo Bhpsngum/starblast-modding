@@ -22,23 +22,40 @@ const alien_types = new Map([
 class Alien extends Entity {
   constructor(game, options) {
     super(game);
-    this.x = options?.x ?? 0;
-    this.y = options?.y ?? 0;
-    this.vx = options?.vx ?? 0;
-    this.vy = options?.vy ?? 0;
-    this.code = options?.code ?? [...alien_types.keys()][0];
-    this.level = options?.level ?? 0;
+    let _this = this.modding.data;
+    _this.x = options?.x ?? 0;
+    _this.y = options?.y ?? 0;
+    _this.vx = options?.vx ?? 0;
+    _this.vy = options?.vy ?? 0;
+    _this.code = options?.code ?? [...alien_types.keys()][0];
+    _this.level = options?.level ?? 0;
+    _this.points = options?.points;
     let weapon_drop = CollectibleCodes.indexOf(options?.weapon_drop);
-    this.weapon_drop = CollectibleCodes[weapon_drop] ?? null;
-    this.crystal_drop = "number" == options?.crystal_drop ? options.crystal_drop : 0
+    defineProperties(this, {
+      weapon_drop: CollectibleCodes[weapon_drop] ?? null,
+      crystal_drop: "number" == options?.crystal_drop ? options.crystal_drop : 0
+    })
   }
 
   update (data) {
     this.entityUpdate(data);
-    this.code = data.code;
-    let alien_type = alien_types.get(this.code);
-    this.level = Math.min(data.level, alien_type.points.length - 1);
-    this.points = "number" == typeof this.points ? this.points : alien_type.points[this.level];
+    let _this = this.modding.data
+    _this.code = data.code;
+    let alien_type = alien_types.get(_this.code);
+    _this.level = Math.min(data.level, alien_type.points.length - 1);
+    _this.points = "number" == typeof _this.points ? _this.points : alien_type.points[_this.level];
+  }
+
+  get code () {
+    return this.modding.data.code
+  }
+
+  get level () {
+    return this.modding.data.level
+  }
+
+  get points () {
+    return this.modding.data.points
   }
 
   toJSON () {

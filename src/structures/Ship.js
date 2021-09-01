@@ -24,24 +24,25 @@ class Ship extends Entity {
   }
 
   update (data, fromGameClient) {
+    let _this = this.modding.data;
     if (fromGameClient) {
-      this.customization = data.customization;
-      this.hue = data.hue
+      _this.customization = data.customization;
+      _this.hue = data.hue
     }
     else {
       this.entityUpdate(data);
-      this.name = data.player_name;
-      this.angle = data.r * 180 / Math.PI; // convert from radian back to degree
-      this.idle = data.idle;
-      this.alive = data.alive;
-      this.type = data.type;
-      this.stats = convertStats(data.stats);
-      this.team = data.team ?? null;
-      this.score = data.score;
-      this.shield = data.shield;
-      this.generator = data.generator;
-      this.crystals = data.crystals;
-      this.healing = data.healing
+      _this.name = data.player_name;
+      _this.angle = data.r * 180 / Math.PI; // convert from radian back to degree
+      _this.idle = data.idle;
+      _this.alive = data.alive;
+      _this.type = data.type;
+      _this.stats = convertStats(data.stats);
+      _this.team = data.team;
+      _this.score = data.score;
+      _this.shield = data.shield;
+      _this.generator = data.generator;
+      _this.crystals = data.crystals;
+      _this.healing = data.healing
     }
   }
 
@@ -88,8 +89,60 @@ class Ship extends Entity {
     return this
   }
 
+  get name () {
+    return this.modding.data.name
+  }
+
+  get type () {
+    return this.modding.data.type
+  }
+
+  get angle () {
+    return this.modding.data.angle
+  }
+
+  get score () {
+    return this.modding.data.score
+  }
+
+  get idle () {
+    return this.modding.data.idle
+  }
+
+  get shield () {
+    return this.modding.data.shield
+  }
+
+  get generator () {
+    return this.modding.data.generator
+  }
+
+  get healing () {
+    return this.modding.data.healing
+  }
+
+  get crystals () {
+    return this.modding.data.crystals
+  }
+
+  get stats () {
+    return this.modding.data.stats
+  }
+
+  get team () {
+    return this.modding.data.team ?? null
+  }
+
+  get hue () {
+    return this.modding.data.hue ?? null
+  }
+
+  get customization () {
+    return this.modding.data.customization ?? null
+  }
+
   toJSON () {
-    return limitedJSON(this, ["name", "x", "y", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue"])
+    return limitedJSON(this, ["name", "x", "y", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization"])
   }
 }
 

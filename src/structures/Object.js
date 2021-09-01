@@ -26,6 +26,7 @@ class Object3D extends Structure {
   }
 
   assign(options, forceAssign = false) {
+    let _this = this.modding.data;
     if (forceAssign || options?.type != null) {
       let objTypeManager = this.game.objects.types;
       let objType = objTypeManager.create(options?.type);
@@ -34,11 +35,11 @@ class Object3D extends Structure {
         type = objType;
         objTypeManager.insert(type)
       }
-      this.type = type
+      _this.type = type
     }
-    if (forceAssign || options?.position != null) this.position = new Coordinate(options?.position);
-    if (forceAssign || options?.rotation != null) this.rotation = new Coordinate(options?.rotation);
-    if (forceAssign || options?.scale != null) this.scale = new Coordinate(options?.scale);
+    if (forceAssign || options?.position != null) _this.position = new Coordinate(options?.position);
+    if (forceAssign || options?.rotation != null) _this.rotation = new Coordinate(options?.rotation);
+    if (forceAssign || options?.scale != null) _this.scale = new Coordinate(options?.scale);
   }
 
   set (data) {
@@ -46,7 +47,8 @@ class Object3D extends Structure {
     let send = function () {
       this.game.modding.api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
     }.bind(this);
-    this.type = this.game.objects.types.findById(toString(this.type?.id));
+    let _this = this.modding.data;
+    _this.type = this.game.objects.types.findById(toString(_this.type?.id));
     if (this.type.physics.autoShape && this.type.physics.shape == null) this.type.getShape()
     .then(shape => (defineProperties(this.type.physics, {shape}), send()))
     .catch(e => (defineProperties(this.type.physics, {shape: []}), send()));
@@ -61,6 +63,22 @@ class Object3D extends Structure {
     this.markAsInactive();
     this.game.objects.update();
     return this
+  }
+
+  get type () {
+    return this.modding.data.type
+  }
+
+  get position () {
+    return this.modding.data.position
+  }
+
+  get rotation () {
+    return this.modding.data.rotation
+  }
+
+  get scale () {
+    return this.modding.data.scale
   }
 
   toJSON () {

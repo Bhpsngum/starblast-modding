@@ -7,8 +7,8 @@ const defineProperties = require("../utils/defineProperties.js");
 class Station extends Structure {
   constructor(game, options) {
     super(game);
-    let size = Math.trunc(this.game.options.station_size);
-    this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
+    let size = Math.trunc(this.game.options.station_size), _this = this.modding.data;
+    _this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
     let modules = new StationModuleManager(this.game);
     (Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
     defineProperties(this, {
@@ -27,26 +27,48 @@ class Station extends Structure {
   }
 
   updateInfo (data) {
-    this.level = data?.level;
-    this.crystals = data?.crystals;
-    this.crystals_max = this.game.options.crystal_capacity[this.level - 1];
+    let _this = this.modding.data;
+    _this.level = data?.level;
+    _this.crystals = data?.crystals;
+    _this.crystals_max = this.game.options.crystal_capacity[_this.level - 1];
     this.modules.updateShield(data?.modules_shield);
     if (this.isActive() && null == this.modules.all.find(modul => modul.isActive() && modul.isAlive())) {
       this.markAsInactive();
       this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive())
     }
-    this.lastUpdatedStep = this.game.step
+    _this.lastUpdatedStep = this.game.step
   }
 
   step () {
     let phase = (this.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
-    this.x = radius * Math.cos(phase);
-    this.y = radius * Math.sin(phase)
+    let _this = this.modding.data;
+    _this.x = radius * Math.cos(phase);
+    _this.y = radius * Math.sin(phase)
   }
 
   update () {
     this.step();
     this.modules.update()
+  }
+
+  get size () {
+    return this.modding.data.size
+  }
+
+  get level () {
+    return this.modding.data.level
+  }
+
+  get crystals () {
+    return this.modding.data.crystals
+  }
+
+  get crystals_max () {
+    return this.modding.data.crystals_max
+  }
+
+  get lastUpdatedStep () {
+    return this.modding.data.lastUpdatedStep
   }
 }
 

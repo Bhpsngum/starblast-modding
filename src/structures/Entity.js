@@ -30,16 +30,38 @@ class Entity extends Structure{
       delete this.firstUpdate
     }
     else this.firstUpdate = true;
-    this.x = data.x;
-    this.y = data.y;
-    this.vx = data.sx;
-    this.vy = data.sy;
-    this.lastUpdatedStep = this.game.step
+    let _this = this.modding.data;
+    _this.x = data.x;
+    _this.y = data.y;
+    _this.vx = data.sx;
+    _this.vy = data.sy;
+    _this.lastUpdatedStep = this.game.step
+  }
+
+  get x () {
+    return this.modding.data.x
+  }
+
+  get y () {
+    return this.modding.data.y
+  }
+
+  get vx () {
+    return this.modding.data.vx
+  }
+
+  get vy () {
+    return this.modding.data.vy
+  }
+
+  get lastUpdatedStep () {
+    return this.modding.data.lastUpdatedStep
   }
 
   step () {
-    this.x += this.vx;
-    this.y += this.vy
+    let _this = this.modding.data;
+    _this.x += _this.vx;
+    _this.y += _this.vy
   }
 }
 
