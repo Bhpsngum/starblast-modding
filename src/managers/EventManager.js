@@ -151,7 +151,7 @@ module.exports.create = function (api, address, token) {
     }.bind(this.game));
     socket.on("close", function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
-      if (GameSocket.OPEN === this.modding.gameClient.socket.readyState) this.modding.gameClient.socket.close();
+      if (GameSocket.OPEN === this.modding.gameClient.socket?.readyState) this.modding.gameClient.socket.close();
       this.modding.api.started = false;
       this.modding.api.stopped = true;
       this.modding.api.request_id = 0;
