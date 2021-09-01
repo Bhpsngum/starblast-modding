@@ -38,6 +38,7 @@ class GameClient {
               map_name: data.name,
               map_id: data.seed
             });
+            this.socket = socket;
             interval = setInterval(function(){socket.send(0)}, 1000);
             break;
           case "player_name":
