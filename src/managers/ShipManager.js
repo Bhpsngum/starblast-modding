@@ -9,8 +9,8 @@ class ShipManager extends EntityManager {
     super(game)
   }
 
-  add () {
-
+  async add () {
+    throw new Error("Entity class 'ship' couldn't be created through the modding API")
   }
 
   showInstructor () {

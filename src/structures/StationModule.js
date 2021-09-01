@@ -25,8 +25,8 @@ class StationModule extends Structure {
     defineProperties(this, {
       parent,
       id: options?.id,
-      type,
-      subtype_id,
+      station_module_type: type,
+      station_module_subtype_id: subtype_id,
       createdStep: 0,
       _x: "number" == typeof options?.x ? options.x : 0,
       _y: "number" == typeof options?.y ? options.y : 0,
@@ -41,7 +41,7 @@ class StationModule extends Structure {
   updateShield (shield) {
     let _this = this.modding.data;
     _this.alive = shield > 0;
-    _this.shield = Math.max(0, shield - 1) / 254 * this.game.options[this.type + "_shield"][this.parent.level - 1];
+    _this.shield = Math.max(0, shield - 1) / 254 * this.game.options[this.station_module_type + "_shield"][this.parent.level - 1];
     _this.lastUpdatedStep = this.game.step
   }
 

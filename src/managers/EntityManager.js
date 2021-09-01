@@ -10,14 +10,20 @@ class EntityManager extends StructureManager {
 
   add (data) {
     let entity = this.create(data);
-    defineProperties(entity, {request_id: [this.manager_name, Math.max(this.game.step, 0), this.game.modding.api.request_id++].join("-")});
+    defineProperties(entity, {request_id: entity.uuid});
     this.insert(entity);
     let rawEntity = JSON.parse(JSON.stringify(entity));
     Object.assign(rawEntity, {
       sx: rawEntity.vx,
       sy: rawEntity.vy
     });
-    this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send()
+    // return new Promise(function(resolve, reject){
+    //   this.game.modding.handlers.create.set(entity.request_id, {
+    //     resolve: resolve,
+    //     reject: reject
+    //   });
+      this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.request_id)
+    // }.bind(this))
   }
 
   update (onTick = false) {

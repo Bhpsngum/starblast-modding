@@ -75,9 +75,19 @@ class ModdingAPI {
     return this.clientMessage(null, name, data)
   }
 
-  send () {
+  send (uid) {
     if (this.started) try { this.socket.send(JSON.stringify(this.pending_request)) }
-    catch(e) { this.game.emit('error', new Error("Failed to encoding request"), this.game) }
+    catch(e) {
+      // let error = new Error("Failed to encoding request");
+      // if (arguments.length > 0) {
+      //   let reject = this.game.modding.handlers.create.get(uid)?.reject;
+      //   if ("function" == typeof reject) {
+      //     this.game.modding.handlers.create.delete(uid);
+      //     reject(error)
+      //   }
+      // }
+      this.game.emit('error', error, this.game)
+    }
     else this.preflight_requests.push(this.pending_request);
     return this.clear()
   }

@@ -2,6 +2,7 @@
 
 const EventEmitter = require("events");
 const defineProperties = require("../utils/defineProperties.js");
+const toString = require("../utils/toString.js");
 
 class ModdingClient extends EventEmitter {
   constructor (options) {
@@ -11,6 +12,10 @@ class ModdingClient extends EventEmitter {
       api: new (require("../rest/ModdingAPI.js"))(this, options),
       gameClient: new (require("./GameClient.js"))(this),
       events: require("../resources/Events.js")(),
+      // handlers: defineProperties({}, {
+      //   create: new Map(),
+      //   destroy: new Map()
+      // }),
       data: {}
     });
     defineProperties(this, {modding});
@@ -65,6 +70,24 @@ class ModdingClient extends EventEmitter {
     return this
   }
 
+  findStructureByUUId (uuid) {
+    let manager_name = toString(uuid).split("-")[0], manager;
+    switch (manager_name) {
+      case "station_module":
+        manager = this.teams?.stations?.map(station => station?.modules)?.flat?.() ?? [];
+        break;
+      case "object_type":
+        manager = this.objects.types;
+        break;
+      case "station":
+        manager = this.teams.stations;
+        break;
+      default:
+        manager = this[manager_name + "s"]
+    }
+    return manager?.find(structure => Object.is(structure.uuid, uuid)) ?? null
+  }
+
   async start (options) {
     if (this.started) throw new Error("Mod already started");
     return await this.configure(options).modding.api.start()
@@ -113,7 +136,16 @@ class ModdingClient extends EventEmitter {
   }
 
   reset (init) {
-    this.custom = {}
+    this.custom = {};
+    // let stopError = new Error("Mod had stopped before the action could be completed");
+    // for (let key of ["create", "destroy"]) {
+    //   let handlers = this.modding.handlers[key];
+    //   for (let handler of handlers) {
+    //     let reject = handler[1]?.reject;
+    //     if ("function" == typeof reject) reject(error)
+    //   }
+    //   handlers.clear()
+    // }
     Object.assign(this.modding.data, {
       aliens: new (require("../managers/AlienManager.js"))(this),
       asteroids: new (require("../managers/AsteroidManager.js"))(this),

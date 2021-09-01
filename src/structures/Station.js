@@ -51,6 +51,14 @@ class Station extends Structure {
     this.modules.update()
   }
 
+  get x () {
+    return this.modding.data.x
+  }
+
+  get y () {
+    return this.modding.data.y
+  }
+
   get size () {
     return this.modding.data.size
   }

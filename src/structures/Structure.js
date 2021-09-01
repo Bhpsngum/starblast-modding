@@ -5,7 +5,8 @@ const defineProperties = require("../utils/defineProperties.js");
 class Structure {
   constructor (game) {
     let modding = defineProperties({}, {data: {}});
-    defineProperties(this, {game, modding})
+    let uuid = [this.structure_type || "structure", Math.max(game.step, 0) || 0, game.modding.api.request_id++ || 0].join("-");
+    defineProperties(this, {game, modding, uuid: uuid})
   }
 
   markAsInactive () {

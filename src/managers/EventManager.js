@@ -58,11 +58,11 @@ module.exports.create = function (api, address, token) {
           case "alien_created":
           case "asteroid_created":
           case "collectible_created": {
-            let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"];
+            let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"], uid = event.request_id;
             let entity = entityList.all.find(entity => {
               if (entityList.isInstance(entity)) {
                 try { entity.id = null } catch(e) {}
-                return entity.id == null && entity.request_id === event.request_id
+                return entity.id == null && entity.request_id === uid
               }
               return false
             });
@@ -77,6 +77,11 @@ module.exports.create = function (api, address, token) {
             entity.markAsSpawned();
             entity.modding.data.lastUpdatedStep = this.step;
             entityList.update();
+            // let resolve = this.modding.handlers.create.get(uid)?.resolve;
+            // if ("function" == typeof resolve) {
+            //   this.modding.handlers.create.delete(uid);
+            //   resolve(entity)
+            // }
             this.emit(events[event.name.toUpperCase()], entity, this);
             break;
           }
