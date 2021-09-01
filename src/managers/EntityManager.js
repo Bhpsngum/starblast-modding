@@ -17,13 +17,26 @@ class EntityManager extends StructureManager {
       sx: rawEntity.vx,
       sy: rawEntity.vy
     });
-    // return new Promise(function(resolve, reject){
-    //   this.game.modding.handlers.create.set(entity.request_id, {
-    //     resolve: resolve,
-    //     reject: reject
-    //   });
-      this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.request_id)
-    // }.bind(this))
+    return new Promise(function(resolve, reject){
+      this.game.modding.handlers.create.set(entity.uuid, {
+        resolve: resolve,
+        reject: reject
+      });
+      this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.uuid, "create")
+    }.bind(this))
+  }
+
+  setById (id, data) {
+    let entity = this.findById(id);
+    if (entity == null) {
+      entity = this.create(data);
+      entity.id = id
+    }
+    entity.set(data)
+  }
+
+  set (data) {
+    this.set(data?.id, data)
   }
 
   update (onTick = false) {

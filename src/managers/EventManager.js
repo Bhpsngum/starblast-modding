@@ -58,11 +58,11 @@ module.exports.create = function (api, address, token) {
           case "alien_created":
           case "asteroid_created":
           case "collectible_created": {
-            let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"], uid = event.request_id;
+            let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"], uuid = event.request_id;
             let entity = entityList.all.find(entity => {
               if (entityList.isInstance(entity)) {
                 try { entity.id = null } catch(e) {}
-                return entity.id == null && entity.request_id === uid
+                return entity.id == null && entity.request_id === uuid
               }
               return false
             });
@@ -77,11 +77,9 @@ module.exports.create = function (api, address, token) {
             entity.markAsSpawned();
             entity.modding.data.lastUpdatedStep = this.step;
             entityList.update();
-            // let resolve = this.modding.handlers.create.get(uid)?.resolve;
-            // if ("function" == typeof resolve) {
-            //   this.modding.handlers.create.delete(uid);
-            //   resolve(entity)
-            // }
+            let resolve = this.modding.handlers.create.get(uuid)?.resolve;
+            this.modding.handlers.create.delete(uuid);
+            if ("function" == typeof resolve) resolve(entity);
             this.emit(events[event.name.toUpperCase()], entity, this);
             break;
           }
@@ -112,6 +110,9 @@ module.exports.create = function (api, address, token) {
                 let ship = getEntity(data, this.ships);
                 let killer = this.ships.findById(data.killer, true);
                 ship.alive = false;
+                let uuid = ship.uuid, resolve = this.modding.handlers.destroy.get(uuid)?.resolve;
+                this.modding.handlers.destroy.delete(uuid);
+                if ("function" == typeof resolve) resolve(ship);
                 this.emit(events.SHIP_DESTROYED, ship, killer, this);
                 break;
               }
@@ -123,6 +124,9 @@ module.exports.create = function (api, address, token) {
                 let killer = this.ships.findById(data.killer, true);
                 entity.markAsInactive();
                 entityList.update();
+                let uuid = entity.uuid, resolve = this.modding.handlers.destroy.get(uuid)?.resolve;
+                this.modding.handlers.destroy.delete(uuid);
+                if ("function" == typeof resolve) resolve(entity);
                 this.emit(events[entity_name.toUpperCase()], entity, killer, this);
                 break;
               }

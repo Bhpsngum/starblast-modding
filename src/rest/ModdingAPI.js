@@ -13,6 +13,7 @@ class ModdingAPI {
     this.clear();
     this.started = false;
     this.stopped = false;
+    this.onstop = [];
     this.request_id = 0;
     this.configuration = {}
   }
@@ -27,7 +28,9 @@ class ModdingAPI {
     this.request_id = 0;
     this.preflight_requests.splice(0);
     this.clear();
-    if (!this.cacheConfiguration) this.configuration = {}
+    if (!this.cacheConfiguration) this.configuration = {};
+    let onstops = this.onstop.splice(0);
+    onstops.forEach(onstop => "function" == typeof onstop?.resolve && onstop.resolve(this.game))
   }
 
   async start () {
@@ -43,7 +46,10 @@ class ModdingAPI {
   }
 
   stop () {
-    this.name("stop").send()
+    return new Promise(function(resolve, reject) {
+      this.onstop.push({resolve, reject});
+      this.name("stop").send(null, "stop")
+    }.bind(this))
   }
 
   name (name) {
@@ -75,17 +81,27 @@ class ModdingAPI {
     return this.clientMessage(null, name, data)
   }
 
-  send (uid) {
+  send (uuid, action) {
     if (this.started) try { this.socket.send(JSON.stringify(this.pending_request)) }
     catch(e) {
-      // let error = new Error("Failed to encoding request");
-      // if (arguments.length > 0) {
-      //   let reject = this.game.modding.handlers.create.get(uid)?.reject;
-      //   if ("function" == typeof reject) {
-      //     this.game.modding.handlers.create.delete(uid);
-      //     reject(error)
-      //   }
-      // }
+      if (arguments.length > 0) {
+        let error = new Error("Failed to encoding request");
+        switch (action) {
+          case "create":
+          case "destroy": {
+            let hanlder = this.game.modding.handlers[action]?.get?.(uuid), reject = handler?.reject;
+            handler.delete(uuid);
+            if ("function" == typeof reject) reject(error);
+            break
+          }
+          case "stop": {
+            let rejectonstop = this.onstop[0]?.reject;
+            if ("function" == typeof rejectonstop) rejectonstop(error);
+            this.onstop.splice(0, 1);
+            break
+          }
+        }
+      }
       this.game.emit('error', error, this.game)
     }
     else this.preflight_requests.push(this.pending_request);

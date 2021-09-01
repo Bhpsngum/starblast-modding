@@ -10,7 +10,7 @@ class ShipManager extends EntityManager {
   }
 
   async add () {
-    throw new Error("Entity class 'ship' couldn't be created through the modding API")
+    throw new Error("Entity class 'ship' could not be added through the Modding API")
   }
 
   showInstructor () {

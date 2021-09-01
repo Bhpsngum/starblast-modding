@@ -12,10 +12,10 @@ class ModdingClient extends EventEmitter {
       api: new (require("../rest/ModdingAPI.js"))(this, options),
       gameClient: new (require("./GameClient.js"))(this),
       events: require("../resources/Events.js")(),
-      // handlers: defineProperties({}, {
-      //   create: new Map(),
-      //   destroy: new Map()
-      // }),
+      handlers: defineProperties({}, {
+        create: new Map(),
+        destroy: new Map()
+      }),
       data: {}
     });
     defineProperties(this, {modding});
@@ -88,14 +88,23 @@ class ModdingClient extends EventEmitter {
     return manager?.find(structure => Object.is(structure.uuid, uuid)) ?? null
   }
 
+  setStructure (data) {
+    this.setStructureByUUId(data?.uuid, data)
+  }
+
+  setStructureByUUId (uuid, data) {
+    let structure_id = this.findStructureByUUId(uuid)?.id ?? null;
+    this[toString(uuid).split("-")[0] + "s"]?.setById?.(structure_id, data)
+  }
+
   async start (options) {
     if (this.started) throw new Error("Mod already started");
     return await this.configure(options).modding.api.start()
   }
 
-  stop () {
-    if (this.stopped) this.error("Mod already stopped");
-    this.modding.api.stop()
+  async stop () {
+    if (this.stopped) throw new Error("Mod already stopped");
+    return await this.modding.api.stop()
   }
 
   get ships () {
@@ -137,15 +146,15 @@ class ModdingClient extends EventEmitter {
 
   reset (init) {
     this.custom = {};
-    // let stopError = new Error("Mod had stopped before the action could be completed");
-    // for (let key of ["create", "destroy"]) {
-    //   let handlers = this.modding.handlers[key];
-    //   for (let handler of handlers) {
-    //     let reject = handler[1]?.reject;
-    //     if ("function" == typeof reject) reject(error)
-    //   }
-    //   handlers.clear()
-    // }
+    let stopError = new Error("Mod had stopped before the action could be completed");
+    for (let key of ["create", "destroy"]) {
+      let handlers = this.modding.handlers[key].entries();
+      this.modding.handlers[key].clear()
+      for (let handler of handlers) {
+        let reject = handler[1]?.reject;
+        if ("function" == typeof reject) reject(error)
+      }
+    }
     Object.assign(this.modding.data, {
       aliens: new (require("../managers/AlienManager.js"))(this),
       asteroids: new (require("../managers/AsteroidManager.js"))(this),

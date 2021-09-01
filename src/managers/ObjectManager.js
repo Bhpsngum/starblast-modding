@@ -18,11 +18,15 @@ class ObjectManager extends StructureManager {
   }
 
   set (data) {
-    return setObject.call(this, data)
+    setObject.call(this, data)
   }
 
   add (data) { // placeholder, same functionality as 'ObjectManager.set'
-    return setObject.call(this, data)
+    setObject.call(this, data)
+  }
+
+  setById (id, data) {
+    this.set(Object.assign({}, data, {id}))
   }
 
   update () {
