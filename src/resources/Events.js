@@ -7,6 +7,7 @@ module.exports = function() {
     // General Modding events
     MOD_STARTED: "start",
     ERROR: "error",
+    LOG: "log",
     TICK: "tick",
     MOD_STOPPED: "stop",
     // Ship events

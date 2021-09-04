@@ -106,6 +106,9 @@ module.exports.create = function (api, address, token) {
             let error = new Error(event.text);
             switch(event.text) {
               case "Incorrect data":
+              case "Too many aliens":
+              case "Too many asteroids":
+              case "Too many Collectibles":
                 let uuid = this.modding.create_requests.shift();
                 let handler = this.modding.handlers.create;
                 let reject = handler.get(uuid)?.reject
