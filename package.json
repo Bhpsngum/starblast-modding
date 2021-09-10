@@ -18,10 +18,9 @@
     "api",
     "client"
   ],
-  "engines": [
-    "node": ">=16.0.0",
+  "engines": {    "node": ">=16.0.0",
     "npm": ">=6.0.0"
-  ],
+  },
   "license": "ISC",
   "dependencies": {
     "three": "^0.85.0",
