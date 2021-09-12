@@ -3,7 +3,7 @@
 const GameSocket = require("../GameSocket.js");
 const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
-const events = require("../resources/Events.js")();
+const events = require("../resources/Events.js");
 const defineProperties = require("../utils/defineProperties.js");
 
 module.exports.create = function (api, address, token) {
@@ -42,7 +42,7 @@ module.exports.create = function (api, address, token) {
             });
             delete this.modding.api.ECPKey;
             for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
-            this.modding.data.options = defineProperties({}, data.options);
+            this.modding.data.options = defineProperties({}, data.options, true);
             this.modding.gameClient.connect(address.ip, data.id, address.port);
             this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();

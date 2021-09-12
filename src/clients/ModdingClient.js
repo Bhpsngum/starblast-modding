@@ -11,7 +11,7 @@ class ModdingClient extends EventEmitter {
     defineProperties(modding, {
       api: new (require("../rest/ModdingAPI.js"))(this, options),
       gameClient: new (require("./GameClient.js"))(this),
-      events: require("../resources/Events.js")(),
+      events: require("../resources/Events.js"),
       handlers: defineProperties({}, {
         create: new Map(),
         destroy: new Map()

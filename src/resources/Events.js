@@ -2,8 +2,8 @@
 
 const defineProperties = require("../utils/defineProperties.js");
 
-module.exports = function() {
-  let obj = {}, EVENTS = {
+module.exports = (function() {
+  let EVENTS = {
     // General Modding events
     MOD_STARTED: "start",
     ERROR: "error",
@@ -26,6 +26,5 @@ module.exports = function() {
     COLLECTIBLE_CREATED: "collectibleCreate",
     COLLECTIBLE_PICKED: "collectiblePick"
   }
-  defineProperties(obj, EVENTS);
-  return obj
-}
+  return Object.freeze(EVENTS)
+})()
