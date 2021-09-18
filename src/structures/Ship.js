@@ -4,6 +4,7 @@ const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
+const toString = require("../utils/toString.js");
 const convertStats = function(data) {
   if (isNaN(data)) return 0;
   let stats = [];
@@ -52,10 +53,7 @@ class Ship extends Entity {
   }
 
   instructorSays (text, character) {
-    this.game.modding.api.clientMessage(this.id, "instructor_says", {
-      text: text,
-      character: character
-    }).send();
+    this.game.modding.api.clientMessage(this.id, "instructor_says", {text, character}).send();
     return this
   }
 
@@ -65,14 +63,15 @@ class Ship extends Entity {
   }
 
   setUIComponent (component) {
-    this.game.modding.api.clientMessage(this.id, "set_ui_component", {component: component}).send();
+    this.game.modding.api.clientMessage(this.id, "set_ui_component", {component}).send();
     return this
   }
 
   intermission (data, gameOver) {
     data = Object.assign({}, data);
-    data.gameover = !!gameOver;
-    this.game.modding.api.clientMessage(this.id, "intermission", {data: data}).send();
+    for (let i in data) if (i != "gameover") data[i] = toString(data[i]);
+    if ("boolean" != typeof data.gameover) data.gameover = !!gameOver && toString(data.gameover);
+    this.game.modding.api.clientMessage(this.id, "intermission", {data}).send();
     return this
   }
 
@@ -81,7 +80,7 @@ class Ship extends Entity {
   }
 
   setObject (data) {
-    this.game.modding.api.clientMessage(this.id, "set_object", {data: data}).send();
+    this.game.modding.api.clientMessage(this.id, "set_object", {data}).send();
   }
 
   emptyWeapons () {

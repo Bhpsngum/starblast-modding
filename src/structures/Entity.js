@@ -4,7 +4,7 @@ const Structure = require("./Structure.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const defineProperties = require("../utils/defineProperties.js");
 
-class Entity extends Structure{
+class Entity extends Structure {
   constructor (game) {
     super(game);
     this.custom = {}
