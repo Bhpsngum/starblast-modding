@@ -1,9 +1,9 @@
 'use strict';
 
-const UUIDv4 = require("uuid").v4;
 const defineProperties = require("../utils/defineProperties.js");
+const crypto = require("crypto");
 const createUUID = function () {
-  return UUIDv4().toUpperCase()
+  return crypto.randomUUID({ disableEntropyCache: true }).toUpperCase()
 }
 
 class Structure {
