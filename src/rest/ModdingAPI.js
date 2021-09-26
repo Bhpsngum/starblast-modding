@@ -14,7 +14,6 @@ class ModdingAPI {
     this.started = false;
     this.stopped = false;
     this.onstop = [];
-    this.request_id = 0;
     this.configuration = {}
   }
 
@@ -25,7 +24,6 @@ class ModdingAPI {
   reset () {
     this.started = false;
     this.stopped = true;
-    this.request_id = 0;
     this.preflight_requests.splice(0);
     this.clear();
     if (!this.cacheConfiguration) this.configuration = {};

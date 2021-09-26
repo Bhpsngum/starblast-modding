@@ -51,7 +51,6 @@ module.exports.create = function (api, address, token) {
             break;
           case "tick":
             this.modding.data.step = data.step;
-            this.modding.api.request_id = 0;
             for (let key of ["aliens", "asteroids", "collectibles", "ships", "objects", "teams"]) this.modding.data[key]?.update?.(true);
             this.emit(events.TICK, data.step, this);
             break;
