@@ -1,12 +1,15 @@
 'use strict';
 
+const UUIDv4 = require("uuid").v4;
 const defineProperties = require("../utils/defineProperties.js");
+const createUUID = function () {
+  return UUIDv4().toUpperCase()
+}
 
 class Structure {
   constructor (game) {
     let modding = defineProperties({}, {data: {}});
-    let uuid = [this.structure_type || "structure", Math.max(game.step, 0) || 0, game.modding.api.request_id++ || 0].join("-");
-    defineProperties(this, {game, modding, uuid: uuid})
+    defineProperties(this, {game, modding, uuid: createUUID()})
   }
 
   markAsInactive () {

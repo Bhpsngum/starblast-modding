@@ -3,6 +3,7 @@
 const EventEmitter = require("events");
 const defineProperties = require("../utils/defineProperties.js");
 const toString = require("../utils/toString.js");
+const StructureManager = require("../managers/StructureManager.js");
 
 class ModdingClient extends EventEmitter {
   constructor (options) {
@@ -75,31 +76,33 @@ class ModdingClient extends EventEmitter {
     return this
   }
 
-  findStructureByUUId (uuid) {
-    let manager_name = toString(uuid).split("-")[0], manager;
-    switch (manager_name) {
-      case "station_module":
-        manager = this.teams?.stations?.map(station => station?.modules)?.flat?.() ?? [];
-        break;
-      case "object_type":
-        manager = this.objects.types;
-        break;
-      case "station":
-        manager = this.teams.stations;
-        break;
-      default:
-        manager = this[manager_name + "s"]
+  findStructureByUUID (uuid, includeInactive = false) {
+    let managers = [
+      { path: ["ships"] },
+      { path: ["asteroids"] },
+      { path: ["aliens"] },
+      { path: ["collectibles"] },
+      { path: ["objects"] },
+      { path: ["objects", "types"] },
+      { path: ["teams"], },
+      { path: ["teams", "stations"] },
+      { path: ["team", "stations"], mapper: v => v.modules }
+    ];
+
+    Search: for (let keys of managers) {
+      let manager = this;
+      for (let key of keys.path) {
+        manager = manager[key];
+        if (manager == null) continue Search
+      }
+      if (!(manager instanceof StructureManager)) continue Search;
+      if (includeInactive) manager = manager.all;
+      if ("function" == keys.mapper) manager = manager.map(keys.mapper);
+      let results = manager.flat(Infinity).find(structure => Object.is(structure.uuid, uuid));
+      if (results != null) return results
     }
-    return manager?.find(structure => Object.is(structure.uuid, uuid)) ?? null
-  }
 
-  setStructure (data) {
-    this.setStructureByUUId(data?.uuid, data)
-  }
-
-  setStructureByUUId (uuid, data) {
-    let structure_id = this.findStructureByUUId(uuid)?.id ?? null;
-    this[toString(uuid).split("-")[0] + "s"]?.setById?.(structure_id, data)
+    return null
   }
 
   async start (options) {
