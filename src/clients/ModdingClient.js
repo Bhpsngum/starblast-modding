@@ -4,6 +4,17 @@ const EventEmitter = require("events");
 const defineProperties = require("../utils/defineProperties.js");
 const toString = require("../utils/toString.js");
 const StructureManager = require("../managers/StructureManager.js");
+const managers = [
+  { path: ["ships"] },
+  { path: ["asteroids"] },
+  { path: ["aliens"] },
+  { path: ["collectibles"] },
+  { path: ["objects"] },
+  { path: ["objects", "types"] },
+  { path: ["teams"], },
+  { path: ["teams", "stations"] },
+  { path: ["teams", "stations"], mapper: v => v.modules }
+];
 
 class ModdingClient extends EventEmitter {
   constructor (options) {
@@ -77,18 +88,6 @@ class ModdingClient extends EventEmitter {
   }
 
   findStructureByUUID (uuid, includeInactive = false) {
-    let managers = [
-      { path: ["ships"] },
-      { path: ["asteroids"] },
-      { path: ["aliens"] },
-      { path: ["collectibles"] },
-      { path: ["objects"] },
-      { path: ["objects", "types"] },
-      { path: ["teams"], },
-      { path: ["teams", "stations"] },
-      { path: ["team", "stations"], mapper: v => v.modules }
-    ];
-
     Search: for (let keys of managers) {
       let manager = this;
       for (let key of keys.path) {
@@ -97,7 +96,7 @@ class ModdingClient extends EventEmitter {
       }
       if (!(manager instanceof StructureManager)) continue Search;
       if (includeInactive) manager = manager.all;
-      if ("function" == keys.mapper) manager = manager.map(keys.mapper);
+      if ("function" == typeof keys.mapper) manager = manager.map(keys.mapper);
       let results = manager.flat(Infinity).find(structure => Object.is(structure.uuid, uuid));
       if (results != null) return results
     }
