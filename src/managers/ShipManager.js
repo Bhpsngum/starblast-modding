@@ -3,6 +3,8 @@
 const EntityManager = require("./EntityManager.js");
 const Ship = require("../structures/Ship.js");
 const defineProperties = require("../utils/defineProperties.js");
+const parseUI = require("../utils/parseUI.js");
+const parseIntermission = require("../utils/parseIntermission.js");
 
 class ShipManager extends EntityManager {
   constructor(game) {
@@ -32,14 +34,12 @@ class ShipManager extends EntityManager {
   }
 
   setUIComponent (component) {
-    this.game.modding.api.globalMessage("set_ui_component", {component: component}).send();
+    this.game.modding.api.globalMessage("set_ui_component", {component: parseUI(component)}).send();
     return this
   }
 
   intermission (data, gameOver) {
-    data = Object.assign({}, data);
-    data.gameover = !!gameOver;
-    this.game.modding.api.globalMessage("intermission", {data: data}).send();
+    this.game.modding.api.globalMessage("intermission", {data: parseIntermission(data, gameOver)}).send();
     return this
   }
 

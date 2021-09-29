@@ -5,6 +5,8 @@ const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
 const toString = require("../utils/toString.js");
+const parseUI = require("../utils/parseUI.js");
+const parseIntermission = require("../utils/parseIntermission.js");
 const convertStats = function(data) {
   if (isNaN(data)) return 0;
   let stats = [];
@@ -63,15 +65,12 @@ class Ship extends Entity {
   }
 
   setUIComponent (component) {
-    this.game.modding.api.clientMessage(this.id, "set_ui_component", {component}).send();
+    this.game.modding.api.clientMessage(this.id, "set_ui_component", {component: parseUI(component)}).send();
     return this
   }
 
   intermission (data, gameOver) {
-    data = Object.assign({}, data);
-    for (let i in data) if (i != "gameover") data[i] = toString(data[i]);
-    if ("boolean" != typeof data.gameover) data.gameover = !!gameOver && toString(data.gameover);
-    this.game.modding.api.clientMessage(this.id, "intermission", {data}).send();
+    this.game.modding.api.clientMessage(this.id, "intermission", {data: parseIntermission(data, gameOver)}).send();
     return this
   }
 

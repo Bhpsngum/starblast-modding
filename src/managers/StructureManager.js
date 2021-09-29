@@ -1,6 +1,7 @@
 'use strict';
 
 const defineProperties = require("../utils/defineProperties.js");
+const Structure = require("../structures/Structure.js");
 
 class StructureManager extends Array {
   constructor(game) {
@@ -39,5 +40,7 @@ class StructureManager extends Array {
     return this
   }
 }
+
+StructureManager.prototype.StructureConstructor = Structure;
 
 module.exports = StructureManager
