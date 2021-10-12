@@ -50,10 +50,12 @@ class ShipManager extends EntityManager {
   update (onTick = false) {
     this.filterList();
     if (onTick) this.all.forEach(ship => ship.isActive() && ship.isAlive() && ship.step());
-    this.splice(0);
-    this.push(...this.all.filter(ship => ship.isActive()));
+    this.clear();
+    this.all.forEach(ship => ship.isActive() && this.set(ship.uuid, ship));
     return this
   }
+
+  [Symbol.toStringTag] = 'ShipManager'
 }
 
 defineProperties(ShipManager.prototype, {

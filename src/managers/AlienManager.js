@@ -8,6 +8,8 @@ class AlienManager extends EntityManager {
   constructor(game) {
     super(game)
   }
+
+  [Symbol.toStringTag] = 'AlienManager'
 }
 
 defineProperties(AlienManager.prototype, {

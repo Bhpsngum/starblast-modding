@@ -10,10 +10,12 @@ class ObjectTypeManager extends StructureManager {
   }
 
   update () {
-    this.filterList().splice(0);
-    this.push(...this.all);
+    this.filterList().clear();
+    this.all.forEach(objectType => this.set(objectType.uuid, objectType));
     return this
   }
+
+  [Symbol.toStringTag] = 'ObjectTypeManager'
 }
 
 

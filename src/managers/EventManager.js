@@ -58,7 +58,7 @@ module.exports.create = function (api, address, token) {
           case "asteroid_created":
           case "collectible_created": {
             let entity_name = event.name.split("_")[0], entityList = this[entity_name + "s"], uuid = event.request_id;
-            let entity = entityList.all.find(entity => {
+            let entity = entityList.array(true).find(entity => {
               if (entityList.isInstance(entity)) {
                 try { entity.id = null } catch(e) {}
                 return entity.id == null && entity.request_id === uuid

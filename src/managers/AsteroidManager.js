@@ -8,6 +8,8 @@ class AsteroidManager extends EntityManager {
   constructor(game) {
     super(game)
   }
+
+  [Symbol.toStringTag] = 'AsteroidManager'
 }
 
 defineProperties(AsteroidManager.prototype, {

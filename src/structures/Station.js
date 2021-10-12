@@ -9,7 +9,7 @@ class Station extends Structure {
     super(game);
     let size = Math.trunc(this.game.options.station_size), _this = this.modding.data;
     _this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
-    let modules = new StationModuleManager(this.game);
+    let modules = new StationModuleManager(this.game, this);
     (Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
     defineProperties(this, {
       name: "string" == typeof options?.name ? options.name : "Unknown",
@@ -32,7 +32,7 @@ class Station extends Structure {
     _this.crystals = data?.crystals;
     _this.crystals_max = this.game.options.crystal_capacity[_this.level - 1];
     this.modules.updateShield(data?.modules_shield);
-    if (this.isActive() && null == this.modules.all.find(modul => modul.isActive() && modul.isAlive())) {
+    if (this.isActive() && null == this.modules.array(true).find(modul => modul.isActive() && modul.isAlive())) {
       this.markAsInactive();
       this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive())
     }

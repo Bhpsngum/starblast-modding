@@ -10,11 +10,12 @@ class StationManager extends StructureManager {
   }
 
   update () {
-    this.filterList().all.forEach(station => station.isActive() && station.update());
-    this.splice(0);
-    this.push(...this.all.filter(station => station.isActive()));
+    this.clear();
+    this.filterList().all.forEach(station => station.isActive() && (station.update(), this.set(station.uuid, station)));
     return this
   }
+
+  [Symbol.toStringTag] = 'StationManager'
 }
 
 defineProperties(StationManager.prototype, {

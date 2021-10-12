@@ -10,11 +10,16 @@ class CollectibleManager extends EntityManager {
   }
 
   update () {
-    this.filterList().all.forEach(collectible => collectible.isActive() && collectible.lastUpdatedStep + 600 < this.game.step && collectible.markAsInactive());
-    this.splice(0);
-    this.push(...this.all.filter(collectible => collectible.isActive()));
+    this.clear();
+    this.filterList().all.forEach(collectible => {
+      let isActive = collectible.isActive() && collectible.lastUpdatedStep + 600 < this.game.step;
+      if (!isActive) collectible.markAsInactive();
+      else this.set(collectible.uuid, collectible)
+    });
     return this
   }
+
+  [Symbol.toStringTag] = 'CollectibleManager'
 }
 
 defineProperties(CollectibleManager.prototype, {

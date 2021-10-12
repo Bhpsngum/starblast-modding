@@ -3,13 +3,18 @@
 const defineProperties = require("../utils/defineProperties.js");
 const Structure = require("../structures/Structure.js");
 
-class StructureManager extends Array {
+class StructureManager extends Map {
   constructor(game) {
     super();
     defineProperties(this, {
       game,
-      all: []
+      all: new Map()
     })
+  }
+
+  array (includeInactive = false) {
+    let value = includeInactive ? this.all : this;
+    return [...value.entries()].map(structure => structure[1])
   }
 
   create (data, ...additionalValues) {
@@ -23,22 +28,24 @@ class StructureManager extends Array {
   insert (...data) {
     for (let option of data) {
       let p = this.isInstance(option) ? option : this.create(option);
-      this.all.push(p)
+      this.all.set(p.uuid, p)
     }
     this.update()
   }
 
   findById (id, includeInactive = false) {
     this.update();
-    let value = includeInactive ? this.all : this;
-    return value.find(entity => Object.is(entity.id, id)) ?? null
+    return this.array(includeInactive).find(entity => Object.is(entity.id, id)) ?? null
   }
 
   filterList () {
-    let x = this.all.splice(0).filter(structure => this.isInstance(structure));
-    this.all.push(...x);
+    let x = this.array(true).filter(structure => this.isInstance(structure));
+    this.all.clear();
+    x.forEach(structure => this.all.set(structure.uuid, structure));
     return this
   }
+
+  [Symbol.toStringTag] = 'StructureManager'
 }
 
 StructureManager.prototype.StructureConstructor = Structure;

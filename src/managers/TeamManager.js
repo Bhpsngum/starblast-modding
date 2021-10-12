@@ -15,7 +15,7 @@ class TeamManager extends StructureManager {
   insert (...data) {
     for (let option of data) {
       let p = this.isInstance(option) ? option : this.create(option);
-      this.all.push(p);
+      this.all.set(p.uuid, p);
       this.stations.insert(Object.assign({}, option.station, {id: option.id, name: option.base_name}))
     }
     this.update()
@@ -40,10 +40,12 @@ class TeamManager extends StructureManager {
 
   update () {
     this.stations.update();
-    this.filterList().splice(0);
-    this.push(...this.all.filter(team => team.isActive()));
+    this.filterList().clear();
+    this.all.forEach(team => team.isActive() && this.set(team.uuid, team));
     return this
   }
+
+  [Symbol.toStringTag] = 'TeamManager'
 }
 
 defineProperties(TeamManager.prototype, {
