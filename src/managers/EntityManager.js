@@ -29,7 +29,15 @@ class EntityManager extends StructureManager {
       entity = this.create(data);
       entity.id = id
     }
-    entity.set(data)
+    return entity.set(data)
+  }
+
+  set (data) {
+    return this.setById(data?.id, data)
+  }
+
+  kill (id) {
+    return this.setById(id, {kill: true})
   }
 
   update (onTick = false) {
@@ -40,7 +48,7 @@ class EntityManager extends StructureManager {
       }
     });
     this.clear();
-    this.all.forEach(entity => entity.isActive() && this.set(entity.uuid, entity));
+    this.all.forEach(entity => entity.isActive() && this._MapSet(entity.uuid, entity));
     return this
   }
 

@@ -51,7 +51,7 @@ class ShipManager extends EntityManager {
     this.filterList();
     if (onTick) this.all.forEach(ship => ship.isActive() && ship.isAlive() && ship.step());
     this.clear();
-    this.all.forEach(ship => ship.isActive() && this.set(ship.uuid, ship));
+    this.all.forEach(ship => ship.isActive() && this._MapSet(ship.uuid, ship));
     return this
   }
 

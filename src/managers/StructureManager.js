@@ -45,6 +45,10 @@ class StructureManager extends Map {
     return this
   }
 
+  _MapSet (key, value) {
+    return Map.prototype.set.call(this, key, value)
+  }
+
   [Symbol.toStringTag] = 'StructureManager'
 }
 

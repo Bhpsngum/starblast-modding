@@ -11,7 +11,7 @@ class ObjectTypeManager extends StructureManager {
 
   update () {
     this.filterList().clear();
-    this.all.forEach(objectType => this.set(objectType.uuid, objectType));
+    this.all.forEach(objectType => this._MapSet(objectType.uuid, objectType));
     return this
   }
 
