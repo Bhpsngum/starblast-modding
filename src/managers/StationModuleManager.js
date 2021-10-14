@@ -13,7 +13,7 @@ class StationModuleManager extends StructureManager {
 
   update () {
     this.clear();
-    this.filterList().all.forEach(modul => modul.isActive() && modul.isAlive() && (modul.step(), this._MapSet(modul.uuid, modul)));
+    this.filterList().all.forEach(modul => modul.isActive() && modul.isAlive() && (modul.step(), this._UUIDset(modul)));
     return this
   }
 

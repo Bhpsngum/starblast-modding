@@ -14,7 +14,7 @@ class CollectibleManager extends EntityManager {
     this.filterList().all.forEach(collectible => {
       let isActive = collectible.isActive() && collectible.lastUpdatedStep + 600 < this.game.step;
       if (!isActive) collectible.markAsInactive();
-      else this._MapSet(collectible.uuid, collectible)
+      else this._UUIDset(collectible)
     });
     return this
   }

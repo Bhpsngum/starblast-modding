@@ -15,7 +15,7 @@ class TeamManager extends StructureManager {
   insert (...data) {
     for (let option of data) {
       let p = this.isInstance(option) ? option : this.create(option);
-      this.all.set(p.uuid, p);
+      this.all._UUIDset(p);
       this.stations.insert(Object.assign({}, option.station, {id: option.id, name: option.base_name}))
     }
     this.update()
@@ -41,7 +41,7 @@ class TeamManager extends StructureManager {
   update () {
     this.stations.update();
     this.filterList().clear();
-    this.all.forEach(team => team.isActive() && this.set(team.uuid, team));
+    this.all.forEach(team => team.isActive() && this._UUIDset(team));
     return this
   }
 

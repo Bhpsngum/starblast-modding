@@ -37,7 +37,7 @@ class ObjectManager extends StructureManager {
 
   update () {
     this.filterList().clear();
-    this.all.forEach(object => object.isActive() && this._MapSet(object.uuid, object));
+    this.all.forEach(object => object.isActive() && this._UUIDset(object));
     return this
   }
 

@@ -11,7 +11,7 @@ class StationManager extends StructureManager {
 
   update () {
     this.clear();
-    this.filterList().all.forEach(station => station.isActive() && (station.update(), this._MapSet(station.uuid, station)));
+    this.filterList().all.forEach(station => station.isActive() && (station.update(), this._UUIDset(station)));
     return this
   }
 

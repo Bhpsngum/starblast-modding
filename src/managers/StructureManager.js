@@ -2,19 +2,20 @@
 
 const defineProperties = require("../utils/defineProperties.js");
 const Structure = require("../structures/Structure.js");
+const ArrayMap = require("../utils/ArrayMap.js");
 
-class StructureManager extends Map {
+class StructureManager extends ArrayMap {
   constructor(game) {
     super();
     defineProperties(this, {
       game,
-      all: new Map()
+      all: new ArrayMap()
     })
   }
 
   array (includeInactive = false) {
     let value = includeInactive ? this.all : this;
-    return [...value.entries()].map(structure => structure[1])
+    return value.toArray()
   }
 
   create (data, ...additionalValues) {
@@ -28,7 +29,7 @@ class StructureManager extends Map {
   insert (...data) {
     for (let option of data) {
       let p = this.isInstance(option) ? option : this.create(option);
-      this.all.set(p.uuid, p)
+      this.all._UUIDset(p)
     }
     this.update()
   }
@@ -41,12 +42,8 @@ class StructureManager extends Map {
   filterList () {
     let x = this.array(true).filter(structure => this.isInstance(structure));
     this.all.clear();
-    x.forEach(structure => this.all.set(structure.uuid, structure));
+    x.forEach(structure => this.all._UUIDset(structure));
     return this
-  }
-
-  _MapSet (key, value) {
-    return Map.prototype.set.call(this, key, value)
   }
 
   [Symbol.toStringTag] = 'StructureManager'

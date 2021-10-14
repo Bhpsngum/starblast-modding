@@ -48,7 +48,7 @@ class EntityManager extends StructureManager {
       }
     });
     this.clear();
-    this.all.forEach(entity => entity.isActive() && this._MapSet(entity.uuid, entity));
+    this.all.forEach(entity => entity.isActive() && this._UUIDset(entity));
     return this
   }
 
