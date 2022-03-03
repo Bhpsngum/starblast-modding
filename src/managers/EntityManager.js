@@ -40,13 +40,8 @@ class EntityManager extends StructureManager {
     return this.setById(id, {kill: true})
   }
 
-  update (onTick = false) {
-    this.filterList().all.forEach(entity => {
-      if (entity.isActive()) {
-        if (onTick) entity.step();
-        if (entity.lastUpdatedStep + 90 < this.game.step) entity.markAsInactive()
-      }
-    });
+  update () {
+    this.filterList().all.forEach(entity => entity.isActive() && entity.lastUpdatedStep + 90 < this.game.step && entity.markAsInactive());
     this.clear();
     this.all.forEach(entity => entity.isActive() && this._UUIDset(entity));
     return this

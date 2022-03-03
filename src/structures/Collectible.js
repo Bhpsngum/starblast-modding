@@ -12,14 +12,11 @@ class Collectible extends Entity {
     let _this = this.modding.data;
     _this.x = options?.x ?? 0;
     _this.y = options?.y ?? 0;
-    _this.vx = _this.vy = 0
+    _this.vx = _this.vy = 0;
+    _this.lastUpdatedStep = game.step;
   }
 
   set () {
-
-  }
-
-  step () {
 
   }
 

@@ -48,7 +48,7 @@ class ModdingClient extends EventEmitter {
   }
 
   log (...data) {
-    return this.emit(this.modding.events.LOG, ...data, this)
+    return this.emit(this.modding.events.LOG, ...data)
   }
 
   setRegion (region) {

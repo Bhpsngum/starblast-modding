@@ -45,16 +45,6 @@ class StationModule extends Structure {
     _this.lastUpdatedStep = this.game.step
   }
 
-  step () {
-    let init_phase = Math.atan2(this._y, this._x), phase = init_phase - (this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI;
-    // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
-    let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
-    let _this = this.modding.data;
-    _this.offsetX = radius * Math.cos(phase);
-    _this.offsetY = radius * Math.sin(phase);
-    _this.angle = (((phase - init_phase) / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
-  }
-
   get x () {
     return this.parent.x + this.offsetX
   }
@@ -64,11 +54,21 @@ class StationModule extends Structure {
   }
 
   get offsetX () {
-    return this.modding.data.offsetX
+    let phase = Math.atan2(this._y, this._x) - (this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI;
+    // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
+    let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
+    return radius * Math.cos(phase)
   }
 
   get offsetY () {
-    return this.modding.data.offsetY
+    let phase = Math.atan2(this._y, this._x) - (this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI;
+    // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
+    let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
+    return radius * Math.sin(phase)
+  }
+
+  get angle () {
+    return ((-(this.game.step / 60 / 3600 % 1 * 2) * 3 * Math.PI / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
   }
 
   get shield () {

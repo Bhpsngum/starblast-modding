@@ -13,10 +13,13 @@ class Structure {
   }
 
   markAsInactive () {
-    defineProperties(this, {
-      [this.inactive_field]: true,
-      [this.inactive_field + "Step"]: this.game.step
-    })
+    try {
+      defineProperties(this, {
+        [this.inactive_field]: true,
+        [this.inactive_field + "Step"]: this.game.step
+      })
+    }
+    catch (e) {}
   }
 
   markAsSpawned () {

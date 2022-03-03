@@ -47,12 +47,12 @@ module.exports.create = function (api, address, token) {
             this.modding.gameClient.initTeamStats();
             while (this.modding.api.preflight_requests.length > 0) this.modding.api.set(this.modding.api.preflight_requests.shift()).send();
             resolve(this.link);
-            this.emit(events.MOD_STARTED, this.link, this);
+            this.emit(events.MOD_STARTED, this.link, this.options);
             break;
           case "tick":
             this.modding.data.step = data.step;
             for (let key of ["aliens", "asteroids", "collectibles", "ships", "objects", "teams"]) this.modding.data[key]?.update?.(true);
-            this.emit(events.TICK, data.step, this);
+            this.emit(events.TICK, data.step);
             break;
           case "alien_created":
           case "asteroid_created":
@@ -81,7 +81,7 @@ module.exports.create = function (api, address, token) {
             let resolve = this.modding.handlers.create.get(uuid)?.resolve;
             this.modding.handlers.create.delete(uuid);
             resolve?.(entity);
-            this.emit(events[event.name.toUpperCase()], entity, this);
+            this.emit(events[event.name.toUpperCase()], entity);
             break;
           }
           case "ship_update": {
@@ -98,7 +98,7 @@ module.exports.create = function (api, address, token) {
             let ship = getEntity(event, this.ships);
             ship.markAsInactive();
             this.ships.update();
-            this.emit(events.SHIP_DISCONNECTED, ship, this);
+            this.emit(events.SHIP_DISCONNECTED, ship);
             break;
           }
           case "error": {
@@ -129,7 +129,7 @@ module.exports.create = function (api, address, token) {
                 let uuid = ship.uuid, handler = this.modding.handlers.destroy, resolve = handler.get(uuid)?.resolve;
                 handler.delete(uuid);
                 resolve?.(ship);
-                this.emit(events.SHIP_DESTROYED, ship, killer, this);
+                this.emit(events.SHIP_DESTROYED, ship, killer);
                 break;
               }
               case "alien_destroyed":
@@ -143,7 +143,7 @@ module.exports.create = function (api, address, token) {
                 let uuid = entity.uuid, handler = this.modding.handlers.destroy, resolve = handler.get(uuid)?.resolve;
                 handler.delete(uuid);
                 resolve?.(entity);
-                this.emit(events[entity_name.toUpperCase()], entity, killer, this);
+                this.emit(events[entity_name.toUpperCase()], entity, killer);
                 break;
               }
               case "ship_spawned": {
@@ -152,7 +152,7 @@ module.exports.create = function (api, address, token) {
                 let event_name = ship.isSpawned() ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
                 if (!ship.isSpawned()) ship.markAsSpawned();
                 this.ships.update();
-                this.emit(event_name, ship, this);
+                this.emit(event_name, ship);
                 break;
               }
               case "collectible_picked": {
@@ -161,13 +161,13 @@ module.exports.create = function (api, address, token) {
                 data.id = data.ship;
                 let ship = getEntity(data, this.ships);
                 collectible.markAsInactive();
-                this.emit(events.COLLECTIBLE_PICKED, collectible, ship, this);
+                this.emit(events.COLLECTIBLE_PICKED, collectible, ship);
                 break;
               }
               case "ui_component_clicked":
                 let id = data.id;
                 data.id = data.ship;
-                this.emit(events.UI_COMPONENT_CLICKED, id, getEntity(data, this.ships), this);
+                this.emit(events.UI_COMPONENT_CLICKED, id, getEntity(data, this.ships));
                 break;
             }
             break;
@@ -176,7 +176,7 @@ module.exports.create = function (api, address, token) {
     }.bind(this.game));
     socket.on("close", function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
-      else this.emit(events.MOD_STOPPED, this);
+      else this.emit(events.MOD_STOPPED);
       if (GameSocket.OPEN === this.modding.gameClient.socket?.readyState) this.modding.gameClient.socket.close();
       this.reset();
     }.bind(this.game))

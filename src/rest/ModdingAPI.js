@@ -65,7 +65,8 @@ class ModdingAPI {
   }
 
   data (...data) {
-    let pData = Object.assign({}, ...data);
+    let pData = data[0] ?? {};
+    Object.assign(pData, ...data.slice(1));
     return this.prop("data", pData)
   }
 

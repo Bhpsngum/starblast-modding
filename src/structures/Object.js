@@ -57,7 +57,7 @@ class Object3D extends Structure {
   }
 
   remove () {
-    this.game.modding.api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object").send();
+    this.game.modding.api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object", {id: this.id}).send();
     this.markAsInactive();
     this.game.objects.update();
     return this

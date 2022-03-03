@@ -23,7 +23,6 @@ class Station extends Structure {
       level: Math.max(Math.trunc(options?.level), 1) || 1,
       crystals: Math.max(options?.crystals, 0) || 0
     });
-    this.update()
   }
 
   updateInfo (data) {
@@ -39,24 +38,14 @@ class Station extends Structure {
     _this.lastUpdatedStep = this.game.step
   }
 
-  step () {
-    let phase = (this.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
-    let _this = this.modding.data;
-    _this.x = radius * Math.cos(phase);
-    _this.y = radius * Math.sin(phase)
-  }
-
-  update () {
-    this.step();
-    this.modules.update()
-  }
-
   get x () {
-    return this.modding.data.x
+    let phase = (this.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
+    return radius * Math.cos(phase)
   }
 
   get y () {
-    return this.modding.data.y
+    let phase = (this.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
+    return radius * Math.sin(phase)
   }
 
   get size () {

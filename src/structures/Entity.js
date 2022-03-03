@@ -42,11 +42,11 @@ class Entity extends Structure {
   }
 
   get x () {
-    return this.modding.data.x
+    return +(this.modding.data.x + (this.game.step - this.lastUpdatedStep) * this.vx) || 0
   }
 
   get y () {
-    return this.modding.data.y
+    return +(this.modding.data.y + (this.game.step - this.lastUpdatedStep) * this.vy) || 0
   }
 
   get vx () {
@@ -58,13 +58,8 @@ class Entity extends Structure {
   }
 
   get lastUpdatedStep () {
-    return this.modding.data.lastUpdatedStep
-  }
-
-  step () {
-    let _this = this.modding.data;
-    _this.x += _this.vx;
-    _this.y += _this.vy
+    let step = this.modding.data.lastUpdatedStep;
+    return Number.isNaN(step) ? -1 : Math.max(0, step);
   }
 }
 
