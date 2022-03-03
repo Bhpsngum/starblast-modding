@@ -1,3 +1,6 @@
+# starblast-modding
+The JavaScript library for hosting modded Starblast games on NodeJS
+
 The document about this package will be released soon.
 
 This is an example on how to run a team-mode modded game:
