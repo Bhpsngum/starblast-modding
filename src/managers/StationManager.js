@@ -15,6 +15,10 @@ class StationManager extends StructureManager {
     return this
   }
 
+  get limit () {
+    return this.game.options.friendly_colors
+  }
+
   [Symbol.toStringTag] = 'StationManager'
 }
 

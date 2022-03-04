@@ -112,6 +112,7 @@ module.exports.create = function (api, address, token) {
                 let handler = this.modding.handlers.create;
                 let reject = handler.get(uuid)?.reject
                 handler.delete(uuid);
+                this.findStructureByUUID(uuid, true)?.markAsInactive?.();
                 reject?.(error);
                 break;
               default:
@@ -125,7 +126,8 @@ module.exports.create = function (api, address, token) {
                 data.id = data.ship;
                 let ship = getEntity(data, this.ships);
                 let killer = this.ships.findById(data.killer, true);
-                ship.alive = false;
+                ship.modding.data.alive = false;
+                ship.modding.data.lastAliveStep = this.step;
                 let uuid = ship.uuid, handler = this.modding.handlers.destroy, resolve = handler.get(uuid)?.resolve;
                 handler.delete(uuid);
                 resolve?.(ship);

@@ -9,6 +9,10 @@ class AlienManager extends EntityManager {
     super(game)
   }
 
+  get limit () {
+    return 300
+  }
+
   [Symbol.toStringTag] = 'AlienManager'
 }
 

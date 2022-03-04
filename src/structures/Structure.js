@@ -20,6 +20,7 @@ class Structure {
       })
     }
     catch (e) {}
+    this.modding.data.lastAliveStep = this.game.step
   }
 
   markAsSpawned () {
@@ -34,6 +35,11 @@ class Structure {
   isSpawned () {
     try { this.spawned = false } catch(e) {}
     return !!this.spawned
+  }
+
+  get lastAliveStep () {
+    let aliveData = this.modding.data.alive, alive = this.isActive() && ("function" != typeof this.isAlive || this.isAlive());
+    return alive ? this.game.step : this.modding.data.lastAliveStep;
   }
 }
 

@@ -24,7 +24,12 @@ module.exports = (function() {
     ASTEROID_DESTROYED: "asteroidDestroy",
     // Collectible events
     COLLECTIBLE_CREATED: "collectibleCreate",
-    COLLECTIBLE_PICKED: "collectiblePick"
+    COLLECTIBLE_PICKED: "collectiblePick",
+    // Station events
+    STATION_DESTROYED: "stationDestroy",
+    // Station module events
+    STATION_MODULE_DESTROYED: "stationModuleDestroy",
+    STATION_MODULE_REPAIRED: "stationModuleRepair"
   }
   return Object.freeze(EVENTS)
 })()

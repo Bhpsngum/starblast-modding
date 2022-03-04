@@ -46,6 +46,17 @@ class StructureManager extends ArrayMap {
     return this
   }
 
+  limitReached () {
+    return this.array(true).filter(structure => {
+      structure.isActive();
+      return !structure[structure.inactive_field]
+    }).length >= this.limit
+  }
+
+  get limit () {
+    return Infinity
+  }
+
   [Symbol.toStringTag] = 'StructureManager'
 }
 

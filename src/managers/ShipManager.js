@@ -47,12 +47,15 @@ class ShipManager extends EntityManager {
     return this.intermission(data, true)
   }
 
-  update (onTick = false) {
+  update () {
     this.filterList();
-    if (onTick) this.all.forEach(ship => ship.isActive() && ship.isAlive() && ship.step());
     this.clear();
     this.all.forEach(ship => ship.isActive() && this._UUIDset(ship));
     return this
+  }
+
+  get limit () {
+    return this.game.options.max_players
   }
 
   [Symbol.toStringTag] = 'ShipManager'

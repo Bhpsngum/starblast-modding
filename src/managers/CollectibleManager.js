@@ -16,6 +16,10 @@ class CollectibleManager extends EntityManager {
     return this
   }
 
+  get limit () {
+    return 50
+  }
+
   [Symbol.toStringTag] = 'CollectibleManager'
 }
 

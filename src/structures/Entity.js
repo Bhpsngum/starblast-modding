@@ -42,11 +42,11 @@ class Entity extends Structure {
   }
 
   get x () {
-    return +(this.modding.data.x + (this.game.step - this.lastUpdatedStep) * this.vx) || 0
+    return +(this.modding.data.x + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vx) : 0)) || 0
   }
 
   get y () {
-    return +(this.modding.data.y + (this.game.step - this.lastUpdatedStep) * this.vy) || 0
+    return +(this.modding.data.y + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vy) : 0)) || 0
   }
 
   get vx () {

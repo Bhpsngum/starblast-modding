@@ -12,17 +12,27 @@ class Object3D extends Structure {
   constructor (game, options) {
     super(game);
     defineProperties(this, {id: toString(options?.id)});
+    Object.defineProperties(this, {
+      [this.inactive_field]: {
+        get () { return this.modding.data[this.inactive_field]}
+      },
+      [this.inactive_field + "Step"]: {
+        get () { return this.modding.data[this.inactive_field + "Step"]}
+      }
+    })
     this.assign(options, true)
   }
 
   markAsActive () {
-    this[this.inactive_field] = false;
-    delete this[this.inactive_field + "Step"]
+    let _this = this.modding.data;
+    _this[this.inactive_field] = false;
+    delete _this[this.inactive_field + "Step"]
   }
 
   markAsInactive () {
-    this[this.inactive_field] = true
-    this[this.inactive_field + "Step"] = this.game.step
+    let _this = this.modding.data;
+    _this[this.inactive_field] = true
+    _this[this.inactive_field + "Step"] = this.game.step
   }
 
   assign(options, forceAssign = false) {

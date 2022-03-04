@@ -1,10 +1,10 @@
 'use strict';
 
-const Structure = require("./Structure.js");
+const Entity = require("./Entity.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
 const defineProperties = require("../utils/defineProperties.js");
 
-class Station extends Structure {
+class Station extends Entity {
   constructor(game, options) {
     super(game);
     let size = Math.trunc(this.game.options.station_size), _this = this.modding.data;
@@ -31,20 +31,21 @@ class Station extends Structure {
     _this.crystals = data?.crystals;
     _this.crystals_max = this.game.options.crystal_capacity[_this.level - 1];
     this.modules.updateShield(data?.modules_shield);
+    _this.lastUpdatedStep = this.game.step;
     if (this.isActive() && null == this.modules.array(true).find(modul => modul.isActive() && modul.isAlive())) {
       this.markAsInactive();
-      this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive())
+      this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive());
+      this.game.emit(this.game.modding.events.STATION_DESTROYED, this);
     }
-    _this.lastUpdatedStep = this.game.step
   }
 
   get x () {
-    let phase = (this.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
+    let phase = (this.phase / 180 + this.lastAliveStep / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
     return radius * Math.cos(phase)
   }
 
   get y () {
-    let phase = (this.phase / 180 + this.game.step / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
+    let phase = (this.phase / 180 + this.lastAliveStep / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
     return radius * Math.sin(phase)
   }
 
@@ -62,10 +63,6 @@ class Station extends Structure {
 
   get crystals_max () {
     return this.modding.data.crystals_max
-  }
-
-  get lastUpdatedStep () {
-    return this.modding.data.lastUpdatedStep
   }
 }
 

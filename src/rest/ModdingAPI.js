@@ -94,6 +94,7 @@ class ModdingAPI {
           case "destroy": {
             let hanlder = this.game.modding.handlers[action], reject = handler.get(uuid)?.reject;
             handler.delete(uuid);
+            this.game.findStructureByUUID(uuid)?.markAsInactive?.();
             reject?.(error);
             break
           }

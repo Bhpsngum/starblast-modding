@@ -132,8 +132,21 @@ game.on('asteroidDestroy', function(asteroid, killer) {
 game.on('collectibleCreate', function(asteroid) {
 
 });
+
 game.on('collectiblePick', function(asteroid, ship) {
 
+});
+
+game.on('stationDestroy', function(station) {
+  console.log(station)
+});
+
+game.on('stationModuleDestroy', function(station_module) {
+  console.log("Destroyed:", station_module)
+});
+
+game.on('stationModuleRepair', function(station_module) {
+  console.log("Repaired:", station_module)
 });
 
 game.on('UIComponentClick', function (component_id, ship) {
