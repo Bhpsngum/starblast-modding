@@ -7,6 +7,13 @@ const typeMap = new Map([
   ["d", "deposit"],
   ["sp", "spawning"]
 ]);
+const getAngle = function (_this, step) {
+  return Math.atan2(_this._y, _this._x) - (step / 60 / 3600 % 1 * 2) * 3 * Math.PI
+}
+const getRadius = function (_this) {
+  // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
+  return Math.sqrt(_this._x ** 2 + _this._y ** 2) * (_this.parent.level + 3) * 2.5;
+}
 
 class StationModule extends Entity {
   constructor(game, options, parent) {
@@ -57,18 +64,30 @@ class StationModule extends Entity {
     return this.parent.y + this.offsetY
   }
 
+  get vx () {
+    return this.parent.vx + this.offsetVx
+  }
+
+  get vy () {
+    return this.parent.vy + this.offsetVy
+  }
+
   get offsetX () {
-    let phase = Math.atan2(this._y, this._x) - (this.lastAliveStep / 60 / 3600 % 1 * 2) * 3 * Math.PI;
-    // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
-    let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
-    return radius * Math.cos(phase)
+    return getRadius(this) * Math.cos(getAngle(this, this.lastAliveStep))
   }
 
   get offsetY () {
-    let phase = Math.atan2(this._y, this._x) - (this.lastAliveStep / 60 / 3600 % 1 * 2) * 3 * Math.PI;
-    // originally (level + 4), but since we start from lvl1 and the game itself starts from lvl0, so the result needs to be minus by 1
-    let radius = Math.sqrt(this._x ** 2 + this._y ** 2) * (this.parent.level + 3) * 2.5;
-    return radius * Math.sin(phase)
+    return getRadius(this) * Math.sin(getAngle(this, this.lastAliveStep))
+  }
+
+  get offsetVx () {
+    let step = this.lastAliveStep;
+    return getRadius(this) * (Math.cos(getAngle(this, step + 1)) - Math.cos(getAngle(this, step)))
+  }
+
+  get offsetVy () {
+    let step = this.lastAliveStep;
+    return getRadius(this) * (Math.sin(getAngle(this, step + 1)) - Math.sin(getAngle(this, step)))
   }
 
   get angle () {

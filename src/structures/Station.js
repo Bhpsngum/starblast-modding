@@ -3,6 +3,12 @@
 const Entity = require("./Entity.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
 const defineProperties = require("../utils/defineProperties.js");
+const getAngle = function (phase, step) {
+  return (phase / 180 + step / 60 / 3600 % 1 * 2) * Math.PI
+}
+const getRadius = function (game) {
+  return (game.modding.data.teams?.stations?.all||[]).length > 1 ? game.options.map_size * 5 * Math.sqrt(2) / 2 : 0
+}
 
 class Station extends Entity {
   constructor(game, options) {
@@ -40,13 +46,22 @@ class Station extends Entity {
   }
 
   get x () {
-    let phase = (this.phase / 180 + this.lastAliveStep / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
-    return radius * Math.cos(phase)
+    return getRadius(this.game) * Math.cos(getAngle(this.phase, this.lastAliveStep))
   }
 
   get y () {
-    let phase = (this.phase / 180 + this.lastAliveStep / 60 / 3600 % 1 * 2) * Math.PI, radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
-    return radius * Math.sin(phase)
+    let radius = (this.game.modding.data.teams?.stations?.all||[]).length > 1 ? this.game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
+    return getRadius(this.game) * Math.sin(getAngle(this.phase, this.lastAliveStep))
+  }
+
+  get vx () {
+    let phase = this.phase, step = this.lastAliveStep;
+    return getRadius(this.game) * (Math.cos(getAngle(phase, step + 1)) - Math.cos(getAngle(phase, step)))
+  }
+
+  get vy () {
+    let phase = this.phase, step = this.lastAliveStep;
+    return getRadius(this.game) * (Math.sin(getAngle(phase, step + 1)) - Math.sin(getAngle(phase, step)))
   }
 
   get size () {
