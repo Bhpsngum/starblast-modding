@@ -16,12 +16,17 @@ module.exports = function (UI) {
 
   if (parsedUI.visible || parsedUI.visible == null) {
     delete parsedUI.visible;
-    let position = parsedUI.position, count = 0;
+    let position = parsedUI.position, idealPos = [0, 0, 100, 100], newPos = [], count = 0;
     for (let i = 0 ; i < 4 ; i++) {
       let pos = position?.[i];
-      if (pos == null || pos == 100) count++
+      if (pos == null || isNaN(pos) || pos == idealPos[i]) {
+        ++count;
+        newPos.push(idealPos[i])
+      }
+      else newPos.push(+pos)
     }
-    if (count == 4) delete parsedUI.position
+    if (count == 4) delete parsedUI.position;
+    else parseUI.position = newPos
   }
   else {
     parsedUI.position = [0,0,0,0];
