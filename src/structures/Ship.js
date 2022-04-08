@@ -22,7 +22,7 @@ class Ship extends Entity {
     super(game)
   }
 
-  isAlive () {
+  get alive () {
     return !!this.modding.data.alive
   }
 

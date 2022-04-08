@@ -40,7 +40,7 @@ class StationModule extends Entity {
     })
   }
 
-  isAlive () {
+  get alive () {
     return !!this.modding.data.alive
   }
 

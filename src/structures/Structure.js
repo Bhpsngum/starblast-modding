@@ -37,8 +37,12 @@ class Structure {
     return !!this.spawned
   }
 
+  get alive () {
+    return this.isActive()
+  }
+
   get lastAliveStep () {
-    let aliveData = this.modding.data.alive, alive = this.isActive() && ("function" != typeof this.isAlive || this.isAlive());
+    let aliveData = this.modding.data.alive, alive = this.isActive() && this.alive;
     return alive ? this.game.step : this.modding.data.lastAliveStep;
   }
 }

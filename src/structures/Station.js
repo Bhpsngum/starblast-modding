@@ -38,7 +38,7 @@ class Station extends Entity {
     _this.crystals_max = this.game.options.crystal_capacity[_this.level - 1];
     this.modules.updateShield(data?.modules_shield);
     _this.lastUpdatedStep = this.game.step;
-    if (this.isActive() && null == this.modules.array(true).find(modul => modul.isActive() && modul.isAlive())) {
+    if (this.isActive() && null == this.modules.array(true).find(modul => modul.isActive() && modul.alive)) {
       this.markAsInactive();
       this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive());
       this.game.emit(this.game.modding.events.STATION_DESTROYED, this);
