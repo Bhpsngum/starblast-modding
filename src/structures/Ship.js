@@ -74,6 +74,10 @@ class Ship extends Entity {
     return this
   }
 
+  gameover (data) {
+    return this.intermission(data, true)
+  }
+
   gameOver (data) {
     return this.intermission(data, true)
   }
