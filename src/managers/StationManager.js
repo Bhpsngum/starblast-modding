@@ -6,8 +6,11 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class StationManager extends StructureManager {
   constructor (game) {
-    super(game)
+    super(game);
+    this.#game = game;
   }
+
+  #game;
 
   update () {
     this.clear();
@@ -16,7 +19,7 @@ class StationManager extends StructureManager {
   }
 
   get limit () {
-    return this.game.options.friendly_colors
+    return this.#game.options.friendly_colors
   }
 
   [Symbol.toStringTag] = 'StationManager'

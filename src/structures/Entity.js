@@ -7,22 +7,25 @@ const defineProperties = require("../utils/defineProperties.js");
 class Entity extends Structure {
   constructor (game) {
     super(game);
+    this.#game = game;
     this.custom = {}
   }
+
+  #game;
 
   set (data) {
     data = Object.assign({}, data);
     data.id = this.id;
     data.sx = data.vx;
     data.sy = data.vy;
-    this.game.modding.api.name("set_"+this.structure_type).data(data).send();
+    this.#game.modding.api.name("set_"+this.structure_type).data(data).send();
     return this
   }
 
   kill () {
     return new Promise(function(resolve, reject) {
-      this.game.modding.handlers.destroy.set(this.uuid, {resolve, reject});
-      this.game.modding.api.name("set_"+this.structure_type).data({id: this.id, kill: true}).send(this.uuid, "destroy")
+      this.#game.modding.handlers.destroy.set(this.uuid, {resolve, reject});
+      this.#game.modding.api.name("set_"+this.structure_type).data({id: this.id, kill: true}).send(this.uuid, "destroy")
     }.bind(this))
   }
 
@@ -38,7 +41,7 @@ class Entity extends Structure {
     _this.y = data.y;
     _this.vx = data.sx;
     _this.vy = data.sy;
-    _this.lastUpdatedStep = this.game.step
+    _this.lastUpdatedStep = this.#game.step
   }
 
   get x () {

@@ -5,8 +5,11 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class EntityManager extends StructureManager {
   constructor(game) {
-    super(game)
+    super(game);
+    this.#game = game;
   }
+
+  #game;
 
   add (data) {
     let entity = this.create(data);
@@ -18,8 +21,8 @@ class EntityManager extends StructureManager {
       sy: rawEntity.vy
     });
     return new Promise(function(resolve, reject){
-      this.game.modding.handlers.create.set(entity.uuid, {resolve, reject});
-      this.game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.uuid, "create")
+      this.#game.modding.handlers.create.set(entity.uuid, {resolve, reject});
+      this.#game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.uuid, "create")
     }.bind(this))
   }
 
@@ -41,7 +44,7 @@ class EntityManager extends StructureManager {
   }
 
   update () {
-    this.filterList().all.forEach(entity => entity.isActive() && entity.lastUpdatedStep + 90 < this.game.step && entity.markAsInactive());
+    this.filterList().all.forEach(entity => entity.isActive() && entity.lastUpdatedStep + 90 < this.#game.step && entity.markAsInactive());
     this.clear();
     this.all.forEach(entity => entity.isActive() && this._UUIDset(entity));
     return this

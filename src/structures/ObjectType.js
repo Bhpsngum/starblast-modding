@@ -9,6 +9,7 @@ const defineProperties = require("../utils/defineProperties.js");
 class ObjectType extends Structure {
   constructor (game, type) {
     super(game);
+    this.#game = game;
     let pysics = type?.physics ?? {}
     let physics = {}
     defineProperties(physics, {
@@ -33,6 +34,8 @@ class ObjectType extends Structure {
       physics
     });
   }
+
+  #game;
 
   markAsInactive () {
 

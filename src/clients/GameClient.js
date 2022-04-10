@@ -4,12 +4,12 @@ const GameSocket = require("../GameSocket.js");
 const TeamManager = require("../managers/TeamManager.js");
 const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
-const readBinaries = function (data) {
+const readBinaries = function (data, game) {
   let dataView = new DataView(data), eventID = dataView.getUint8(0);
   dataView = new DataView(data.slice(1));
   switch (eventID) {
     case eventIDs.STATION_UPDATE:
-      this.game.teams.socketUpdate(dataView);
+      game.teams.socketUpdate(dataView);
       break;
   }
 }
@@ -19,11 +19,13 @@ const eventIDs = {
 
 class GameClient {
   constructor(game) {
-    defineProperties(this, {game})
+    this.#game = game
   }
 
+  #game;
+
   connect (ip, id, port) {
-    let socket = GameSocket.create(ip, port), interval;
+    let socket = GameSocket.create(ip, port), interval, game = this.#game;
     socket.on("open", function () {
       this.send('{"name":"join","data":{"player_name":" ","preferred":' +id +'}}')
     });
@@ -34,7 +36,7 @@ class GameClient {
         let data = parsed.data
         switch (parsed.name) {
           case "welcome":
-            defineProperties(this.game.options, {
+            defineProperties(game.options, {
               map_name: data.name,
               map_id: data.seed
             });
@@ -46,13 +48,13 @@ class GameClient {
             custom.badge = "string" == typeof custom.badge ? custom.badge.replace(/^https{0,1}\:\/\/starblast\.io\/ecp\/([^.]+).+$/,"$1") : null;
             custom.laser = lasers[custom.laser] ?? lasers[0];
             data.customization = defineProperties({}, custom);
-            getEntity(data, this.game.ships).update(data, true)
+            getEntity(game, data, game.ships).update(data, true)
             break;
         }
       }
       else try {
-        if ("function" == typeof event.arrayBuffer) event.arrayBuffer().then(readBinaries.bind(this));
-        else readBinaries.call(this, event.buffer.slice(event.byteOffset, event.byteOffset + event.byteLength))
+        if ("function" == typeof event.arrayBuffer) event.arrayBuffer().then(e => readBinaries.call(this, e, game));
+        else readBinaries.call(this, event.buffer.slice(event.byteOffset, event.byteOffset + event.byteLength), game)
       } catch (e) {}
     }.bind(this));
     socket.on("close", function () {
@@ -61,11 +63,11 @@ class GameClient {
   }
 
   initTeamStats () {
-    let teams = JSON.parse(JSON.stringify(this.game.options.teams ?? null));
+    let teams = JSON.parse(JSON.stringify(this.#game.options.teams ?? null));
     if (Array.isArray(teams)) {
-      let teamManager = new TeamManager(this.game);
+      let teamManager = new TeamManager(this.#game);
       teamManager.insert(...teams.map((team, i) => Object.assign({}, team, {id: i})));
-      this.game.modding.data.teams = teamManager
+      this.#game.modding.data.teams = teamManager
     }
   }
 }

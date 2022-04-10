@@ -7,6 +7,7 @@ const defineProperties = require("../utils/defineProperties.js");
 class Team extends Structure {
   constructor(game, options) {
     super(game);
+    this.#game = game;
     this.markAsSpawned(true);
     defineProperties(this, {
       id: options.id,
@@ -16,6 +17,8 @@ class Team extends Structure {
     let _this = this.modding.data;
     _this.open = true
   }
+
+  #game;
 
   updateInfo (data) {
     let _this = this.modding.data;

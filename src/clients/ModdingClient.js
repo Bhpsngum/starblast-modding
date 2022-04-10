@@ -35,6 +35,8 @@ class ModdingClient extends EventEmitter {
     this.reset(true)
   }
 
+  #gameClient;
+
   get started () {
     return !!this.modding.api.started
   }

@@ -11,6 +11,7 @@ const defineProperties = require("../utils/defineProperties.js");
 class Object3D extends Structure {
   constructor (game, options) {
     super(game);
+    this.#game = game;
     defineProperties(this, {id: toString(options?.id)});
     Object.defineProperties(this, {
       [this.inactive_field]: {
@@ -23,6 +24,8 @@ class Object3D extends Structure {
     this.assign(options, true)
   }
 
+  #game;
+
   markAsActive () {
     let _this = this.modding.data;
     _this[this.inactive_field] = false;
@@ -32,13 +35,13 @@ class Object3D extends Structure {
   markAsInactive () {
     let _this = this.modding.data;
     _this[this.inactive_field] = true
-    _this[this.inactive_field + "Step"] = this.game.step
+    _this[this.inactive_field + "Step"] = this.#game.step
   }
 
   assign(options, forceAssign = false) {
     let _this = this.modding.data;
     if (forceAssign || options?.type != null) {
-      let objTypeManager = this.game.objects.types;
+      let objTypeManager = this.#game.objects.types;
       let objType = objTypeManager.create(options?.type);
       let type = objTypeManager.findById(objType.id, true);
       if (type == null) {
@@ -55,21 +58,21 @@ class Object3D extends Structure {
   set (data) {
     this.assign(data);
     let send = function () {
-      this.game.modding.api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
+      this.#game.modding.api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
     }.bind(this);
     if (this.type.physics.autoShape && this.type.physics.shape == null) this.type.getShape()
     .then(shape => (defineProperties(this.type.physics, {shape}), send()))
     .catch(e => (defineProperties(this.type.physics, {shape: []}), send()));
     else send()
     this.markAsActive();
-    this.game.objects.update();
+    this.#game.objects.update();
     return this
   }
 
   remove () {
-    this.game.modding.api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object", {id: this.id}).send();
+    this.#game.modding.api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object", {id: this.id}).send();
     this.markAsInactive();
-    this.game.objects.update();
+    this.#game.objects.update();
     return this
   }
 

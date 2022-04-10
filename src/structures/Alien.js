@@ -22,6 +22,7 @@ const alien_types = new Map([
 class Alien extends Entity {
   constructor(game, options) {
     super(game);
+    this.#game = game;
     let _this = this.modding.data;
     _this.x = options?.x ?? 0;
     _this.y = options?.y ?? 0;
@@ -36,6 +37,8 @@ class Alien extends Entity {
       crystal_drop: "number" == options?.crystal_drop ? options.crystal_drop : 0
     })
   }
+
+  #game;
 
   update (data) {
     this.entityUpdate(data);

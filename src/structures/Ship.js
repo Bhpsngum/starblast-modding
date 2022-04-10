@@ -19,8 +19,11 @@ const convertStats = function(data) {
 
 class Ship extends Entity {
   constructor(game) {
-    super(game)
+    super(game);
+    this.#game = game;
   }
+
+  #game;
 
   get alive () {
     return !!this.modding.data.alive
@@ -50,27 +53,27 @@ class Ship extends Entity {
   }
 
   showInstructor () {
-    this.game.modding.api.clientMessage(this.id, "show_instructor").send();
+    this.#game.modding.api.clientMessage(this.id, "show_instructor").send();
     return this
   }
 
   instructorSays (text, character) {
-    this.game.modding.api.clientMessage(this.id, "instructor_says", {text, character}).send();
+    this.#game.modding.api.clientMessage(this.id, "instructor_says", {text, character}).send();
     return this
   }
 
   hideInstructor () {
-    this.game.modding.api.clientMessage(this.id, "hide_instructor").send();
+    this.#game.modding.api.clientMessage(this.id, "hide_instructor").send();
     return this
   }
 
   setUIComponent (component) {
-    this.game.modding.api.clientMessage(this.id, "set_ui_component", {component: parseUI(component)}).send();
+    this.#game.modding.api.clientMessage(this.id, "set_ui_component", {component: parseUI(component)}).send();
     return this
   }
 
   intermission (data, gameOver) {
-    this.game.modding.api.clientMessage(this.id, "intermission", {data: parseIntermission(data, gameOver)}).send();
+    this.#game.modding.api.clientMessage(this.id, "intermission", {data: parseIntermission(data, gameOver)}).send();
     return this
   }
 
@@ -83,11 +86,11 @@ class Ship extends Entity {
   }
 
   setObject (data) {
-    this.game.modding.api.clientMessage(this.id, "set_object", {data}).send();
+    this.#game.modding.api.clientMessage(this.id, "set_object", {data}).send();
   }
 
   emptyWeapons () {
-    this.game.modding.api.name("empty_weapons").prop("ship", this.id).send();
+    this.#game.modding.api.name("empty_weapons").prop("ship", this.id).send();
     return this
   }
 

@@ -5,8 +5,8 @@ const ObjectTypeManager = require("./ObjectTypeManager.js");
 const Object3D = require("../structures/Object.js");
 const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
-const setObject = function (data) {
-  let object = getEntity(data, this);
+const setObject = function (game, data) {
+  let object = getEntity(game, data, this);
   if (!object.spawned) object.markAsSpawned();
   return object.set(data)
 }
@@ -14,15 +14,18 @@ const setObject = function (data) {
 class ObjectManager extends StructureManager {
   constructor(game) {
     super(game);
+    this.#game = game;
     defineProperties(this, {types: new ObjectTypeManager(game)})
   }
 
+  #game;
+
   add (data) {
-    return setObject.call(this, data)
+    return setObject.call(this, this.#game, data)
   }
 
   set (data) {
-    return setObject.call(this, data)
+    return setObject.call(this, this.#game, data)
   }
 
   setById (id, data) {
@@ -30,7 +33,7 @@ class ObjectManager extends StructureManager {
   }
 
   remove (id) {
-    this.game.modding.api.name("remove_server_object").prop("id", id).send().globalMessage("remove_object").send();
+    this.#game.modding.api.name("remove_server_object").prop("id", id).send().globalMessage("remove_object").send();
     this.findById(id)?.markAsInactive?.();
     return this.update()
   }

@@ -7,7 +7,10 @@ const defineProperties = require("../utils/defineProperties.js");
 class ObjectTypeManager extends StructureManager {
   constructor(game) {
     super(game);
+    this.#game = game;
   }
+
+  #game;
 
   update () {
     this.filterList().clear();

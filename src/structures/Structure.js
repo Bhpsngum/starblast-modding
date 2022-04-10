@@ -8,19 +8,21 @@ const createUUID = function () {
 
 class Structure {
   constructor (game) {
-    let modding = defineProperties({}, {data: {}});
-    defineProperties(this, {game, modding, uuid: createUUID()})
+    this.#game = game;
+    defineProperties(this, {modding: {data: {}}, uuid: createUUID()})
   }
+
+  #game;
 
   markAsInactive () {
     try {
       defineProperties(this, {
         [this.inactive_field]: true,
-        [this.inactive_field + "Step"]: this.game.step
+        [this.inactive_field + "Step"]: this.#game.step
       })
     }
     catch (e) {}
-    this.modding.data.lastAliveStep = this.game.step
+    this.modding.data.lastAliveStep = this.#game.step
   }
 
   markAsSpawned () {
@@ -43,7 +45,7 @@ class Structure {
 
   get lastAliveStep () {
     let aliveData = this.modding.data.alive, alive = this.isActive() && this.alive;
-    return alive ? this.game.step : this.modding.data.lastAliveStep;
+    return alive ? this.#game.step : this.modding.data.lastAliveStep;
   }
 }
 

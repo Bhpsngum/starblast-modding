@@ -5,8 +5,8 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class ModdingAPI {
   constructor(game, options) {
+    this.#game = game;
     defineProperties(this, {
-      game,
       preflight_requests: [],
       cacheConfiguration: !!options?.cacheConfiguration
     });
@@ -16,6 +16,8 @@ class ModdingAPI {
     this.onstop = [];
     this.configuration = {}
   }
+
+  #game;
 
   clear () {
     return this.set({})
@@ -28,7 +30,7 @@ class ModdingAPI {
     this.clear();
     if (!this.cacheConfiguration) this.configuration = {};
     let onstops = this.onstop.splice(0);
-    onstops.forEach(onstop => onstop?.resolve?.(this.game))
+    onstops.forEach(onstop => onstop?.resolve?.(this.#game))
   }
 
   async start () {
@@ -40,7 +42,7 @@ class ModdingAPI {
       this.data.options = {}
       this.encodeOptionsError = true
     }
-    return await runMod(this)
+    return await runMod(this, this.#game)
   }
 
   stop () {
@@ -84,7 +86,7 @@ class ModdingAPI {
     let pr = this.pending_request;
     if (this.started) try {
       this.socket.send(JSON.stringify(pr));
-      if ("string" == typeof pr.name && pr.name.match(/^add_(alien|asteroid|collectible)$/)) this.game.modding.create_requests.push(pr.data.uuid)
+      if ("string" == typeof pr.name && pr.name.match(/^add_(alien|asteroid|collectible)$/)) this.#game.modding.create_requests.push(pr.data.uuid)
     }
     catch(e) {
       if (arguments.length > 0) {
@@ -92,9 +94,9 @@ class ModdingAPI {
         switch (action) {
           case "create":
           case "destroy": {
-            let hanlder = this.game.modding.handlers[action], reject = handler.get(uuid)?.reject;
+            let hanlder = this.#game.modding.handlers[action], reject = handler.get(uuid)?.reject;
             handler.delete(uuid);
-            this.game.findStructureByUUID(uuid)?.markAsInactive?.();
+            this.#game.findStructureByUUID(uuid)?.markAsInactive?.();
             reject?.(error);
             break
           }
@@ -104,7 +106,7 @@ class ModdingAPI {
           default:
             globalMessage = 1;
         }
-        if (globalMessage) this.game.emit('error', error, this.game)
+        if (globalMessage) this.#game.emit('error', error, this.#game)
       }
     }
     else this.preflight_requests.push(pr);

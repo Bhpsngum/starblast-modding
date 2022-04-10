@@ -7,11 +7,13 @@ const ArrayMap = require("../utils/ArrayMap.js");
 class StructureManager extends ArrayMap {
   constructor(game) {
     super();
+    this.#game = game;
     defineProperties(this, {
-      game,
       all: new ArrayMap()
     })
   }
+
+  #game;
 
   array (includeInactive = false) {
     let value = includeInactive ? this.all : this;
@@ -19,7 +21,7 @@ class StructureManager extends ArrayMap {
   }
 
   create (data, ...additionalValues) {
-    return new this.StructureConstructor(this.game, data, ...additionalValues)
+    return new this.StructureConstructor(this.#game, data, ...additionalValues)
   }
 
   isInstance (entity) {

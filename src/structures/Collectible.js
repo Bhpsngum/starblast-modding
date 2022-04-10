@@ -8,6 +8,7 @@ const defineProperties = require("../utils/defineProperties.js");
 class Collectible extends Entity {
   constructor(game, options) {
     super(game);
+    this.#game = game;
     this.code = options?.code ?? CollectibleCodes[0];
     let _this = this.modding.data;
     _this.x = options?.x ?? 0;
@@ -15,6 +16,8 @@ class Collectible extends Entity {
     _this.vx = _this.vy = 0;
     _this.lastUpdatedStep = game.step;
   }
+
+  #game;
 
   set () {
 

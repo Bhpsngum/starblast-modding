@@ -9,8 +9,11 @@ const limits = [6, 12, 18, 36, 48];
 class StationModuleManager extends StructureManager {
   constructor(game, parent) {
     super(game);
+    this.#game = game;
     defineProperties(this, {parent})
   }
+
+  #game;
 
   update () {
     this.clear();
@@ -22,7 +25,7 @@ class StationModuleManager extends StructureManager {
     if (shield) {
       let i = 0;
       try {
-        while (true) getEntity({id: i}, this, this.parent).updateShield(shield.getUint8(i++))
+        while (true) getEntity(this.#game, {id: i}, this, this.parent).updateShield(shield.getUint8(i++))
       }
       catch (e) {}
     }
@@ -30,7 +33,7 @@ class StationModuleManager extends StructureManager {
   }
 
   get limit () {
-    return limits[this.game.options.station_size - 1] || limits[1]
+    return limits[this.#game.options.station_size - 1] || limits[1]
   }
 
   [Symbol.toStringTag] = 'StationModuleManager'

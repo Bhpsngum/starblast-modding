@@ -6,8 +6,11 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class AlienManager extends EntityManager {
   constructor(game) {
-    super(game)
+    super(game);
+    this.#game = game;
   }
+
+  #game;
 
   get limit () {
     return 300

@@ -6,10 +6,10 @@ const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js");
 const defineProperties = require("../utils/defineProperties.js");
 
-module.exports.create = function (api, address, token) {
+module.exports.create = function (game, api, address, token) {
   if (api.encodeOptionsError) {
-    api.game.error("Failed to encode game options");
-    api.game.error("Mod will be run with empty options instead")
+    game.error("Failed to encode game options");
+    game.error("Mod will be run with empty options instead")
   }
   delete api.encodeOptionsError
   let socket = GameSocket.create(address.ip, address.port, "https://starblast.data.neuronality.com");
@@ -21,9 +21,6 @@ module.exports.create = function (api, address, token) {
         options: api.configuration.options
       }
     }))
-  });
-  socket.on('connection', function (ws, req) {
-    console.log(req.headers);
   });
   return new Promise(function (resolve, reject) {
     socket.on("message", function(event, isBinary) {
@@ -85,17 +82,17 @@ module.exports.create = function (api, address, token) {
             break;
           }
           case "ship_update": {
-            let ship = getEntity(event, this.ships);
+            let ship = getEntity(game, event, this.ships);
             if (!ship.isSpawned()) this.objects.forEach(object => this.modding.api.clientMessage(ship.id, "set_object", {object: object}).send())
             ship.update(event);
             break;
           }
           case "alien_update":
           case "asteroid_update":
-            getEntity(event, this[event.name.split("_")[0] + "s"]).update(event);
+            getEntity(game, event, this[event.name.split("_")[0] + "s"]).update(event);
             break;
           case "ship_disconnected": {
-            let ship = getEntity(event, this.ships);
+            let ship = getEntity(game, event, this.ships);
             ship.markAsInactive();
             this.ships.update();
             this.emit(events.SHIP_DISCONNECTED, ship);
@@ -124,7 +121,7 @@ module.exports.create = function (api, address, token) {
             switch (data.name) {
               case "ship_destroyed": {
                 data.id = data.ship;
-                let ship = getEntity(data, this.ships);
+                let ship = getEntity(game, data, this.ships);
                 let killer = this.ships.findById(data.killer, true);
                 ship.modding.data.alive = false;
                 ship.modding.data.lastAliveStep = this.step;
@@ -138,7 +135,7 @@ module.exports.create = function (api, address, token) {
               case "asteroid_destroyed": {
                 let entity_name = data.name.split("_")[0], entityList = this[entity_name + "s"];
                 data.id = data[entity_name];
-                let entity = getEntity(data, entityList);
+                let entity = getEntity(game, data, entityList);
                 let killer = this.ships.findById(data.killer, true);
                 entity.markAsInactive();
                 entityList.update();
@@ -150,7 +147,7 @@ module.exports.create = function (api, address, token) {
               }
               case "ship_spawned": {
                 data.id = data.ship;
-                let ship = getEntity(data, this.ships);
+                let ship = getEntity(game, data, this.ships);
                 let event_name = ship.isSpawned() ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
                 if (!ship.isSpawned()) ship.markAsSpawned();
                 this.ships.update();
@@ -159,9 +156,9 @@ module.exports.create = function (api, address, token) {
               }
               case "collectible_picked": {
                 data.id = data.collectible;
-                let collectible = getEntity(data, this.collectibles);
+                let collectible = getEntity(game, data, this.collectibles);
                 data.id = data.ship;
-                let ship = getEntity(data, this.ships);
+                let ship = getEntity(game, data, this.ships);
                 collectible.markAsInactive();
                 this.emit(events.COLLECTIBLE_PICKED, collectible, ship);
                 break;
@@ -169,18 +166,18 @@ module.exports.create = function (api, address, token) {
               case "ui_component_clicked":
                 let id = data.id;
                 data.id = data.ship;
-                this.emit(events.UI_COMPONENT_CLICKED, id, getEntity(data, this.ships));
+                this.emit(events.UI_COMPONENT_CLICKED, id, getEntity(game, data, this.ships));
                 break;
             }
             break;
         }
       }
-    }.bind(this.game));
+    }.bind(game));
     socket.on("close", function () {
       if (!this.started) reject(new Error("Failed to run the mod"));
       else this.emit(events.MOD_STOPPED);
       if (GameSocket.OPEN === this.modding.gameClient.socket?.readyState) this.modding.gameClient.socket.close();
       this.reset();
-    }.bind(this.game))
+    }.bind(game))
   }.bind(api))
 }

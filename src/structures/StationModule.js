@@ -18,6 +18,7 @@ const getRadius = function (_this) {
 class StationModule extends Entity {
   constructor(game, options, parent) {
     super(game);
+    this.#game = game;
     let _this = this.modding.data;
     _this.shield = 1;
     _this.alive = true;
@@ -40,6 +41,8 @@ class StationModule extends Entity {
     })
   }
 
+  #game;
+
   get alive () {
     return !!this.modding.data.alive
   }
@@ -48,11 +51,11 @@ class StationModule extends Entity {
     let _this = this.modding.data;
     let lastAlive = _this.alive;
     _this.alive = shield > 0;
-    _this.shield = Math.max(0, shield - 1) / 254 * this.game.options[this.type + "_shield"][this.parent.level - 1];
-    _this.lastUpdatedStep = this.game.step;
+    _this.shield = Math.max(0, shield - 1) / 254 * this.#game.options[this.type + "_shield"][this.parent.level - 1];
+    _this.lastUpdatedStep = this.#game.step;
     if (_this.alive != lastAlive) {
-      if (!_this.alive) _this.lastAliveStep = this.game.step;
-      this.game.emit(this.game.modding.events["STATION_MODULE_" + (_this.alive ? "REPAIRED" : "DESTROYED")], this)
+      if (!_this.alive) _this.lastAliveStep = this.#game.step;
+      this.#game.emit(this.#game.modding.events["STATION_MODULE_" + (_this.alive ? "REPAIRED" : "DESTROYED")], this)
     }
   }
 

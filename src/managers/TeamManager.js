@@ -9,8 +9,11 @@ const defineProperties = require("../utils/defineProperties.js");
 class TeamManager extends StructureManager {
   constructor(game) {
     super(game);
-    defineProperties(this, {stations: new StationManager(this.game)});
+    this.#game = game;
+    defineProperties(this, {stations: new StationManager(this.#game)});
   }
+
+  #game;
 
   insert (...data) {
     for (let option of data) {
@@ -24,7 +27,7 @@ class TeamManager extends StructureManager {
   socketUpdate (dataView) {
     let size = Math.round(dataView.byteLength/this.all.length);
     for (let i = 0; i < this.all.length; i++) {
-      let team = getEntity({id: i}, this), station = getEntity({id: i}, this.stations), index = i * size;
+      let team = getEntity(this.#game, {id: i}, this), station = getEntity(this.#game, {id: i}, this.stations), index = i * size;
       team.updateInfo({
         open: dataView.getUint8(index) > 0
       });
@@ -46,7 +49,7 @@ class TeamManager extends StructureManager {
   }
 
   get limit () {
-    return this.game.options.friendly_colors
+    return this.#game.options.friendly_colors
   }
 
   [Symbol.toStringTag] = 'TeamManager'
