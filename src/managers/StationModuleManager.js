@@ -6,10 +6,21 @@ const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
 const limits = [6, 12, 18, 36, 48];
 
+/**
+ * The Station Module Manager Instance.
+ * @extends {StructureManager}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ */
+
 class StationModuleManager extends StructureManager {
   constructor(game, parent) {
     super(game);
     this.#game = game;
+    /**
+     * Parent station of the modules
+     * @type {Station}
+     * @readonly
+     */
     defineProperties(this, {parent})
   }
 

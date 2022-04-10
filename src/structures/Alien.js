@@ -19,6 +19,13 @@ const alien_types = new Map([
   [20, {points: [5000, 10000]}]
 ]);
 
+/**
+ * The Alien Instance
+ * @extends {Entity}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @param {object} options - Instance options
+ */
+
 class Alien extends Entity {
   constructor(game, options) {
     super(game);
@@ -32,6 +39,20 @@ class Alien extends Entity {
     _this.level = options?.level ?? 0;
     _this.points = options?.points;
     let weapon_drop = CollectibleCodes.indexOf(options?.weapon_drop);
+    /**
+     * The collectible drop code after the alien is killed
+     * @name Alien.prototype.weapon_drop
+     * @type {number}
+     * @readonly
+     */
+
+    /**
+    * The amount of crystals dropped after the alien is killed
+    * @name Alien.prototype.crytal_drop
+    * @type {number}
+    * @readonly
+    */
+
     defineProperties(this, {
       weapon_drop: CollectibleCodes[weapon_drop] ?? null,
       crystal_drop: "number" == options?.crystal_drop ? options.crystal_drop : 0
@@ -49,13 +70,31 @@ class Alien extends Entity {
     _this.points = "number" == typeof _this.points ? _this.points : alien_type.points[_this.level];
   }
 
+  /**
+   * Alien code
+   * @type {number}
+   * @readonly
+   */
+
   get code () {
     return this.modding.data.code
   }
 
+  /**
+   * Alien level
+   * @type {number}
+   * @readonly
+   */
+
   get level () {
     return this.modding.data.level
   }
+
+  /**
+   * Alien points
+   * @type {number}
+   * @readonly
+   */
 
   get points () {
     return this.modding.data.points

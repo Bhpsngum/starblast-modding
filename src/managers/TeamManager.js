@@ -6,10 +6,24 @@ const Team = require("../structures/Team.js");
 const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The Team Manager Instance.
+ * @extends {StructureManager}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ */
+
 class TeamManager extends StructureManager {
   constructor(game) {
     super(game);
     this.#game = game;
+
+    /**
+     * The Station Manager object.
+     * @name TeamManager.prototype.stations
+     * @type {StationManager}
+     * @readonly
+     */
+
     defineProperties(this, {stations: new StationManager(this.#game)});
   }
 

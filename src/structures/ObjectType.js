@@ -6,6 +6,13 @@ const toString = require("../utils/toString.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The ObjectType Instance
+ * @extends {Structure}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @param {object} options - Instance options
+ */
+
 class ObjectType extends Structure {
   constructor (game, type) {
     super(game);
@@ -18,6 +25,97 @@ class ObjectType extends Structure {
     });
     if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape});
     else if (!physics.autoShape) defineProperties(physics, {shape: []});
+    /**
+    * ObjectType ID
+    * @name ObjectType.prototype.id
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * ObjectType model link (.obj file)
+    * @name ObjectType.prototype.obj
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * ObjectType diffuse texture link
+    * @name ObjectType.prototype.diffuse
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * ObjectType emissive texture link
+    * @name ObjectType.prototype.emissive
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * ObjectType specular texture link
+    * @name ObjectType.prototype.specular
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * ObjectType bump texture link
+    * @name ObjectType.prototype.bump
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * ObjectType diffuse color
+    * @name ObjectType.prototype.diffuseColor
+    * @type {(string|number)}
+    * @readonly
+    */
+
+    /**
+    * ObjectType emissive color
+    * @name ObjectType.prototype.emissiveColor
+    * @type {(string|number)}
+    * @readonly
+    */
+
+    /**
+    * ObjectType specular color
+    * @name ObjectType.prototype.specularColor
+    * @type {(string|number)}
+    * @readonly
+    */
+
+    /**
+    * ObjectType bump scale
+    * @name ObjectType.prototype.bumpScale
+    * @type {(string|number)}
+    * @readonly
+    */
+
+    /**
+    * ObjectType transparency
+    * @name ObjectType.prototype.transparent
+    * @type {boolean}
+    * @readonly
+    */
+
+    /**
+    * ObjectType shininess
+    * @name ObjectType.prototype.shininess
+    * @type {boolean}
+    * @readonly
+    */
+
+    /**
+    * ObjectType physics with 3 properties: (array) shape, (boolean) fixed and (number) mass
+    * @name ObjectType.prototype.physics
+    * @type {object}
+    * @readonly
+    */
+
     defineProperties(this, {
       id: toString(type?.id),
       obj:  type?.obj ?? null,

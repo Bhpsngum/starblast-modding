@@ -8,10 +8,25 @@ const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const toString = require("../utils/toString.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The Object3D Instance
+ * @extends {Structure}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @param {object} options - Instance options
+ */
+
 class Object3D extends Structure {
   constructor (game, options) {
     super(game);
     this.#game = game;
+
+    /**
+    * Object ID
+    * @name Object3D.prototype.id
+    * @type {string}
+    * @readonly
+    */
+
     defineProperties(this, {id: toString(options?.id)});
     Object.defineProperties(this, {
       [this.inactive_field]: {
@@ -69,6 +84,11 @@ class Object3D extends Structure {
     return this
   }
 
+  /**
+   * Remove the object from the game
+   * @returns {Object3D}
+   */
+
   remove () {
     this.#game.modding.api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object", {id: this.id}).send();
     this.markAsInactive();
@@ -76,17 +96,44 @@ class Object3D extends Structure {
     return this
   }
 
+  /**
+  * Object type
+  * @name Structure.prototype.type
+  * @type {ObjectType}
+  * @readonly
+  */
+
   get type () {
     return this.modding.data.type
   }
+
+  /**
+  * Object position
+  * @type {Coordinate}
+  * @readonly
+  */
 
   get position () {
     return this.modding.data.position
   }
 
+  /**
+  * Object rotation
+  * @name Structure.prototype.rotation
+  * @type {Coordinate}
+  * @readonly
+  */
+
   get rotation () {
     return this.modding.data.rotation
   }
+
+  /**
+  * Object scale
+  * @name Structure.prototype.scale
+  * @type {Coordinate}
+  * @readonly
+  */
 
   get scale () {
     return this.modding.data.scale

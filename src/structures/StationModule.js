@@ -15,6 +15,14 @@ const getRadius = function (_this) {
   return Math.sqrt(_this._x ** 2 + _this._y ** 2) * (_this.parent.level + 3) * 2.5;
 }
 
+/**
+ * The Station Instance
+ * @extends {Entity}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @param {object} options - Instance options
+ * @param {Station} parent - The parent station object
+ */
+
 class StationModule extends Entity {
   constructor(game, options, parent) {
     super(game);
@@ -29,6 +37,28 @@ class StationModule extends Entity {
       subtype_id = Number(id)
     });
     this.markAsSpawned();
+
+    /**
+    * The parent station of this module
+    * @name StationModule.prototype.parent
+    * @type {Station}
+    * @readonly
+    */
+
+    /**
+    * Module type
+    * @name StationModule.prototype.type
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * Module class
+    * @name StationModule.prototype.class
+    * @type {number}
+    * @readonly
+    */
+
     defineProperties(this, {
       parent,
       id: options?.id,
@@ -75,27 +105,63 @@ class StationModule extends Entity {
     return this.parent.vy + this.offsetVy
   }
 
+  /**
+   * Module X Offset from the parent station's center
+   * @type {number}
+   * @readonly
+   */
+
   get offsetX () {
     return getRadius(this) * Math.cos(getAngle(this, this.lastAliveStep))
   }
 
+  /**
+   * Module Y Offset from the parent station's center
+   * @type {number}
+   * @readonly
+   */
+
   get offsetY () {
     return getRadius(this) * Math.sin(getAngle(this, this.lastAliveStep))
   }
+
+  /**
+   * Module vx Offset from the parent station's Velocity
+   * @type {number}
+   * @readonly
+   */
 
   get offsetVx () {
     let step = this.lastAliveStep;
     return getRadius(this) * (Math.cos(getAngle(this, step + 1)) - Math.cos(getAngle(this, step)))
   }
 
+  /**
+   * Module vy Offset from the parent station's Velocity
+   * @type {number}
+   * @readonly
+   */
+
   get offsetVy () {
     let step = this.lastAliveStep;
     return getRadius(this) * (Math.sin(getAngle(this, step + 1)) - Math.sin(getAngle(this, step)))
   }
 
+  /**
+   * Module angle (in degrees)
+   * @type {number}
+   * @readonly
+   */
+
   get angle () {
     return ((-(this.lastAliveStep / 60 / 3600 % 1 * 2) * 3 * Math.PI / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
   }
+
+  /**
+   * Module shield
+   * @type {number}
+   * @readonly
+   */
 
   get shield () {
     return this.modding.data.shield
@@ -104,6 +170,12 @@ class StationModule extends Entity {
   get alive () {
     return this.modding.data.alive
   }
+
+  /**
+   * Module finish
+   * @type {string}
+   * @readonly
+   */
 
   get finish () {
     return this.modding.data.finish

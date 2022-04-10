@@ -4,6 +4,12 @@ const EntityManager = require("./EntityManager.js");
 const Alien = require("../structures/Alien.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The Alien Manager Instance.
+ * @extends {EntityManager}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ */
+
 class AlienManager extends EntityManager {
   constructor(game) {
     super(game);

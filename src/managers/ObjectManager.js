@@ -11,6 +11,12 @@ const setObject = function (game, data) {
   return object.set(data)
 }
 
+/**
+ * The Object3D Manager Instance.
+ * @extends {StructureManager}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ */
+
 class ObjectManager extends StructureManager {
   constructor(game) {
     super(game);
@@ -20,17 +26,42 @@ class ObjectManager extends StructureManager {
 
   #game;
 
+  /**
+   * Add a new object to the game
+   * @param {object} data - object creation options
+   * @returns {Promise<Object3D>}
+   */
+
   add (data) {
     return setObject.call(this, this.#game, data)
   }
+
+  /**
+   * Set options to an object
+   * @param {object} data - Options to be set on the object including the object ID itself
+   * @returns {Object3D}
+   */
 
   set (data) {
     return setObject.call(this, this.#game, data)
   }
 
+  /**
+  * Set options to an object based on ID
+  * @param {number} id - The object's ID
+  * @param {object} data - Options to be set on the object
+  * @returns {Object3D}
+  */
+
   setById (id, data) {
     this.set(Object.assign({}, data, {id}))
   }
+
+  /**
+   * Remove an object based on ID
+   * @param {number} id - The object's ID needs to be killed
+   * @returns {Object3D}
+   */
 
   remove (id) {
     this.#game.modding.api.name("remove_server_object").prop("id", id).send().globalMessage("remove_object").send();

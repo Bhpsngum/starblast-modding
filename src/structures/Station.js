@@ -10,6 +10,13 @@ const getRadius = function (game) {
   return (game.modding.data.teams?.stations?.all||[]).length > 1 ? game.options.map_size * 5 * Math.sqrt(2) / 2 : 0
 }
 
+/**
+ * The Station Instance
+ * @extends {Entity}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @param {object} options - Instance options
+ */
+
 class Station extends Entity {
   constructor(game, options) {
     super(game);
@@ -18,6 +25,35 @@ class Station extends Entity {
     _this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
     let modules = new StationModuleManager(this.#game, this);
     (Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
+
+    /**
+    * Station name
+    * @name Station.prototype.name
+    * @type {string}
+    * @readonly
+    */
+
+    /**
+    * Station team id
+    * @name Station.prototype.team
+    * @type {number}
+    * @readonly
+    */
+
+    /**
+    * Station modules list
+    * @name Station.prototype.modules
+    * @type {StationModuleManager}
+    * @readonly
+    */
+
+    /**
+    * Station phase (in degrees)
+    * @name Station.prototype.phase
+    * @type {string}
+    * @readonly
+    */
+
     defineProperties(this, {
       name: "string" == typeof options?.name ? options.name : "Unknown",
       id: options?.id,
@@ -67,17 +103,41 @@ class Station extends Entity {
     return getRadius(this.#game) * (Math.sin(getAngle(phase, step + 1)) - Math.sin(getAngle(phase, step)))
   }
 
+  /**
+   * Station size
+   * @type {number}
+   * @readonly
+   */
+
   get size () {
     return this.modding.data.size
   }
+
+  /**
+   * Station level
+   * @type {number}
+   * @readonly
+   */
 
   get level () {
     return this.modding.data.level
   }
 
+  /**
+   * Station crystals progress
+   * @type {number}
+   * @readonly
+   */
+
   get crystals () {
     return this.modding.data.crystals
   }
+
+  /**
+   * Station's maximum crystals for that level
+   * @type {number}
+   * @readonly
+   */
 
   get crystals_max () {
     return this.modding.data.crystals_max

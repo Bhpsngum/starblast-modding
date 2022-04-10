@@ -5,6 +5,13 @@ const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The Asteroid Instance
+ * @extends {Entity}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @param {object} options - Instance options
+ */
+
 class Asteroid extends Entity {
   constructor(game, options) {
     super(game);
@@ -24,6 +31,12 @@ class Asteroid extends Entity {
     let _this = this.modding.data;
     _this.size = data.size
   }
+
+  /**
+   * Asteroid size
+   * @type {number}
+   * @readonly
+   */
 
   get size () {
     return this.modding.data.size

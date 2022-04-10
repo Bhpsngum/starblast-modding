@@ -4,6 +4,12 @@ const StructureManager = require("./StructureManager.js");
 const ObjectType = require("../structures/ObjectType.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The Object Type Manager Instance.
+ * @extends {StructureManager}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ */
+
 class ObjectTypeManager extends StructureManager {
   constructor(game) {
     super(game);

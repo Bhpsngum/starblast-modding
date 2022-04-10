@@ -4,6 +4,12 @@ const EntityManager = require("./EntityManager.js");
 const Collectible = require("../structures/Collectible.js");
 const defineProperties = require("../utils/defineProperties.js");
 
+/**
+ * The Collectible Manager Instance.
+ * @extends {EntityManager}
+ * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ */
+
 class CollectibleManager extends EntityManager {
   constructor(game) {
     super(game);
