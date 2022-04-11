@@ -8,6 +8,7 @@ const defineProperties = require("../utils/defineProperties.js");
  * The Station Manager Instance.
  * @extends {StructureManager}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class StationManager extends StructureManager {

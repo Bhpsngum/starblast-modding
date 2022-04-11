@@ -10,6 +10,7 @@ const limits = [6, 12, 18, 36, 48];
  * The Station Module Manager Instance.
  * @extends {StructureManager}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class StationModuleManager extends StructureManager {

@@ -3,6 +3,7 @@
 /**
  * The Map Instance with a few array methods
  * @extends {Map}
+ * @abstract
  */
 
 class ArrayMap extends Map {

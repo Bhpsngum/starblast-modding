@@ -24,6 +24,7 @@ const alien_types = new Map([
  * @extends {Entity}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @param {object} options - Instance options
+ * @abstract
  */
 
 class Alien extends Entity {

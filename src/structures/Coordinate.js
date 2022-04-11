@@ -6,6 +6,7 @@ const defineProperties = require("../utils/defineProperties.js");
  * The Coordinate Instance
  * @param {object} position - The position object
  * @param {object} options - Instance options
+ * @abstract
  */
 
 class Coordinate {

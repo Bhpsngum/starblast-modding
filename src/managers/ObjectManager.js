@@ -15,6 +15,7 @@ const setObject = function (game, data) {
  * The Object3D Manager Instance.
  * @extends {StructureManager}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class ObjectManager extends StructureManager {

@@ -10,6 +10,7 @@ const parseIntermission = require("../utils/parseIntermission.js");
  * The Ship Manager Instance.
  * @extends {EntityManager}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class ShipManager extends EntityManager {

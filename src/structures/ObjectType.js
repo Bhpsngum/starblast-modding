@@ -11,6 +11,7 @@ const defineProperties = require("../utils/defineProperties.js");
  * @extends {Structure}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @param {object} options - Instance options
+ * @abstract
  */
 
 class ObjectType extends Structure {

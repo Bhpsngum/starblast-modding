@@ -10,6 +10,7 @@ const defineProperties = require("../utils/defineProperties.js");
  * The Team Manager Instance.
  * @extends {StructureManager}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class TeamManager extends StructureManager {

@@ -21,6 +21,7 @@ const convertStats = function(data) {
  * The ObjectType Instance
  * @extends {Entity}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class Ship extends Entity {

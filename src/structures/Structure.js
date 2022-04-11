@@ -9,6 +9,7 @@ const createUUID = function () {
 /**
  * The Structure Instance - represents any structrure in the game
  * @param {game} game - The <code>game</code> object
+ * @abstract
  */
 
 class Structure {

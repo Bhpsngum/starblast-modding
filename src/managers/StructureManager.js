@@ -8,6 +8,7 @@ const ArrayMap = require("../utils/ArrayMap.js");
  * The Station Module Manager Instance.
  * @extends {ArrayMap}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class StructureManager extends ArrayMap {

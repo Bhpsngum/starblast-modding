@@ -7,6 +7,7 @@ const defineProperties = require("../utils/defineProperties.js");
  * The Entity Manager Instance.
  * @extends {StructureManager}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
+ * @abstract
  */
 
 class EntityManager extends StructureManager {
