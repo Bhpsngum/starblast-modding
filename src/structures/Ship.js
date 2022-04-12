@@ -18,7 +18,7 @@ const convertStats = function(data) {
 }
 
 /**
- * The ObjectType Instance
+ * The Ship Instance
  * @extends {Entity}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract

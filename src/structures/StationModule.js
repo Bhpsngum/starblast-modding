@@ -16,7 +16,7 @@ const getRadius = function (_this) {
 }
 
 /**
- * The Station Instance
+ * The Station Module Instance
  * @extends {Entity}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @param {object} options - Instance options

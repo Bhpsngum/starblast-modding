@@ -12,7 +12,7 @@ class ArrayMap extends Map {
   }
 
   /**
-   * Get an array from the object
+   * Get an array from this object
    * @returns {array}
    */
 
@@ -21,7 +21,7 @@ class ArrayMap extends Map {
   }
 
   /**
-   * Length of the object, same as `Map.prototype.size`
+   * Length of this object, same as <code>Map.prototype.size</code>
    * @type {number}
    * @readonly
    */

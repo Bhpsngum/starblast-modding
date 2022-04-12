@@ -20,7 +20,7 @@ class Team extends Structure {
 
     /**
     * Team faction name
-    * @name Structure.prototype.faction
+    * @name Team.prototype.faction
     * @type {string}
     * @readonly
     */

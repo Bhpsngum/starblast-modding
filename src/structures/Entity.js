@@ -9,6 +9,7 @@ const defineProperties = require("../utils/defineProperties.js");
  * @extends {Structure}
  * @param {game} game - The <code>game</code> object
  * @param {object} options - Instance options
+ * @abstract
  */
 
 class Entity extends Structure {

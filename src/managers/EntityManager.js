@@ -21,6 +21,7 @@ class EntityManager extends StructureManager {
   /**
    * Add a new entity to the game
    * @param {object} data - entity creation options
+   * @async
    * @returns {Promise<Entity>}
    */
 
@@ -68,6 +69,7 @@ class EntityManager extends StructureManager {
   /**
    * Kill an entity based on ID
    * @param {number} id - The entity's ID needs to be killed
+   * @async
    * @returns {Entity}
    */
 

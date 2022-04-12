@@ -16,7 +16,7 @@ class StructureManager extends ArrayMap {
     super();
     this.#game = game;
     /**
-     * A collection containing all structures of the ship
+     * A collection containing all structures in the manager
      * @type {ArrayMap}
      * @name StructureManager.prototype.all
      * @readonly
@@ -95,6 +95,7 @@ class StructureManager extends ArrayMap {
   /**
    * The server limit (maximum number of structures) of this manager
    * @returns {boolean}
+   * @readonly
    */
 
   get limit () {

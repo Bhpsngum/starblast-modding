@@ -6,7 +6,7 @@ const CollectibleCodes = require("../utils/collectibleCodes.js");
 const defineProperties = require("../utils/defineProperties.js");
 
 /**
- * The Asteroid Instance
+ * The Collectible Instance
  * @extends {Entity}
  * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @param {object} options - Instance options

@@ -99,7 +99,6 @@ class Object3D extends Structure {
 
   /**
   * Object type
-  * @name Structure.prototype.type
   * @type {ObjectType}
   * @readonly
   */
@@ -120,7 +119,6 @@ class Object3D extends Structure {
 
   /**
   * Object rotation
-  * @name Structure.prototype.rotation
   * @type {Coordinate}
   * @readonly
   */
@@ -131,7 +129,6 @@ class Object3D extends Structure {
 
   /**
   * Object scale
-  * @name Structure.prototype.scale
   * @type {Coordinate}
   * @readonly
   */
