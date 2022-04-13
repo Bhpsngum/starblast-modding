@@ -69,7 +69,6 @@ class EntityManager extends StructureManager {
   /**
    * Kill an entity based on ID
    * @param {number} id - The entity's ID needs to be killed
-   * @async
    * @returns {Entity}
    */
 
