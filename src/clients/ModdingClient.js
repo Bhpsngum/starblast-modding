@@ -23,7 +23,7 @@ const cloneObj = function (obj) {
 /**
  * The Modding Client Instance.
  * @extends {EventEmitter}
- * @param {object} options - options for calling the object, currently has the following properties:<br><ul><li><b><code>cacheConfiguration</code></b> - set to <code>true</code> if you want to reuse data (ECP Key, regions, etc.) for the next run, <code>false</code> otherwise</li></ul>
+ * @param {object} options - options for calling the object, currently has the following properties:<br><ul><li><b><code>cacheECPKey</code></b> - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise</li><li><b><code>cacheOptions</code></b> - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise</li><li><b><code>cacheEvents</code></b> - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise</li></ul>
  */
 
 class ModdingClient extends EventEmitter {

@@ -109,7 +109,7 @@ class ObjectType extends Structure {
     */
 
     /**
-    * ObjectType physics with 3 properties: (array) shape, (boolean) fixed and (number) mass
+    * ObjectType physics with 3 properties: <ul><li><b><code>shape</code></b> - An array representing object type's hitbox shape</li><li><b><code>mass</code></b> - A number representing the mass of the object type</li><li><b><code>fixed</code></b> - A boolean representing if the object type is movable or not (honestly this doesn't do anything much)</li><li><b><code>autoShape</code></b> - A boolean representing if the object type's hitbox shape will be rendered automatically. This property only exists as an option if you want to automatically render its hitbox shape, and it will be deleted after the object type has been set.</li></ul>
     * @name ObjectType.prototype.physics
     * @type {object}
     * @readonly

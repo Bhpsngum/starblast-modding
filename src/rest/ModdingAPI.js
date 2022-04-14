@@ -8,7 +8,9 @@ class ModdingAPI {
     this.game = game;
     defineProperties(this, {
       preflight_requests: [],
-      cacheConfiguration: !!options?.cacheConfiguration
+      cacheECPKey: !!options?.cacheECPKey,
+      cacheOptions: !!options?.cacheOptions,
+      cacheEvents: !!options?.cacheEvents
     });
     this.gameClient = new (require("../clients/GameClient.js"))(this.game, this),
     this.events = require("../resources/Events.js");
@@ -54,18 +56,20 @@ class ModdingAPI {
     this.stopped = true;
     this.preflight_requests.splice(0);
     this.clear();
-    if (!this.cacheConfiguration) this.configuration = {};
+    if (!this.cacheECPKey) delete this.configuration.ECPKey;
+    if (!this.cacheOptions) delete this.configuration.options;
+    if (!this.cacheEvents) this.game.removeAllListeners();
     let onstops = this.onstop.splice(0);
     onstops.forEach(onstop => onstop?.resolve?.(this.game))
   }
 
   async start () {
     try {
-      this.data.options = JSON.parse(JSON.stringify(this.data.options ?? {}));
+      this.configuration.options = JSON.parse(JSON.stringify(this.configuration.options ?? {}));
       this.encodeOptionsError = false
     }
     catch (e) {
-      this.data.options = {}
+      this.configuration.options = {}
       this.encodeOptionsError = true
     }
     return await runMod(this)
