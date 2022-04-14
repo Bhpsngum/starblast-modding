@@ -22,14 +22,12 @@ const alien_types = new Map([
 /**
  * The Alien Instance
  * @extends {Entity}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class Alien extends Entity {
-  constructor(game, options) {
-    super(game);
+  constructor(game, api, options) {
+    super(game, api);
     this.#game = game;
     let _this = this.modding.data;
     _this.x = options?.x ?? 0;

@@ -7,14 +7,14 @@ const ArrayMap = require("../utils/ArrayMap.js");
 /**
  * The Station Module Manager Instance.
  * @extends {ArrayMap}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class StructureManager extends ArrayMap {
-  constructor(game) {
+  constructor(game, api) {
     super();
     this.#game = game;
+    this.#api = api;
     /**
      * A collection containing all structures in the manager
      * @type {ArrayMap}
@@ -27,6 +27,7 @@ class StructureManager extends ArrayMap {
   }
 
   #game;
+  #api;
 
   /**
    * converts the list to array
@@ -40,7 +41,7 @@ class StructureManager extends ArrayMap {
   }
 
   create (data, ...additionalValues) {
-    return new this.StructureConstructor(this.#game, data, ...additionalValues)
+    return new this.StructureConstructor(this.#game, this.#api, data, ...additionalValues)
   }
 
   /**

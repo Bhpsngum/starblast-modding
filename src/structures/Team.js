@@ -7,14 +7,12 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Team Instance
  * @extends {Structure}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class Team extends Structure {
-  constructor(game, options) {
-    super(game);
+  constructor(game, api, options) {
+    super(game, api);
     this.#game = game;
     this.markAsSpawned(true);
 

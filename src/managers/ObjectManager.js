@@ -14,13 +14,12 @@ const setObject = function (game, data) {
 /**
  * The Object3D Manager Instance.
  * @extends {StructureManager}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class ObjectManager extends StructureManager {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
     defineProperties(this, {types: new ObjectTypeManager(game)})
   }

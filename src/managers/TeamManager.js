@@ -9,14 +9,14 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Team Manager Instance.
  * @extends {StructureManager}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class TeamManager extends StructureManager {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
 
     /**
      * The Station Manager object.
@@ -25,10 +25,11 @@ class TeamManager extends StructureManager {
      * @readonly
      */
 
-    defineProperties(this, {stations: new StationManager(this.#game)});
+    defineProperties(this, {stations: new StationManager(this.#game, this.#api)});
   }
 
   #game;
+  #api;
 
   insert (...data) {
     for (let option of data) {

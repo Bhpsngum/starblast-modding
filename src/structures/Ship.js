@@ -20,17 +20,18 @@ const convertStats = function(data) {
 /**
  * The Ship Instance
  * @extends {Entity}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class Ship extends Entity {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
   }
 
   #game;
+  #api;
 
   get alive () {
     return !!this.modding.data.alive
@@ -65,7 +66,7 @@ class Ship extends Entity {
    */
 
   showInstructor () {
-    this.#game.modding.api.clientMessage(this.id, "show_instructor").send();
+    this.#api.clientMessage(this.id, "show_instructor").send();
     return this
   }
 
@@ -77,7 +78,7 @@ class Ship extends Entity {
    */
 
   instructorSays (text, character) {
-    this.#game.modding.api.clientMessage(this.id, "instructor_says", {text, character}).send();
+    this.#api.clientMessage(this.id, "instructor_says", {text, character}).send();
     return this
   }
 
@@ -87,7 +88,7 @@ class Ship extends Entity {
    */
 
   hideInstructor () {
-    this.#game.modding.api.clientMessage(this.id, "hide_instructor").send();
+    this.#api.clientMessage(this.id, "hide_instructor").send();
     return this
   }
 
@@ -98,7 +99,7 @@ class Ship extends Entity {
    */
 
   setUIComponent (component) {
-    this.#game.modding.api.clientMessage(this.id, "set_ui_component", {component: parseUI(component)}).send();
+    this.#api.clientMessage(this.id, "set_ui_component", {component: parseUI(component)}).send();
     return this
   }
 
@@ -110,7 +111,7 @@ class Ship extends Entity {
    */
 
   intermission (data, gameOver) {
-    this.#game.modding.api.clientMessage(this.id, "intermission", {data: parseIntermission(data, gameOver)}).send();
+    this.#api.clientMessage(this.id, "intermission", {data: parseIntermission(data, gameOver)}).send();
     return this
   }
 
@@ -135,7 +136,7 @@ class Ship extends Entity {
   }
 
   setObject (data) {
-    this.#game.modding.api.clientMessage(this.id, "set_object", {data}).send();
+    this.#api.clientMessage(this.id, "set_object", {data}).send();
   }
 
   /**
@@ -144,7 +145,7 @@ class Ship extends Entity {
    */
 
   emptyWeapons () {
-    this.#game.modding.api.name("empty_weapons").prop("ship", this.id).send();
+    this.#api.name("empty_weapons").prop("ship", this.id).send();
     return this
   }
 

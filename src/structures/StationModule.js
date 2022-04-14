@@ -18,16 +18,14 @@ const getRadius = function (_this) {
 /**
  * The Station Module Instance
  * @extends {Entity}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
- * @param {Station} parent - The parent station object
  * @abstract
  */
 
 class StationModule extends Entity {
-  constructor(game, options, parent) {
-    super(game);
+  constructor(game, api, options, parent) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
     let _this = this.modding.data;
     _this.shield = 1;
     _this.alive = true;
@@ -73,6 +71,7 @@ class StationModule extends Entity {
   }
 
   #game;
+  #api;
 
   get alive () {
     return !!this.modding.data.alive
@@ -86,7 +85,7 @@ class StationModule extends Entity {
     _this.lastUpdatedStep = this.#game.step;
     if (_this.alive != lastAlive) {
       if (!_this.alive) _this.lastAliveStep = this.#game.step;
-      this.#game.emit(this.#game.modding.events["STATION_MODULE_" + (_this.alive ? "REPAIRED" : "DESTROYED")], this)
+      this.#game.emit(this.#api.events["STATION_MODULE_" + (_this.alive ? "REPAIRED" : "DESTROYED")], this)
     }
   }
 

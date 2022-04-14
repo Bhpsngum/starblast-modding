@@ -6,25 +6,24 @@ const defineProperties = require("../utils/defineProperties.js");
 const getAngle = function (phase, step) {
   return (phase / 180 + step / 60 / 3600 % 1 * 2) * Math.PI
 }
-const getRadius = function (game) {
-  return (game.modding.data.teams?.stations?.all||[]).length > 1 ? game.options.map_size * 5 * Math.sqrt(2) / 2 : 0
+const getRadius = function (game, api) {
+  return (api.mod_data.teams?.stations?.all||[]).length > 1 ? game.options.map_size * 5 * Math.sqrt(2) / 2 : 0
 }
 
 /**
  * The Station Instance
  * @extends {Entity}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class Station extends Entity {
-  constructor(game, options) {
-    super(game);
+  constructor(game, api, options) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
     let size = Math.trunc(this.#game.options.station_size), _this = this.modding.data;
     _this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
-    let modules = new StationModuleManager(this.#game, this);
+    let modules = new StationModuleManager(this.#game, this.#api, this);
     (Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
 
     /**
@@ -70,6 +69,7 @@ class Station extends Entity {
   }
 
   #game;
+  #api;
 
   updateInfo (data) {
     let _this = this.modding.data;
@@ -81,27 +81,26 @@ class Station extends Entity {
     if (this.isActive() && null == this.modules.array(true).find(modul => modul.isActive() && modul.alive)) {
       this.markAsInactive();
       this.modules.all.forEach(modul => modul.isActive() && modul.markAsInactive());
-      this.#game.emit(this.#game.modding.events.STATION_DESTROYED, this);
+      this.#game.emit(this.#api.events.STATION_DESTROYED, this);
     }
   }
 
   get x () {
-    return getRadius(this.#game) * Math.cos(getAngle(this.phase, this.lastAliveStep))
+    return getRadius(this.#game, this.#api) * Math.cos(getAngle(this.phase, this.lastAliveStep))
   }
 
   get y () {
-    let radius = (this.#game.modding.data.teams?.stations?.all||[]).length > 1 ? this.#game.options.map_size * 5 * Math.sqrt(2) / 2 : 0;
-    return getRadius(this.#game) * Math.sin(getAngle(this.phase, this.lastAliveStep))
+    return getRadius(this.#game, this.#api) * Math.sin(getAngle(this.phase, this.lastAliveStep))
   }
 
   get vx () {
     let phase = this.phase, step = this.lastAliveStep;
-    return getRadius(this.#game) * (Math.cos(getAngle(phase, step + 1)) - Math.cos(getAngle(phase, step)))
+    return getRadius(this.#game, this.#api) * (Math.cos(getAngle(phase, step + 1)) - Math.cos(getAngle(phase, step)))
   }
 
   get vy () {
     let phase = this.phase, step = this.lastAliveStep;
-    return getRadius(this.#game) * (Math.sin(getAngle(phase, step + 1)) - Math.sin(getAngle(phase, step)))
+    return getRadius(this.#game, this.#api) * (Math.sin(getAngle(phase, step + 1)) - Math.sin(getAngle(phase, step)))
   }
 
   /**

@@ -18,11 +18,13 @@ const eventIDs = {
 }
 
 class GameClient {
-  constructor(game) {
-    this.#game = game
+  constructor(game, api) {
+    this.#game = game;
+    this.#api = api;
   }
 
   #game;
+  #api
 
   connect (ip, id, port) {
     let socket = GameSocket.create(ip, port), interval, game = this.#game;
@@ -65,9 +67,9 @@ class GameClient {
   initTeamStats () {
     let teams = JSON.parse(JSON.stringify(this.#game.options.teams ?? null));
     if (Array.isArray(teams)) {
-      let teamManager = new TeamManager(this.#game);
+      let teamManager = new TeamManager(this.#game, this.#api);
       teamManager.insert(...teams.map((team, i) => Object.assign({}, team, {id: i})));
-      this.#game.modding.data.teams = teamManager
+      this.#api.mod_data.teams = teamManager
     }
   }
 }

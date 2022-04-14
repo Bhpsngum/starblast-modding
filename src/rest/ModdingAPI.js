@@ -5,22 +5,48 @@ const defineProperties = require("../utils/defineProperties.js");
 
 class ModdingAPI {
   constructor(game, options) {
-    this.#game = game;
+    this.game = game;
     defineProperties(this, {
       preflight_requests: [],
       cacheConfiguration: !!options?.cacheConfiguration
     });
+    this.gameClient = new (require("../clients/GameClient.js"))(this.game, this),
+    this.events = require("../resources/Events.js");
+    this.handlers = {
+      create: new Map(),
+      destroy: new Map()
+    }
+    this.configuration = {};
+    this.create_requests = [],
+    this.mod_data = {};
     this.clear();
     this.started = false;
     this.stopped = false;
     this.onstop = [];
-    this.configuration = {}
   }
-
-  #game;
 
   clear () {
     return this.set({})
+  }
+
+  setOptions (options) {
+    return this.configuration.options = options
+  }
+
+  setRegion (region) {
+    return this.configuration.region = region
+  }
+
+  setECPKey (ECPKey) {
+    return this.configuration.ECPKey = ECPKey
+  }
+
+  getRequestOptions () {
+    return this.configuration.options
+  }
+
+  getRegion () {
+    return this.configuration.region
   }
 
   reset () {
@@ -30,7 +56,7 @@ class ModdingAPI {
     this.clear();
     if (!this.cacheConfiguration) this.configuration = {};
     let onstops = this.onstop.splice(0);
-    onstops.forEach(onstop => onstop?.resolve?.(this.#game))
+    onstops.forEach(onstop => onstop?.resolve?.(this.game))
   }
 
   async start () {
@@ -42,7 +68,7 @@ class ModdingAPI {
       this.data.options = {}
       this.encodeOptionsError = true
     }
-    return await runMod(this, this.#game)
+    return await runMod(this)
   }
 
   stop () {
@@ -86,7 +112,7 @@ class ModdingAPI {
     let pr = this.pending_request;
     if (this.started) try {
       this.socket.send(JSON.stringify(pr));
-      if ("string" == typeof pr.name && pr.name.match(/^add_(alien|asteroid|collectible)$/)) this.#game.modding.create_requests.push(pr.data.uuid)
+      if ("string" == typeof pr.name && pr.name.match(/^add_(alien|asteroid|collectible)$/)) this.create_requests.push(pr.data.uuid)
     }
     catch(e) {
       if (arguments.length > 0) {
@@ -94,9 +120,9 @@ class ModdingAPI {
         switch (action) {
           case "create":
           case "destroy": {
-            let hanlder = this.#game.modding.handlers[action], reject = handler.get(uuid)?.reject;
+            let hanlder = this.handlers[action], reject = handler.get(uuid)?.reject;
             handler.delete(uuid);
-            this.#game.findStructureByUUID(uuid)?.markAsInactive?.();
+            this.game.findStructureByUUID(uuid)?.markAsInactive?.();
             reject?.(error);
             break
           }
@@ -106,7 +132,7 @@ class ModdingAPI {
           default:
             globalMessage = 1;
         }
-        if (globalMessage) this.#game.emit('error', error, this.#game)
+        if (globalMessage) this.game.emit('error', error, this.game)
       }
     }
     else this.preflight_requests.push(pr);

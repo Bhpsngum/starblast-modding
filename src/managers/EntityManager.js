@@ -6,17 +6,18 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Entity Manager Instance.
  * @extends {StructureManager}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class EntityManager extends StructureManager {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
   }
 
   #game;
+  #api;
 
   /**
    * Add a new entity to the game
@@ -34,9 +35,10 @@ class EntityManager extends StructureManager {
       sx: rawEntity.vx,
       sy: rawEntity.vy
     });
+    let api = this.#api;
     return new Promise(function(resolve, reject){
-      this.#game.modding.handlers.create.set(entity.uuid, {resolve, reject});
-      this.#game.modding.api.name("add_"+this.manager_name).data(rawEntity).send(entity.uuid, "create")
+      api.handlers.create.set(entity.uuid, {resolve, reject});
+      api.name("add_"+this.manager_name).data(rawEntity).send(entity.uuid, "create")
     }.bind(this))
   }
 

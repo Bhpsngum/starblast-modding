@@ -7,13 +7,12 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Collectible Manager Instance.
  * @extends {EntityManager}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class CollectibleManager extends EntityManager {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
   }
 

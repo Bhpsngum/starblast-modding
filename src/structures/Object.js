@@ -11,15 +11,14 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Object3D Instance
  * @extends {Structure}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class Object3D extends Structure {
-  constructor (game, options) {
-    super(game);
+  constructor (game, api, options) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
 
     /**
     * Object ID
@@ -41,6 +40,7 @@ class Object3D extends Structure {
   }
 
   #game;
+  #api;
 
   markAsActive () {
     let _this = this.modding.data;
@@ -74,7 +74,7 @@ class Object3D extends Structure {
   set (data) {
     this.assign(data);
     let send = function () {
-      this.#game.modding.api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
+      this.#api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
     }.bind(this);
     if (this.type.physics.autoShape && this.type.physics.shape == null) this.type.getShape()
     .then(shape => (defineProperties(this.type.physics, {shape}), send()))
@@ -91,7 +91,7 @@ class Object3D extends Structure {
    */
 
   remove () {
-    this.#game.modding.api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object", {id: this.id}).send();
+    this.#api.name("remove_server_object").prop("id", this.id).send().globalMessage("remove_object", {id: this.id}).send();
     this.markAsInactive();
     this.#game.objects.update();
     return this

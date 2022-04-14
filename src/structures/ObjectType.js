@@ -9,14 +9,12 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The ObjectType Instance
  * @extends {Structure}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class ObjectType extends Structure {
-  constructor (game, type) {
-    super(game);
+  constructor (game, api, type) {
+    super(game, api);
     this.#game = game;
     let pysics = type?.physics ?? {}
     let physics = {}

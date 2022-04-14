@@ -26,23 +26,11 @@ class ModdingClient extends EventEmitter {
 
   constructor (options) {
     super();
-    var modding = {};
-    defineProperties(modding, {
-      api: new (require("../rest/ModdingAPI.js"))(this, options),
-      gameClient: new (require("./GameClient.js"))(this),
-      events: require("../resources/Events.js"),
-      handlers: defineProperties({}, {
-        create: new Map(),
-        destroy: new Map()
-      }),
-      create_requests: [],
-      data: {}
-    });
-    defineProperties(this, {modding});
+    this.#api = new (require("../rest/ModdingAPI.js"))(this, options);
     this.reset(true)
   }
 
-  #gameClient;
+  #api;
 
   /**
    * Indicates if the game is started or not.
@@ -51,7 +39,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get started () {
-    return !!this.modding.api.started
+    return !!this.#api.started
   }
 
   /**
@@ -61,7 +49,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get stopped () {
-    return !!this.modding.api.stopped
+    return !!this.#api.stopped
   }
 
   /**
@@ -81,7 +69,7 @@ class ModdingClient extends EventEmitter {
    */
 
   log (...data) {
-    return this.emit(this.modding.events.LOG, ...data)
+    return this.emit(this.#api.events.LOG, ...data)
   }
 
   /**
@@ -92,7 +80,7 @@ class ModdingClient extends EventEmitter {
 
   setRegion (region) {
     if (this.started) return this.error("Could not set region while the mod is running");
-    this.modding.api.configuration.region = region;
+    this.#api.setRegion(region);
     return this
   }
 
@@ -104,7 +92,7 @@ class ModdingClient extends EventEmitter {
 
   setOptions (options) {
     if (this.started) return this.error("Could not set options while the mod is running");
-    this.modding.api.configuration.options = options;
+    this.#api.setOptions(options);
     return this
   }
 
@@ -116,7 +104,7 @@ class ModdingClient extends EventEmitter {
 
   setECPKey (ECPKey) {
     if (this.started) return this.error("Could not set ECPKey while the mod is running");
-    this.modding.api.configuration.ECPKey = ECPKey;
+    this.#api.setECPKey(ECPKey);
     return this
   }
 
@@ -141,7 +129,7 @@ class ModdingClient extends EventEmitter {
    */
 
   setOpen (value) {
-    this.modding.api.name("set_open").prop("value", value).send();
+    this.#api.name("set_open").prop("value", value).send();
     return this
   }
 
@@ -152,7 +140,7 @@ class ModdingClient extends EventEmitter {
    */
 
   setCustomMap (map) {
-    this.modding.api.name("set_custom_map").data(map).send();
+    this.#api.name("set_custom_map").data(map).send();
     return this
   }
 
@@ -187,7 +175,7 @@ class ModdingClient extends EventEmitter {
 
   async start (options) {
     if (this.started) throw new Error("Mod already started");
-    return await this.configure(options).modding.api.start()
+    return await this.configure(options).#api.start()
   }
 
   /**
@@ -197,7 +185,27 @@ class ModdingClient extends EventEmitter {
 
   async stop () {
     if (this.stopped) throw new Error("Mod already stopped");
-    return await this.modding.api.stop()
+    return await this.#api.stop()
+  }
+
+  /**
+   * Options that sent to the server upon mod starting
+   * @type {object}
+   * @readonly
+   */
+
+  get requestOptions () {
+    return this.#api.getRequestOptions()
+  }
+
+  /**
+   * Game region
+   * @type {string}
+   * @readonly
+   */
+
+  get region () {
+    return this.started && !this.stopped ? this.#api.getRegion() : null;
   }
 
   /**
@@ -207,7 +215,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get ships () {
-    return this.modding.data.ships.update()
+    return this.#api.mod_data.ships.update()
   }
 
   /**
@@ -217,7 +225,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get aliens () {
-    return this.modding.data.aliens.update()
+    return this.#api.mod_data.aliens.update()
   }
 
   /**
@@ -227,7 +235,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get asteroids () {
-    return this.modding.data.asteroids.update()
+    return this.#api.mod_data.asteroids.update()
   }
 
   /**
@@ -237,7 +245,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get collectibles () {
-    return this.modding.data.collectibles.update()
+    return this.#api.mod_data.collectibles.update()
   }
 
   /**
@@ -247,7 +255,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get objects () {
-    return this.modding.data.objects.update()
+    return this.#api.mod_data.objects.update()
   }
 
   /**
@@ -257,7 +265,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get teams () {
-    return this.modding.data.teams?.update?.() ?? null
+    return this.#api.mod_data.teams?.update?.() ?? null
   }
 
   /**
@@ -267,7 +275,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get options () {
-    return this.modding.data.options
+    return this.#api.mod_data.options
   }
 
   /**
@@ -277,7 +285,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get step () {
-    return this.modding.data.step
+    return this.#api.mod_data.step
   }
 
   /**
@@ -287,7 +295,7 @@ class ModdingClient extends EventEmitter {
    */
 
   get link () {
-    let api = this.modding.api;
+    let api = this.#api;
     return (api.started && !api.stopped) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
   }
 
@@ -301,22 +309,22 @@ class ModdingClient extends EventEmitter {
     this.custom = {};
     let stopError = new Error("Mod had stopped before the action could be completed");
     for (let key of ["create", "destroy"]) {
-      let handlers = [...this.modding.handlers[key].entries()];
-      this.modding.handlers[key].clear();
+      let handlers = [...this.#api.handlers[key].entries()];
+      this.#api.handlers[key].clear();
       for (let handler of handlers) handler[1]?.reject?.(stopError)
     }
-    this.modding.create_requests.splice(0);
-    Object.assign(this.modding.data, {
-      aliens: new (require("../managers/AlienManager.js"))(this),
-      asteroids: new (require("../managers/AsteroidManager.js"))(this),
-      collectibles: new (require("../managers/CollectibleManager.js"))(this),
-      ships: new (require("../managers/ShipManager.js"))(this),
-      objects: new (require("../managers/ObjectManager.js"))(this),
+    this.#api.create_requests.splice(0);
+    Object.assign(this.#api.mod_data, {
+      aliens: new (require("../managers/AlienManager.js"))(this, this.#api),
+      asteroids: new (require("../managers/AsteroidManager.js"))(this, this.#api),
+      collectibles: new (require("../managers/CollectibleManager.js"))(this, this.#api),
+      ships: new (require("../managers/ShipManager.js"))(this, this.#api),
+      objects: new (require("../managers/ObjectManager.js"))(this, this.#api),
       teams: null,
       options: null,
       step: -1
     });
-    if (!init) this.modding.api.reset()
+    if (!init) this.#api.reset()
   }
 }
 

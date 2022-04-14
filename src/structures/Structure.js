@@ -8,13 +8,13 @@ const createUUID = function () {
 
 /**
  * The Structure Instance - represents any structrure in the game
- * @param {game} game - The <code>game</code> object
  * @abstract
  */
 
 class Structure {
-  constructor (game) {
+  constructor (game, api) {
     this.#game = game;
+    this.#api = api;
 
     /**
      * Custom object served for assigning data by the user
@@ -47,6 +47,7 @@ class Structure {
   }
 
   #game;
+  #api;
 
   markAsInactive () {
     try {

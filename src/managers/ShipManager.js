@@ -9,17 +9,18 @@ const parseIntermission = require("../utils/parseIntermission.js");
 /**
  * The Ship Manager Instance.
  * @extends {EntityManager}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class ShipManager extends EntityManager {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
   }
 
   #game;
+  #api;
 
   async add () {
     throw new Error("Entity class 'ship' could not be added through the Modding API")
@@ -31,7 +32,7 @@ class ShipManager extends EntityManager {
    */
 
   showInstructor () {
-    this.#game.modding.api.globalMessage("show_instructor").send();
+    this.#api.globalMessage("show_instructor").send();
     return this
   }
 
@@ -43,7 +44,7 @@ class ShipManager extends EntityManager {
    */
 
   instructorSays (text, character) {
-    this.#game.modding.api.globalMessage("instructor_says", {
+    this.#api.globalMessage("instructor_says", {
       text: text,
       character: character
     }).send();
@@ -56,7 +57,7 @@ class ShipManager extends EntityManager {
    */
 
   hideInstructor () {
-    this.#game.modding.api.globalMessage("hide_instructor").send();
+    this.#api.globalMessage("hide_instructor").send();
     return this
   }
 
@@ -67,7 +68,7 @@ class ShipManager extends EntityManager {
    */
 
   setUIComponent (component) {
-    this.#game.modding.api.globalMessage("set_ui_component", {component: parseUI(component)}).send();
+    this.#api.globalMessage("set_ui_component", {component: parseUI(component)}).send();
     return this
   }
 
@@ -79,7 +80,7 @@ class ShipManager extends EntityManager {
    */
 
   intermission (data, gameOver) {
-    this.#game.modding.api.globalMessage("intermission", {data: parseIntermission(data, gameOver)}).send();
+    this.#api.globalMessage("intermission", {data: parseIntermission(data, gameOver)}).send();
     return this
   }
 

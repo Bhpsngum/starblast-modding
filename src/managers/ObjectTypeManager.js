@@ -7,13 +7,12 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Object Type Manager Instance.
  * @extends {StructureManager}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
  * @abstract
  */
 
 class ObjectTypeManager extends StructureManager {
-  constructor(game) {
-    super(game);
+  constructor(game, api) {
+    super(game, api);
     this.#game = game;
   }
 

@@ -8,14 +8,12 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Asteroid Instance
  * @extends {Entity}
- * @param {ModdingClient} game - The <code>ModdingClient</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class Asteroid extends Entity {
   constructor(game, options) {
-    super(game);
+    super(game, api);
     this.#game = game;
     let _this = this.modding.data;
     _this.size = options?.size ?? 30;

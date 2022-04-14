@@ -7,18 +7,18 @@ const defineProperties = require("../utils/defineProperties.js");
 /**
  * The Entity Instance - represents any entity in the game
  * @extends {Structure}
- * @param {game} game - The <code>game</code> object
- * @param {object} options - Instance options
  * @abstract
  */
 
 class Entity extends Structure {
-  constructor (game) {
-    super(game);
+  constructor (game, api) {
+    super(game, api);
     this.#game = game;
+    this.#api = api;
   }
 
   #game;
+  #api;
 
   /**
    * Set the entity with given data
@@ -31,7 +31,7 @@ class Entity extends Structure {
     data.id = this.id;
     data.sx = data.vx;
     data.sy = data.vy;
-    this.#game.modding.api.name("set_"+this.structure_type).data(data).send();
+    this.#api.name("set_"+this.structure_type).data(data).send();
     return this
   }
 
@@ -43,8 +43,8 @@ class Entity extends Structure {
 
   kill () {
     return new Promise(function(resolve, reject) {
-      this.#game.modding.handlers.destroy.set(this.uuid, {resolve, reject});
-      this.#game.modding.api.name("set_"+this.structure_type).data({id: this.id, kill: true}).send(this.uuid, "destroy")
+      this.#api.handlers.destroy.set(this.uuid, {resolve, reject});
+      this.#api.name("set_"+this.structure_type).data({id: this.id, kill: true}).send(this.uuid, "destroy")
     }.bind(this))
   }
 
