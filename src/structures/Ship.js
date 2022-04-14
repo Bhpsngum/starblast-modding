@@ -270,8 +270,11 @@ class Ship extends Entity {
   }
 
   /**
-   * Ship customization, containing these properties: <ul><li><b><code>badge</code></b> - A string representing badge name, or <code>null</code> if the ship doesn't have any</li><li><b><code>finish</code></b> - A string representing ship's skin</li><li><b><code>hue</code></b> - A number representing the initial hue when user joins the game</li></ul>
+   * Ship customization, could be <code>null</code>
    * @type {object}
+   * @property {string} badge - Badge name of the ship, or <code>null</code> if the ship doesn't have any
+   * @property {string} finish - Finish name of the ship
+   * @property {number} hue - Initial hue when user joins the game
    * @readonly
    */
 

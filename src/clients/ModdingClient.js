@@ -23,7 +23,10 @@ const cloneObj = function (obj) {
 /**
  * The Modding Client Instance.
  * @extends {EventEmitter}
- * @param {object} options - options for calling the object, currently has the following properties:<br><ul><li><b><code>cacheECPKey</code></b> - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise</li><li><b><code>cacheOptions</code></b> - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise</li><li><b><code>cacheEvents</code></b> - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise</li></ul>
+ * @param {object} options - options for calling the object
+ * @property {boolean} cacheECPKey - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
+ * @property {boolean} cacheOptions - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise
+ * @property {boolean} cacheEvents - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise
  */
 
 class ModdingClient extends EventEmitter {
@@ -68,7 +71,7 @@ class ModdingClient extends EventEmitter {
 
   /**
    * Trigger the <code>onLog</code> event.
-   * @param {string} messages - Log messages strings
+   * @param {...string} messages - Log messages strings
    * @returns {boolean}
    */
 
@@ -114,7 +117,10 @@ class ModdingClient extends EventEmitter {
 
   /**
    * Configure the client
-   * @param {object} options - An object with the following properties:<br><ul><li><b><code>options</code></b> - Modded game options</li><li><b><code>region</code></b> - Modded game region</li><li><b><code>ECPKey</code></b> - ECP key</li></ul>
+   * @param {object} options - An options object
+   * @property {object} options - Modded game options
+   * @property {string} region - Modded game region
+   * @property {string} ECPKey - ECP key
    * @returns {ModdingClient}
    */
 

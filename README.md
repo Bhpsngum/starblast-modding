@@ -1,6 +1,12 @@
 # starblast-modding
 The JavaScript library for hosting modded Starblast games on NodeJS
 
+## Installation
+
+```
+> npm i starblast-modding
+```
+
 ## Documentation
 Please see [this link](https://bhpsngum.github.io/starblast/starblast-modding/)
 
