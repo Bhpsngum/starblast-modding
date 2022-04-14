@@ -27,7 +27,7 @@ class GameClient {
   #api
 
   connect (ip, id, port) {
-    let socket = GameSocket.create(ip, port), interval, game = this.#game;
+    let socket = GameSocket.create(ip, port), interval, game = this.#game, api = this.#api;
     socket.on("open", function () {
       this.send('{"name":"join","data":{"player_name":" ","preferred":' +id +'}}')
     });
@@ -38,7 +38,7 @@ class GameClient {
         let data = parsed.data
         switch (parsed.name) {
           case "welcome":
-            defineProperties(game.options, {
+            Object.assign(api.mod_data.options, {
               map_name: data.name,
               map_id: data.seed
             });

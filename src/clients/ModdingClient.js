@@ -16,6 +16,10 @@ const managers = [
   { path: ["teams", "stations"], mapper: v => v.modules }
 ];
 
+const cloneObj = function (obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 /**
  * The Modding Client Instance.
  * @extends {EventEmitter}
@@ -189,13 +193,13 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
-   * Options that sent to the server upon mod starting
+   * Returns a copy of the options object that was sent to the server from the start
    * @type {object}
    * @readonly
    */
 
   get requestOptions () {
-    return this.#api.getRequestOptions()
+    return cloneObj(this.#api.getRequestOptions())
   }
 
   /**
@@ -269,13 +273,13 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
-   * The game options object
+   * Returns a copy of game options object
    * @type {object}
    * @readonly
    */
 
   get options () {
-    return this.#api.mod_data.options
+    return cloneObj(this.#api.mod_data.options)
   }
 
   /**
