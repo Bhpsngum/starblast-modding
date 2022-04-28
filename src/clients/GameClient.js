@@ -32,7 +32,7 @@ class GameClient {
       this.send('{"name":"join","data":{"player_name":" ","preferred":' +id +'}}')
     });
     socket.on("message", function (event, isBinary) {
-      if (!isBinary) {
+      if (!isBinary && game.started && !game.stopped) {
         let parsed;
         try { parsed = JSON.parse(event.toString()) ?? {} } catch (e) { parsed = {} }
         let data = parsed.data
