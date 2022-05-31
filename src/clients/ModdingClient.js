@@ -34,7 +34,6 @@ class ModdingClient extends EventEmitter {
   constructor (options) {
     super();
     this.#api = new (require("../rest/ModdingAPI.js"))(this, options);
-    this.reset(true)
   }
 
   #api;
@@ -66,7 +65,7 @@ class ModdingClient extends EventEmitter {
    */
 
   error (message) {
-    return this.emit('error', new Error(message), this)
+    return this.emit('error', new Error(message))
   }
 
   /**
@@ -169,8 +168,9 @@ class ModdingClient extends EventEmitter {
       }
       if (!(manager instanceof StructureManager)) continue Search;
       if (includeInactive) manager = manager.all;
+      manager = manager.toArray();
       if ("function" == typeof keys.mapper) manager = manager.map(keys.mapper);
-      let results = manager.flat(Infinity).find(structure => Object.is(structure.uuid, uuid));
+      let results = manager.find(structure => Object.is(structure.uuid, uuid));
       if (results != null) return results
     }
 
@@ -307,34 +307,6 @@ class ModdingClient extends EventEmitter {
   get link () {
     let api = this.#api;
     return (api.started && !api.stopped) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
-  }
-
-  reset (init) {
-
-    /**
-     * Custom object served for assigning data by the user
-     * @type {object}
-     */
-
-    this.custom = {};
-    let stopError = new Error("Mod had stopped before the action could be completed");
-    for (let key of ["create", "destroy"]) {
-      let handlers = [...this.#api.handlers[key].entries()];
-      this.#api.handlers[key].clear();
-      for (let handler of handlers) handler[1]?.reject?.(stopError)
-    }
-    this.#api.create_requests.splice(0);
-    Object.assign(this.#api.mod_data, {
-      aliens: new (require("../managers/AlienManager.js"))(this, this.#api),
-      asteroids: new (require("../managers/AsteroidManager.js"))(this, this.#api),
-      collectibles: new (require("../managers/CollectibleManager.js"))(this, this.#api),
-      ships: new (require("../managers/ShipManager.js"))(this, this.#api),
-      objects: new (require("../managers/ObjectManager.js"))(this, this.#api),
-      teams: null,
-      options: null,
-      step: -1
-    });
-    if (!init) this.#api.reset()
   }
 }
 

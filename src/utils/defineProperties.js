@@ -1,4 +1,4 @@
-module.exports = function(obj, properties, enumerable = false) {
+module.exports = function(obj, properties, enumerable = true) {
   for (let key in properties) properties[key] = {
     value: properties[key],
     enumerable: !!enumerable,

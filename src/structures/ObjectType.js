@@ -130,7 +130,7 @@ class ObjectType extends Structure {
       emissiveColor: type?.emissiveColor ?? 0xFFFFFF,
       specularColor: type?.specularColor ?? 0xFFFFFF,
       bumpScale: "number" == typeof type?.bumpScale ? type.bumpScale : 1,
-      transparent: !!type?.transparent,
+      transparent: !!(type?.transparent ?? true),
       shininess: "number" == typeof type?.shininess ? type.shininess : 0,
       physics
     });

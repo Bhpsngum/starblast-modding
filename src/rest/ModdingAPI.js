@@ -6,12 +6,9 @@ const defineProperties = require("../utils/defineProperties.js");
 class ModdingAPI {
   constructor(game, options) {
     this.game = game;
-    defineProperties(this, {
-      preflight_requests: [],
-      cacheECPKey: !!options?.cacheECPKey,
-      cacheOptions: !!options?.cacheOptions,
-      cacheEvents: !!options?.cacheEvents
-    });
+    this.cacheECPKey = !!options?.cacheECPKey;
+    this.cacheOptions = !!options?.cacheOptions;
+    this.cacheEvents = !!options?.cacheEvents;
     this.gameClient = new (require("../clients/GameClient.js"))(this.game, this),
     this.events = require("../resources/Events.js");
     this.handlers = {
@@ -19,16 +16,15 @@ class ModdingAPI {
       destroy: new Map()
     }
     this.configuration = {};
-    this.create_requests = [],
+    this.create_requests = [];
     this.mod_data = {};
-    this.clear();
-    this.started = false;
-    this.stopped = false;
     this.onstop = [];
+    this.clientReset(this.game);
+    this.stopped = false;
   }
 
   clear () {
-    return this.set({})
+    return this.set()
   }
 
   setOptions (options) {
@@ -54,11 +50,12 @@ class ModdingAPI {
   reset () {
     this.started = false;
     this.stopped = true;
-    this.preflight_requests.splice(0);
+    this.preflight_requests = [];
     this.clear();
     if (!this.cacheECPKey) delete this.configuration.ECPKey;
     if (!this.cacheOptions) delete this.configuration.options;
     if (!this.cacheEvents) this.game.removeAllListeners();
+    if (this.game.listeners('error').length == 0) this.game.on('error', function () {});
     let onstops = this.onstop.splice(0);
     onstops.forEach(onstop => onstop?.resolve?.(this.game))
   }
@@ -105,7 +102,7 @@ class ModdingAPI {
   clientMessage (id, name, data) {
     this.name("client_message");
     data = Object.assign({}, data, {name: name});
-    return this.data({id: id, data: data})
+    return this.data({id, data})
   }
 
   globalMessage (name, data) {
@@ -131,7 +128,7 @@ class ModdingAPI {
             break
           }
           case "stop":
-            this.onstop.shift()?.[0]?.reject?.(error);
+            this.onstop.shift()?.reject?.(error);
             break;
           default:
             globalMessage = 1;
@@ -141,6 +138,35 @@ class ModdingAPI {
     }
     else this.preflight_requests.push(pr);
     return this.clear()
+  }
+
+  clientReset (client) {
+
+    /**
+     * Custom object served for assigning data by the user
+     * @name ModdingClient.prototype.custom
+     * @type {object}
+     */
+
+    client.custom = {};
+    let stopError = new Error("Mod had stopped before the action could be completed");
+    for (let key of ["create", "destroy"]) {
+      let handlers = [...this.handlers[key].entries()];
+      this.handlers[key].clear();
+      for (let handler of handlers) handler[1]?.reject?.(stopError)
+    }
+    this.create_requests.splice(0);
+    Object.assign(this.mod_data, {
+      aliens: new (require("../managers/AlienManager.js"))(client, this),
+      asteroids: new (require("../managers/AsteroidManager.js"))(client, this),
+      collectibles: new (require("../managers/CollectibleManager.js"))(client, this),
+      ships: new (require("../managers/ShipManager.js"))(client, this),
+      objects: new (require("../managers/ObjectManager.js"))(client, this),
+      teams: null,
+      options: null,
+      step: -1
+    });
+    this.reset();
   }
 }
 

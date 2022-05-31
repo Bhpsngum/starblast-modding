@@ -71,6 +71,12 @@ class Object3D extends Structure {
     if (forceAssign || options?.scale != null) _this.scale = new Coordinate(options?.scale);
   }
 
+  /**
+   * Set the object with given data
+   * @param {object} data - options to set to the object
+   * @returns {Object3D}
+   */
+
   set (data) {
     this.assign(data);
     let send = function () {

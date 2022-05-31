@@ -173,10 +173,10 @@ module.exports.create = function (api, address, token) {
       }
     }.bind(api.game));
     socket.on("close", function () {
+      if (GameSocket.OPEN === api.gameClient.socket?.readyState) api.gameClient.socket.close();
+      api.clientReset(this);
       if (!this.started) reject(new Error("Failed to run the mod"));
       else this.emit(events.MOD_STOPPED);
-      if (GameSocket.OPEN === api.gameClient.socket?.readyState) api.gameClient.socket.close();
-      this.reset();
     }.bind(api.game))
   }.bind(api))
 }

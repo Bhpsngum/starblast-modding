@@ -9,6 +9,7 @@ module.exports = (function() {
       * Fires when the game is about to start
       * @event ModdingClient#start
       * @param {string} link - The link to the created game
+      * @param {object} options - The current game options from server
       */
     MOD_STARTED: "start",
     /**
