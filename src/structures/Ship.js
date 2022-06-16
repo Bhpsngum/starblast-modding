@@ -383,7 +383,7 @@ class Ship extends Entity {
   /**
    * Set ship's collider (ability interact with game objects and ships)
    * @method Ship#setCollider
-   * @param {boolean} healing - The collider state to set (<code>true</code> for true and vice versa)
+   * @param {boolean} collider - The collider state to set (<code>true</code> for true and vice versa)
    * @returns {Ship}
    */
 
