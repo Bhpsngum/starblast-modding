@@ -28,28 +28,28 @@ class Station extends Entity {
 
     /**
     * Station name
-    * @name Station.prototype.name
+    * @name Station#name
     * @type {string}
     * @readonly
     */
 
     /**
     * Station team id
-    * @name Station.prototype.team
+    * @name Station#team
     * @type {number}
     * @readonly
     */
 
     /**
     * Station modules list
-    * @name Station.prototype.modules
+    * @name Station#modules
     * @type {StationModuleManager}
     * @readonly
     */
 
     /**
     * Station phase (in degrees)
-    * @name Station.prototype.phase
+    * @name Station#phase
     * @type {string}
     * @readonly
     */

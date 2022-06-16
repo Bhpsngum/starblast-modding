@@ -41,6 +41,41 @@ class Asteroid extends Entity {
     return this.modding.data.size
   }
 
+  /**
+   * Set asteroid's X position
+   * @method Asteroid#setX
+   * @param {number} x - The X position to set
+   * @returns {Asteroid}
+   */
+
+  /**
+   * Set asteroid's Y position
+   * @method Asteroid#setY
+   * @param {number} y - The Y position to set
+   * @returns {Asteroid}
+   */
+
+  /**
+   * Set asteroid speed along the x Axis
+   * @method Asteroid#setVx
+   * @param {number} vx - The speed to set along the x Axis, can be negative
+   * @returns {Asteroid}
+   */
+
+  /**
+   * Set asteroid speed along the y Axis
+   * @method Asteroid#setVy
+   * @param {number} vy - The speed to set along the y Axis, can be negative
+   * @returns {Asteroid}
+   */
+
+  /**
+   * Set asteroid size
+   * @method Asteroid#setSize
+   * @param {number} size - The size to set
+   * @returns {Asteroid}
+   */
+
   toJSON () {
     return limitedJSON(this, ["x", "y", "request_id", "vx", "vy", "size"])
   }

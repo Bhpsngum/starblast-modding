@@ -13,21 +13,21 @@ class Coordinate {
   constructor (position) {
     /**
      * X Coordinate
-     * @name Coordinate.prototype.x
+     * @name Coordinate#x
      * @type {number}
      * @readonly
      */
 
     /**
     * Y Coordinate
-    * @name Coordinate.prototype.y
+    * @name Coordinate#y
     * @type {number}
     * @readonly
     */
 
     /**
      * Z Coordinate
-     * @name Coordinate.prototype.z
+     * @name Coordinate#z
      * @type {number}
      * @readonly
      */

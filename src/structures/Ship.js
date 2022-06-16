@@ -282,6 +282,118 @@ class Ship extends Entity {
     return this.modding.data.customization ?? null
   }
 
+  /**
+   * Set ship's X position
+   * @method Ship#setX
+   * @param {number} x - The X position to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's Y position
+   * @method Ship#setY
+   * @param {number} y - The Y position to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship speed along the x Axis
+   * @method Ship#setVx
+   * @param {number} vx - The speed to set along the x Axis, can be negative
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship speed along the y Axis
+   * @method Ship#setVy
+   * @param {number} vy - The speed to set along the y Axis, can be negative
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship type
+   * @method Ship#setType
+   * @param {number} type - The type code to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship angle
+   * @method Ship#setAngle
+   * @param {number} angle - The angle to set (in degree)
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship score
+   * @method Ship#setScore
+   * @param {number} score - The score to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's idle state
+   * @method Ship#setIdle
+   * @param {boolean} idle - The idle state to set (<code>true</code> for true and vice versa)
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship shield
+   * @method Ship#setShield
+   * @param {number} shield - The shield to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's generator capacity (the energy bar)
+   * @method Ship#setGenerator
+   * @param {number} generator - The generator capacity value to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's healing state
+   * @method Ship#setHealing
+   * @param {boolean} healing - The healing state to set (<code>true</code> for true and vice versa)
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's crystal amount
+   * @method Ship#setCrystals
+   * @param {number} crystals - The crystals amount to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship stats
+   * @method Ship#setStats
+   * @param {number} stats - The stats number to set (8-digit number for 8 specs)
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's team
+   * @method Ship#setTeam
+   * @param {number} team - The id of the team to set
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship's collider (ability interact with game objects and ships)
+   * @method Ship#setCollider
+   * @param {boolean} healing - The collider state to set (<code>true</code> for true and vice versa)
+   * @returns {Ship}
+   */
+
+  /**
+   * Set ship hue
+   * @method Ship#setHue
+   * @param {number} hue - The hue value to set
+   * @returns {Ship}
+   */
+
   toJSON () {
     return limitedJSON(this, ["name", "x", "y", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization"])
   }

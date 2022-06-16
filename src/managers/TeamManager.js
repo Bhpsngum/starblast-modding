@@ -20,7 +20,7 @@ class TeamManager extends StructureManager {
 
     /**
      * The Station Manager object.
-     * @name TeamManager.prototype.stations
+     * @name TeamManager#stations
      * @type {StationManager}
      * @readonly
      */

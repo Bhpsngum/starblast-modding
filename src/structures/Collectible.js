@@ -18,7 +18,7 @@ class Collectible extends Entity {
 
     /**
      * Collectible code
-     * @name Collectible.prototype.code
+     * @name Collectible#code
      * @type {number}
      * @readonly
      */

@@ -22,7 +22,7 @@ class Object3D extends Structure {
 
     /**
     * Object ID
-    * @name Object3D.prototype.id
+    * @name Object3D#id
     * @type {string}
     * @readonly
     */
@@ -142,6 +142,34 @@ class Object3D extends Structure {
   get scale () {
     return this.modding.data.scale
   }
+
+  /**
+   * Set object type
+   * @method Object3D#setType
+   * @param {object} type - The type object to set
+   * @returns {Object3D}
+   */
+
+  /**
+   * Set object position
+   * @method Object3D#setPosition
+   * @param {object} position - The position object to set
+   * @returns {Object3D}
+   */
+
+  /**
+   * Set object rotation
+   * @method Object3D#setRotation
+   * @param {object} rotation - The rotation object to set
+   * @returns {Object3D}
+   */
+
+  /**
+   * Set object scale
+   * @method Object3D#setScale
+   * @param {object} type - The scale object to set
+   * @returns {Object3D}
+   */
 
   toJSON () {
     return limitedJSON(this, ["id", "type", "position", "rotation", "scale"])

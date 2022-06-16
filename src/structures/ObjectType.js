@@ -26,91 +26,91 @@ class ObjectType extends Structure {
     else if (!physics.autoShape) defineProperties(physics, {shape: []});
     /**
     * ObjectType ID
-    * @name ObjectType.prototype.id
+    * @name ObjectType#id
     * @type {string}
     * @readonly
     */
 
     /**
     * ObjectType model link (.obj file)
-    * @name ObjectType.prototype.obj
+    * @name ObjectType#obj
     * @type {string}
     * @readonly
     */
 
     /**
     * ObjectType diffuse texture link
-    * @name ObjectType.prototype.diffuse
+    * @name ObjectType#diffuse
     * @type {string}
     * @readonly
     */
 
     /**
     * ObjectType emissive texture link
-    * @name ObjectType.prototype.emissive
+    * @name ObjectType#emissive
     * @type {string}
     * @readonly
     */
 
     /**
     * ObjectType specular texture link
-    * @name ObjectType.prototype.specular
+    * @name ObjectType#specular
     * @type {string}
     * @readonly
     */
 
     /**
     * ObjectType bump texture link
-    * @name ObjectType.prototype.bump
+    * @name ObjectType#bump
     * @type {string}
     * @readonly
     */
 
     /**
     * ObjectType diffuse color
-    * @name ObjectType.prototype.diffuseColor
+    * @name ObjectType#diffuseColor
     * @type {(string|number)}
     * @readonly
     */
 
     /**
     * ObjectType emissive color
-    * @name ObjectType.prototype.emissiveColor
+    * @name ObjectType#emissiveColor
     * @type {(string|number)}
     * @readonly
     */
 
     /**
     * ObjectType specular color
-    * @name ObjectType.prototype.specularColor
+    * @name ObjectType#specularColor
     * @type {(string|number)}
     * @readonly
     */
 
     /**
     * ObjectType bump scale
-    * @name ObjectType.prototype.bumpScale
+    * @name ObjectType#bumpScale
     * @type {(string|number)}
     * @readonly
     */
 
     /**
     * ObjectType transparency
-    * @name ObjectType.prototype.transparent
+    * @name ObjectType#transparent
     * @type {boolean}
     * @readonly
     */
 
     /**
     * ObjectType shininess
-    * @name ObjectType.prototype.shininess
+    * @name ObjectType#shininess
     * @type {boolean}
     * @readonly
     */
 
     /**
     * ObjectType physics
-    * @name ObjectType.prototype.physics
+    * @name ObjectType#physics
     * @type {object}
     * @property {array} shape - Object type's hitbox shape
     * @property {number} mass - The mass of the object type

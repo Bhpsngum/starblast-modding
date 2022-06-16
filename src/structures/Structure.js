@@ -25,21 +25,21 @@ class Structure {
 
     /**
      * Structure's UUID
-     * @name Structure.prototype.uuid
+     * @name Structure#uuid
      * @type {number}
      * @readonly
      */
 
     /**
     * Structure's ID
-    * @name Structure.prototype.id
+    * @name Structure#id
     * @type {number}
     * @readonly
     */
 
     /**
     * Structure's creation step
-    * @name Structure.prototype.createdStep
+    * @name Structure#createdStep
     * @type {number}
     * @readonly
     */

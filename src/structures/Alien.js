@@ -40,14 +40,14 @@ class Alien extends Entity {
     let weapon_drop = CollectibleCodes.indexOf(options?.weapon_drop);
     /**
      * The collectible drop code after the alien is killed
-     * @name Alien.prototype.weapon_drop
+     * @name Alien#weapon_drop
      * @type {number}
      * @readonly
      */
 
     /**
     * The amount of crystals dropped after the alien is killed
-    * @name Alien.prototype.crytal_drop
+    * @name Alien#crytal_drop
     * @type {number}
     * @readonly
     */
@@ -98,6 +98,69 @@ class Alien extends Entity {
   get points () {
     return this.modding.data.points
   }
+
+  /**
+   * Set alien's X position
+   * @method Alien#setX
+   * @param {number} x - The X position to set
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien's Y position
+   * @method Alien#setY
+   * @param {number} y - The Y position to set
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien speed along the x Axis
+   * @method Alien#setVx
+   * @param {number} vx - The speed to set along the x Axis, can be negative
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien speed along the y Axis
+   * @method Alien#setVy
+   * @param {number} vy - The speed to set along the y Axis, can be negative
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien shield
+   * @method Alien#setShield
+   * @param {number} shield - The shield to set
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien's regeneration rate
+   * @method Alien#setRegen
+   * @param {number} regen - The regeneration rate to set
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien's laser damage
+   * @method Alien#setDamage
+   * @param {number} damage - The damage to set
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien's laser speed
+   * @method Alien#setLaserSpeed
+   * @param {number} x - The X position to set
+   * @returns {Alien}
+   */
+
+  /**
+   * Set alien's firing rate
+   * @method Alien#setRate
+   * @param {number} rate - The firing rate to set
+   * @returns {Alien}
+   */
 
   toJSON () {
     return limitedJSON(this, ["x", "y", "request_id", "vx", "vy", "shield", "regen", "points", "damage", "laser_speed", "rate", "code", "level", "weapon_drop", "crystal_drop"])

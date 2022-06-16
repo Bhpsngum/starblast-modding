@@ -195,6 +195,7 @@ class ModdingClient extends EventEmitter {
 
   async stop () {
     if (this.stopped) throw new Error("Mod already stopped");
+    if (!this.started) throw new Error("Mod is not started yet");
     return await this.#api.stop()
   }
 

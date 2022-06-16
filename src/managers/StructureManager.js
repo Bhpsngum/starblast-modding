@@ -18,7 +18,7 @@ class StructureManager extends ArrayMap {
     /**
      * A collection containing all structures in the manager
      * @type {ArrayMap}
-     * @name StructureManager.prototype.all
+     * @name StructureManager#all
      * @readonly
      */
     defineProperties(this, {

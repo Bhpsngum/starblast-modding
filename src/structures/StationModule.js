@@ -39,21 +39,21 @@ class StationModule extends Entity {
 
     /**
     * The parent station of this module
-    * @name StationModule.prototype.parent
+    * @name StationModule#parent
     * @type {Station}
     * @readonly
     */
 
     /**
     * Module type
-    * @name StationModule.prototype.type
+    * @name StationModule#type
     * @type {string}
     * @readonly
     */
 
     /**
     * Module class
-    * @name StationModule.prototype.class
+    * @name StationModule#class
     * @type {number}
     * @readonly
     */
