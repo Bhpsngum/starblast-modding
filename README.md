@@ -12,6 +12,9 @@
 * Includes new features and events that doesn't exist in the original Modding
 * Regularly updates to catch up with latest Starblast server updates and bugs fixes
 
+## Credits
+* Thanks Caramel#8789 for making the banner for this npm.
+
 ## Installation
 **Node.js >= 16.6.0 and NPM >= 6.0.0 are required.**
 
