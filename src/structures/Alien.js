@@ -9,7 +9,7 @@ const alien_types = new Map([
   [10, {points: [10, 20, 50, 1000]}],
   [11, {points: [30, 60, 120]}],
   [12, {points: [1200, 2500]}],
-  [13, {points: [50]}], // recheck
+  [13, {points: [50]}],
   [14, {points: [80, 80, 80]}],
   [15, {points: [1500, 2500]}],
   [16, {points: [40, 75, 120, 1750]}],
