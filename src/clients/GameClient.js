@@ -29,7 +29,13 @@ class GameClient {
   connect (ip, id, port) {
     let socket = GameSocket.create(ip, port), interval, game = this.#game, api = this.#api;
     socket.on("open", function () {
-      this.send('{"name":"join","data":{"player_name":" ","preferred":' +id +'}}')
+      this.send(JSON.stringify({
+        name: "join",
+        data: {
+          player_name: "starblast-modding",
+          preferred: id
+        }
+      }))
     });
     socket.on("message", function (event, isBinary) {
       if (!isBinary && game.started && !game.stopped) {
@@ -43,6 +49,12 @@ class GameClient {
               map_id: data.seed
             });
             this.socket = socket;
+            for (let ship of game.ships) socket.send(JSON.stringify({
+              name: "get_name",
+              data: {
+                id: ship.id
+              }
+            }));
             interval = setInterval(function(){socket.send(0)}, 1000);
             break;
           case "player_name":
