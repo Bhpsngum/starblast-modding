@@ -59,7 +59,7 @@ class GameClient {
             break;
           case "player_name":
             let custom = data.custom ?? {finish: "zinc", laser: "0"}, lasers = ["single", "double", "lightning", "digital"];
-            custom.badge = "string" == typeof custom.badge ? custom.badge.replace(/^https{0,1}\:\/\/starblast\.io\/ecp\/([^.]+).+$/,"$1") : null;
+            custom.badge = "string" == typeof custom.badge ? custom.badge.replace(/^https{0,1}\:\/\/starblast\.io\/ecp\/(.+)\..+$/,"$1") : null;
             custom.laser = lasers[custom.laser] ?? lasers[0];
             data.customization = defineProperties({}, custom);
             getEntity(game, data, game.ships).update(data, true)
