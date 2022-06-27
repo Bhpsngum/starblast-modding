@@ -19,7 +19,7 @@ class CollectibleManager extends EntityManager {
   #game;
 
   update () {
-    this.filterList().all.forEach(entity => entity.isActive() && entity.lastUpdatedStep + 600 < this.#game.step && entity.markAsInactive());
+    this.filterList().all.forEach(entity => entity.isActive() && entity.lastUpdatedStep + 600 < this.#game.timer.step && entity.markAsInactive());
     this.clear();
     this.all.forEach(entity => entity.isActive() && this._UUIDset(entity));
     return this

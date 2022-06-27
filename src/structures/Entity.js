@@ -60,7 +60,7 @@ class Entity extends Structure {
     _this.y = data.y;
     _this.vx = data.sx;
     _this.vy = data.sy;
-    _this.lastUpdatedStep = this.#game.step
+    _this.lastUpdatedStep = this.#game.timer.step
   }
 
   /**

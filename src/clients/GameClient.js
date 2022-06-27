@@ -7,6 +7,7 @@ const defineProperties = require("../utils/defineProperties.js");
 const readBinaries = function (data, game) {
   let dataView = new DataView(data), eventID = dataView.getUint8(0);
   dataView = new DataView(data.slice(1));
+  console.log(eventID, "Alive");
   switch (eventID) {
     case eventIDs.STATION_UPDATE:
       game.teams.socketUpdate(dataView);

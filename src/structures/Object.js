@@ -51,7 +51,7 @@ class Object3D extends Structure {
   markAsInactive () {
     let _this = this.modding.data;
     _this[this.inactive_field] = true
-    _this[this.inactive_field + "Step"] = this.#game.step
+    _this[this.inactive_field + "Step"] = this.#game.timer.step
   }
 
   assign(options, forceAssign = false) {

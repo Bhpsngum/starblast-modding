@@ -82,9 +82,9 @@ class StationModule extends Entity {
     let lastAlive = _this.alive;
     _this.alive = shield > 0;
     _this.shield = Math.max(0, shield - 1) / 254 * this.#game.options[this.type + "_shield"][this.parent.level - 1];
-    _this.lastUpdatedStep = this.#game.step;
+    _this.lastUpdatedStep = this.#game.timer.step;
     if (_this.alive != lastAlive) {
-      if (!_this.alive) _this.lastAliveStep = this.#game.step;
+      if (!_this.alive) _this.lastAliveStep = this.#game.timer.step;
       this.#game.emit(this.#api.events["STATION_MODULE_" + (_this.alive ? "REPAIRED" : "DESTROYED")], this)
     }
   }

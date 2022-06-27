@@ -28,7 +28,7 @@ class Collectible extends Entity {
     _this.x = options?.x ?? 0;
     _this.y = options?.y ?? 0;
     _this.vx = _this.vy = 0;
-    _this.lastUpdatedStep = game.step;
+    _this.lastUpdatedStep = game.timer.step;
   }
 
   #game;

@@ -8,9 +8,9 @@ module.exports = function (game, data, manager, ...additionalValues) {
     entity = manager.create(Object.assign({}, data, entity), ...additionalValues);
     defineProperties(entity, {
       id: data?.id,
-      createdStep: Math.max(game.step, 0)
+      createdStep: Math.max(game.timer.step, 0)
     });
-    entity.modding.data.lastUpdatedStep = Math.max(game.step, 0);
+    entity.modding.data.lastUpdatedStep = Math.max(game.timer.step, 0);
     manager.insert(entity)
   }
   return entity

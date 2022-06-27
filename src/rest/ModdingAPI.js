@@ -162,6 +162,7 @@ class ModdingAPI {
       collectibles: new (require("../managers/CollectibleManager.js"))(client, this),
       ships: new (require("../managers/ShipManager.js"))(client, this),
       objects: new (require("../managers/ObjectManager.js"))(client, this),
+      timer: new (require("../managers/TimeManager.js"))(this),
       teams: null,
       options: null,
       step: -1

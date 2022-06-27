@@ -280,6 +280,16 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
+   * The time manager (timer) of the game.
+   * @type {TimeManager}
+   * @readonly
+   */
+
+  get timer () {
+    return this.#api.mod_data.timer
+  }
+
+  /**
    * Returns a copy of game options object
    * @type {object}
    * @readonly
@@ -287,16 +297,6 @@ class ModdingClient extends EventEmitter {
 
   get options () {
     return cloneObj(this.#api.mod_data.options)
-  }
-
-  /**
-   * The game step
-   * @type {number}
-   * @readonly
-   */
-
-  get step () {
-    return this.#api.mod_data.step
   }
 
   /**

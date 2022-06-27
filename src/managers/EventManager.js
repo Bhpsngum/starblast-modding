@@ -48,6 +48,7 @@ module.exports.create = function (api, address, token) {
           case "tick":
             api.mod_data.step = data.step;
             for (let key of ["aliens", "asteroids", "collectibles", "ships", "objects", "teams"]) api.mod_data[key]?.update?.(true);
+            api.updateTimer();
             this.emit(events.TICK, data.step);
             break;
           case "alien_created":
@@ -67,10 +68,10 @@ module.exports.create = function (api, address, token) {
             }
             defineProperties(entity, {
               id: event.id,
-              createdStep: Math.max(this.step, 0),
+              createdStep: Math.max(this.timer.step, 0),
             });
             entity.markAsSpawned();
-            entity.modding.data.lastUpdatedStep = this.step;
+            entity.modding.data.lastUpdatedStep = this.timer.step;
             entityList.update();
             let createReqs = api.create_requests.splice(0);
             api.create_requests.push(...createReqs.filter(uid => !Object.is(uid, uuid)));
@@ -123,7 +124,7 @@ module.exports.create = function (api, address, token) {
                 let ship = getEntity(api.game, data, this.ships);
                 let killer = this.ships.findById(data.killer, true);
                 ship.modding.data.alive = false;
-                ship.modding.data.lastAliveStep = this.step;
+                ship.modding.data.lastAliveStep = this.timer.step;
                 let uuid = ship.uuid, handler = api.handlers.destroy, resolve = handler.get(uuid)?.resolve;
                 handler.delete(uuid);
                 resolve?.(ship);

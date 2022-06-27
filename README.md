@@ -80,7 +80,7 @@ game.on('start', function(link, options) {
 });
 
 game.on('tick', function (step) {
-  if (game.step % 30 == 0) for (let ship of game.ships) {
+  if (step % 30 == 0) for (let ship of game.ships) {
     ship.set({invulnerable: 120});
     ship.setCrystals(120).setGenerator(300).setHealing(true)
   }
@@ -88,8 +88,8 @@ game.on('tick', function (step) {
 
 game.on('shipRespawn', function(ship) {
   ship.setX(0).setY(0);
-  console.log("Ship respawn: "+ship.name);
-  console.log("Event: "+game.step);
+  console.log("Ship respawn: " + ship.name);
+  console.log("Event: " + game.timer.step);
 });
 game.on('shipSpawn', function(ship) {
   ship.setX(0).setY(0);

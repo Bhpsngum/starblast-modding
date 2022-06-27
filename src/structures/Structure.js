@@ -53,11 +53,11 @@ class Structure {
     try {
       defineProperties(this, {
         [this.inactive_field]: true,
-        [this.inactive_field + "Step"]: this.#game.step
+        [this.inactive_field + "Step"]: this.#game.timer.step
       })
     }
     catch (e) {}
-    this.modding.data.lastAliveStep = this.#game.step
+    this.modding.data.lastAliveStep = this.#game.timer.step
   }
 
   markAsSpawned () {
@@ -102,7 +102,7 @@ class Structure {
 
   get lastAliveStep () {
     let aliveData = this.modding.data.alive, alive = this.isActive() && this.alive;
-    return alive ? this.#game.step : this.modding.data.lastAliveStep;
+    return alive ? this.#game.timer.step : this.modding.data.lastAliveStep;
   }
 }
 
