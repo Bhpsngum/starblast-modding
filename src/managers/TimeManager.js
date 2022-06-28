@@ -34,10 +34,11 @@ class TimeManager {
     return this.#id_pool
   }
 
-  #removeJob (i) {
+  #removeJob(i) {
     let job = this.#jobs[i];
-    if (job.repeat) job.finish += job.time;
-    else this.#jobs.splice(i, 1)
+    if (!job.repeat) return this.#jobs.splice(i, 1), --i;
+    job.finish += job.time;
+    return i
   }
 
   #clearJob (id = null, matchRepeat, matchImmediate) {
@@ -62,10 +63,10 @@ class TimeManager {
           "string" == typeof job.f ? eval(job.f) : job.f?.(...job.args)
         }
         catch (e) {
-          this.#removeJob(i);
+          i = this.#removeJob(i);
           throw e
         }
-        this.#removeJob(i)
+        i = this.#removeJob(i)
       }
     }
   }
