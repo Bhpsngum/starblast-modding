@@ -30,7 +30,7 @@ class TimeManager {
 
   #addJob (f, time, repeat, args, immediate) {
     time = Math.round(Math.max(0, time)) || 0;
-    this.#jobs.push({f, time, finish: this.step + time, repeat, args, id: ++this.#id_pool, immediate});
+    this.#jobs.push({f, time, finish: Math.max(this.step, 0) + time, repeat, args, id: ++this.#id_pool, immediate});
     return this.#id_pool
   }
 
