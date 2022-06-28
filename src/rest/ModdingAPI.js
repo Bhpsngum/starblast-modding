@@ -50,6 +50,7 @@ class ModdingAPI {
   reset () {
     this.started = false;
     this.stopped = true;
+    this.processStarted = false;
     this.preflight_requests = [];
     this.clear();
     if (!this.cacheECPKey) delete this.configuration.ECPKey;
@@ -69,6 +70,7 @@ class ModdingAPI {
       this.configuration.options = {}
       this.encodeOptionsError = true
     }
+    this.processStarted = true;
     return await runMod(this)
   }
 

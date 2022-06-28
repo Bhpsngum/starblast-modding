@@ -49,6 +49,16 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
+   * Indicates if the game alredy started its process (sending starting request to server) or not.
+   * @type {boolean}
+   * @readonly
+   */
+
+  get processStarted () {
+    return !!this.#api.processStarted
+  }
+
+  /**
    * Indicates if the game is stopped or not.
    * @type {boolean}
    * @readonly
@@ -85,7 +95,7 @@ class ModdingClient extends EventEmitter {
    */
 
   setRegion (region) {
-    if (this.started) return this.error("Could not set region while the mod is running");
+    if (this.processStarted) return this.error("Could not set region while the process is running");
     this.#api.setRegion(region);
     return this
   }
@@ -97,7 +107,7 @@ class ModdingClient extends EventEmitter {
    */
 
   setOptions (options) {
-    if (this.started) return this.error("Could not set options while the mod is running");
+    if (this.processStarted) return this.error("Could not set options while the process is running");
     this.#api.setOptions(options);
     return this
   }
@@ -109,7 +119,7 @@ class ModdingClient extends EventEmitter {
    */
 
   setECPKey (ECPKey) {
-    if (this.started) return this.error("Could not set ECPKey while the mod is running");
+    if (this.processStarted) return this.error("Could not set ECPKey while the process is running");
     this.#api.setECPKey(ECPKey);
     return this
   }
@@ -124,7 +134,7 @@ class ModdingClient extends EventEmitter {
    */
 
   configure (options) {
-    if (this.started) return this.error("Could not configure while the mod is running");
+    if (this.processStarted) return this.error("Could not configure while the process is running");
     if (options?.hasOwnProperty?.('region')) this.setRegion(options.region);
     if (options?.hasOwnProperty?.('options')) this.setOptions(options.options);
     if (options?.hasOwnProperty?.('ECPKey')) this.setECPKey(options.ECPKey);
@@ -185,6 +195,7 @@ class ModdingClient extends EventEmitter {
 
   async start (options) {
     if (this.started) throw new Error("Mod already started");
+    if (this.processStarted) throw new Error("Process is running. The mod will start soon");
     return await this.configure(options).#api.start()
   }
 
@@ -195,6 +206,7 @@ class ModdingClient extends EventEmitter {
 
   async stop () {
     if (this.stopped) throw new Error("Mod already stopped");
+    if (!this.processStarted) throw new Error("Process is not started yet");
     if (!this.started) throw new Error("Mod is not started yet");
     return await this.#api.stop()
   }
