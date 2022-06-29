@@ -14,7 +14,7 @@ class TimeManager {
   }
 
   #api;
-  #jobs = [];
+  #jobs = new Map();
   #id_pool = 0;
   #beforeTick = true;
 
@@ -30,43 +30,38 @@ class TimeManager {
 
   #addJob (f, time, repeat, args, immediate) {
     time = Math.round(Math.max(0, time)) || 0;
-    this.#jobs.push({f, time, finish: Math.max(this.step, 0) + time, repeat, args, id: ++this.#id_pool, immediate});
-    return this.#id_pool
+    let id = ++this.#id_pool;
+    this.#jobs.set(id, {f, time, finish: Math.max(this.step, 0) + time, repeat, args, id, immediate});
+    return id
   }
 
-  #removeJob(i) {
-    let job = this.#jobs[i];
-    if (!job.repeat) return this.#jobs.splice(i, 1), --i;
-    job.finish += job.time;
-    return i
-  }
-
-  #clearJob (id = null, matchRepeat, matchImmediate) {
-    if (id == null) {
-      this.#jobs = matchRepeat == null ? [] : this.#jobs.filter(timer => timer.repeat !== matchRepeat || timer.immediate !== matchImmediate)
+  #clearJob (id = null, forceRemove, matchRepeat, matchImmediate) {
+    if (id == null && forceRemove) {
+      if (matchRepeat == null) this.#jobs.clear();
+      else this.#jobs.forEach((timer, id) => (timer.repeat === matchRepeat && timer.immediate === matchImmediate) && this.#jobs.delete(id))
     }
-    for (let i = 0; i < this.#jobs.length; ++i) {
-      let job = this.#jobs[i];
-      if (job.id === id && (matchRepeat == null || job.repeat === matchRepeat && job.immediate === matchImmediate)) {
-        this.#jobs.splice(i, 1);
-        return this
-      }
+
+    let job = this.#jobs.get(id);
+    if (job && (matchRepeat == null || job.repeat === matchRepeat && job.immediate === matchImmediate)) {
+      if (job.repeat && !forceRemove) job.finish += job.time;
+      else this.#jobs.delete(id);
+      return this
     }
     return this
   }
 
   #runJobs () {
-    for (let i = 0; i < this.#jobs.length; ++i) {
-      let job = this.#jobs[i];
+    for (let entries of this.#jobs) {
+      let job = entries[1];
       if (job.finish <= this.step) {
         try {
           "string" == typeof job.f ? eval(job.f) : job.f?.(...job.args)
         }
         catch (e) {
-          i = this.#removeJob(i);
+          this.#clearJob(job.id, false, null, false);
           throw e
         }
-        i = this.#removeJob(i)
+        this.#clearJob(job.id, false, null, false)
       }
     }
   }
@@ -113,7 +108,7 @@ class TimeManager {
    */
 
   clearTimeout (id) {
-    this.#clearJob(id, false, false)
+    this.#clearJob(id, true, false, false)
   }
 
   /**
@@ -123,7 +118,7 @@ class TimeManager {
    */
 
   clearInterval (id) {
-    this.#clearJob(id, true, false)
+    this.#clearJob(id, true, true, false)
   }
 
   /**
@@ -133,7 +128,7 @@ class TimeManager {
    */
 
   clearImmediate (id) {
-    this.#clearJob(id, false, true)
+    this.#clearJob(id, true, false, true)
   }
 
   /**
@@ -143,7 +138,7 @@ class TimeManager {
    */
 
   clear (id) {
-    this.#clearJob(id, null, false)
+    this.#clearJob(id, true, null, false)
   }
 
   [Symbol.toStringTag] = 'TimeManager'

@@ -32,7 +32,7 @@ class ObjectManager extends StructureManager {
   /**
    * Add a new object to the game
    * @param {object} data - object creation options
-   * @returns {Promise<Object3D>}
+   * @returns {Object3D} - The newly created object
    */
 
   add (data) {

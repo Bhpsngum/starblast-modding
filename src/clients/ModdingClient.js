@@ -24,9 +24,9 @@ const cloneObj = function (obj) {
  * The Modding Client Instance.
  * @extends {EventEmitter}
  * @param {object} options - options for calling the object
- * @property {boolean} cacheECPKey - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
- * @property {boolean} cacheOptions - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise
- * @property {boolean} cacheEvents - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise
+ * @param {boolean} options.cacheECPKey - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
+ * @param {boolean} options.cacheOptions - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise
+ * @param {boolean} options.cacheEvents - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise
  */
 
 class ModdingClient extends EventEmitter {
@@ -127,9 +127,9 @@ class ModdingClient extends EventEmitter {
   /**
    * Configure the client
    * @param {object} options - An options object
-   * @property {object} options - Modded game options
-   * @property {string} region - Modded game region
-   * @property {string} ECPKey - ECP key
+   * @param {object} options.options - Modded game options
+   * @param {string} options.region - Modded game region
+   * @param {string} options.ECPKey - ECP key
    * @returns {ModdingClient}
    */
 
@@ -190,7 +190,7 @@ class ModdingClient extends EventEmitter {
   /**
    * Starts the game
    * @param {object} options - Options Object, same as calling configure(options)
-   * @returns {Promise<string>} Link of the game
+   * @returns {string} Link of the game
    */
 
   async start (options) {
@@ -201,7 +201,7 @@ class ModdingClient extends EventEmitter {
 
   /**
    * Stops the game
-   * @returns {Promise<ModdingClient>}
+   * @returns {ModdingClient}
    */
 
   async stop () {

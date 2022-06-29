@@ -23,7 +23,7 @@ class EntityManager extends StructureManager {
    * Add a new entity to the game
    * @param {object} data - entity creation options
    * @async
-   * @returns {Promise<Entity>}
+   * @returns {Entity} - The created entity
    */
 
   add (data) {

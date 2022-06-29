@@ -38,7 +38,7 @@ class Entity extends Structure {
   /**
    * Kill the entity
    * @async
-   * @returns {Promise<Entity>}
+   * @returns {Entity}
    */
 
   kill () {

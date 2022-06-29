@@ -28,6 +28,7 @@ pnpm add starblast-modding
 Please see [this link](https://bhpsngum.github.io/starblast/starblast-modding/)
 
 ## Example
+### ModdingClient usage
 This is an example on how to run a team-mode modded game:
 ```js
 const StarblastModding = require("starblast-modding");
@@ -143,4 +144,26 @@ game.on('UIComponentClick', function (component_id, ship) {
 game.on('stop', function() {
   console.log("Mod stopped");
 })
+```
+### BrowserClient Usage
+Here is an example for running SDC code pulled from Neuronality's site:
+```js
+const BrowserModRunner = require("starblast-browser-mod-runner");
+
+let container = new BrowserModRunner({
+  cacheECPKey: true,
+  cacheOptions: true
+});
+
+container.setRegion("Asia");
+
+container.setECPKey("12345-6789");
+
+container.loadCodeFromExternal("https://starblast.data.neuronality.com/mods/sdc.js");
+
+container.start();
+
+let game = container.getGame();
+
+let node = container.getNode();
 ```
