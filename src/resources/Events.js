@@ -28,8 +28,8 @@ let EVENTS = {
     */
   TICK: "tick",
   /**
-    * Fires when survival starts (available in survival root mode only)
-    * @event ModdingClient#survivalStart
+    * Fires when the mod stops
+    * @event ModdingClient#stop
     */
   MOD_STOPPED: "stop",
   // Ship events
