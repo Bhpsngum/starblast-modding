@@ -7,7 +7,10 @@
     "test": "node ./src/index.js"
   },
   "author": "Bhpsngum <bhpsngumproductions@gmail.com> (https://github.com/Bhspngum)",
-  "repository": "github:bhpsngum/starblast-modding",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhpsngum/starblast-modding.git"
+  },
   "homepage": "https://bhpsngum.github.io/starblast/starblast-modding/",
   "bugs": {
     "url": "https://github.com/Bhpsngum/starblast-modding/issues"
