@@ -11,7 +11,7 @@ const ModdingClient = require("./ModdingClient.js");
 const Game = require("../utils/Game.js");
 
 /**
- * The Browser Client Instance for supporting mod codes running in Browser Modding.
+ * The Browser Client Instance for supporting mod codes running in Browser Modding.<br><b>Warning:</b><br><ul><li>This client doesn't support undocumented features like accessing through <code>game.modding</code>, etc.</li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
  * @param {object} options - options for calling the object.<br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
  * @param {boolean} options.cacheECPKey - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
  * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not<br>**Note:** This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
