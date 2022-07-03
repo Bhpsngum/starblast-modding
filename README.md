@@ -145,12 +145,12 @@ game.on('stop', function() {
   console.log("Mod stopped");
 })
 ```
-### BrowserClient Usage
+### BrowserClient usage
 Here is an example for running SDC code pulled from Neuronality's site:
 ```js
-const BrowserModRunner = require("starblast-browser-mod-runner");
+const StarblastModding = require("starblast-modding");
 
-let container = new BrowserModRunner({
+let container = new StarblastModding.BrowserClient({
   cacheECPKey: true,
   cacheOptions: true
 });

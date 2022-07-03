@@ -32,7 +32,7 @@ class BrowserClient {
 
     let _this = this, handle = function (spec, ...params) {
       let context = this.#game.modding?.context;
-      this.#handle(context?.[spec]?.bind(context), ...params, this.#game)
+      this.#handle(context?.[spec]?.bind(context), ...params)
     }.bind(this);
 
     for (let i of ["ship", "alien", "asteroid", "collectible"]) {
@@ -41,6 +41,10 @@ class BrowserClient {
         set (value) {}
       });
     }
+
+    Object.defineProperty(node.ships.StructureConstructor.prototype, 'stats', {
+      get () { return this.modding.data.stats.reduce((a, b) => a * 10 + b, 0)}
+    })
 
     node.on(ModdingEvents.TICK, function (tick) {
       _this.#game?.modding?.tick?.();
@@ -185,7 +189,7 @@ class BrowserClient {
   #logMessages;
 
   #handle (func, ...params) {
-    try { func?.(...params) }
+    try { func?.(...params, this.#game) }
     catch (e) {
       if (this.#crashOnError) throw e;
       else this.#node.error(e)

@@ -1,22 +1,23 @@
 'use strict';
 
 /**
- * The Time Manager (Timer) Instance.
+ * The Time Manager (Timer) Instance.<br>Please note that all functions running in the timer will be bound to its parent <code>ModdingClient</code> object by default.
  * @abstract
  */
 
 class TimeManager {
-  constructor(api) {
+  constructor(game, api) {
     this.#api = api;
+    this.#game = game;
     api.updateTimer = function () {
       this.#runJobs()
     }.bind(this)
   }
 
   #api;
+  #game;
   #jobs = new Map();
   #id_pool = 0;
-  #beforeTick = true;
 
   /**
    * The game step
@@ -55,7 +56,7 @@ class TimeManager {
       let job = entries[1];
       if (job.finish <= this.step) {
         try {
-          "string" == typeof job.f ? eval(job.f) : job.f?.(...job.args)
+          ("string" == typeof job.f ? new Function(job.f) : job.f)?.call?.(this.#game, ...job.args)
         }
         catch (e) {
           this.#clearJob(job.id, false, null, false);
