@@ -115,7 +115,7 @@ class ObjectType extends Structure {
     * @property {array} shape - Object type's hitbox shape
     * @property {number} mass - The mass of the object type
     * @property {boolean} fixed - Indicates if the object type is movable or not (honestly this doesn't do anything much)
-    * @property {boolean} autoShape - Indicates if the object type's hitbox shape will be rendered automatically. This property only exists as an option if you want to automatically render its hitbox shape, and it will be deleted after the object type has been set.
+    * @property {boolean} autoShape - Indicates if the object type's hitbox shape will be/was rendered automatically
     * @readonly
     */
 

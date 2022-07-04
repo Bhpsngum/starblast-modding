@@ -10,6 +10,8 @@ const ModdingClient = require("./ModdingClient.js");
 
 const Game = require("../utils/Game.js");
 
+const URLFetcher = require("../utils/URLFetcher.js");
+
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding.<br><b>Warning:</b><br><ul><li>This client doesn't support undocumented features like accessing through <code>game.modding</code>, etc.</li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
  * @param {object} options - options for calling the object.<br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
@@ -264,30 +266,7 @@ class BrowserClient {
   }
 
   #fromExternal () {
-    let URL = String(this.#URL);
-    return new Promise(function (resolve, reject) {
-      let fetcher = URL.startsWith("https://") ? https : http;
-      fetcher.get(URL, function (res) {
-        const { statusCode } = res;
-        const contentType = res.headers['content-type'];
-
-        let error;
-        // Any 2xx status code signals a successful response but
-        // here we're only checking for 200.
-        if (Math.trunc(statusCode / 100) != 2) {
-          res.resume();
-          reject(new Error("Failed to fetch the file at URL '" + URL + "'. Resource status code: "+ statusCode))
-        }
-
-        let rawData = '';
-
-        res.setEncoding('utf8');
-        res.on('data', (chunk) => { rawData += chunk; });
-        res.on('end', function () {
-          resolve(rawData)
-        });
-      }).on('error', reject)
-    })
+    return URLFetcher(this.#URL)
   }
 
   async #applyChanges (forced) {

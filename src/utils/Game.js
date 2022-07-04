@@ -98,6 +98,8 @@ class Game {
   }
 
   setObject (...data) {
+    let obj = data[0];
+    if (obj?.type?.physics && obj.type.physics.shape == null) obj.type.physics.autoShape = true;
     this.#node.objects.set(...data)
   }
 

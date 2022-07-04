@@ -1,26 +1,8 @@
-// https://github.com/Bhpsngum/starblast/blob/master/getObjectShapeFromURL.js
 'use strict';
 
-const THREE = require("three");
-const OBJLoader = require("three-obj-loader");
-OBJLoader(THREE);
-THREE.OBJLoader.prototype.load = function load(url, onLoad, onProgress, onError) {
+const THREE = require('three');
 
-  var scope = this;
-  this.onError = onError || defaultOnError;
-
-  var loader = new THREE.FileLoader(scope.manager);
-  loader.setPath(this.path);
-  loader.load(url, function (text) {
-
-    onLoad(scope.parse(text, false));
-  }, onProgress, onError);
-}
-global.XMLHttpRequest = require("xhr2");
-
-var gF = function(f) {
-  return typeof f == "function"?f:function(){}
-}
+const URLFetcher = require("./URLFetcher.js");
 
 var shapePoint = function(e, t, i) {
   var s, o, l;
@@ -28,7 +10,27 @@ var shapePoint = function(e, t, i) {
 }
 
 var getShape = function(obj,e) {
-  obj = new THREE.Geometry().fromBufferGeometry(obj.geometry);
+  obj = obj.geometry;
+  let vertices = Array.from(obj.attributes.position.array);
+  obj.vertices = [];
+  while (vertices.length > 0) {
+    obj.vertices.push({
+      x: vertices[0],
+      y: vertices[1],
+      z: vertices[2]
+    });
+    vertices.splice(0, 3)
+  }
+  let faces = obj.index == null ? [...Array(obj.vertices.length)].map((j, i) => i) : Array.from(obj.index.array);
+  obj.faces = [];
+  while (faces.length > 0) {
+    obj.faces.push({
+      a: faces[0],
+      b: faces[1],
+      c: faces[2]
+    });
+    faces.splice(0, 3)
+  }
   var t, i, s, o, l, n, r, a, h, p, c, d, u, f, g, m, y, x;
   for (null == e && (e = 50), u = [], s = l = 0, p = e - 1; 0 <= p ? l <= p : l >= p; s = 0 <= p ? ++l : --l) u[s] = 0;
   for (c = obj.faces, n = 0, r = c.length; n < r; n++)
@@ -36,15 +38,15 @@ var getShape = function(obj,e) {
   return u.map(i=>parseFloat(i.toFixed(3)))
 }
 
-module.exports = function(url) {
-  return new Promise(function (resolve, reject) {
-    try {
-      new THREE.OBJLoader().load(url, function (object) {
-        let result, st;
-        try { result = getShape(object.children[0]) } catch(e) { reject(new Error("Invalid 3D Object")); st = 1 }
-        if (!st) resolve(result)
-      },gF(),reject)
-    }
-    catch (e) {reject(e)}
-  })
+const getObjectShapeFromURL = async function getObjectShapeFromURL (url) {
+  let rawData = await URLFetcher(url);
+  Function("THREE", "console", await URLFetcher("https://cdn.jsdelivr.net/npm/three@0.142.0/examples/js/loaders/OBJLoader.js"))(THREE, {log: function(){}, error: function(){}, warn: function(){}});
+  try {
+    return getShape(new THREE.OBJLoader().parse(rawData).children[0])
+  }
+  catch (e) {
+    throw new Error("Invalid 3D Object")
+  }
 }
+
+module.exports = getObjectShapeFromURL

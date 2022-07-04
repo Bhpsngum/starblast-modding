@@ -54,10 +54,11 @@ class Structure {
       defineProperties(this, {
         [this.inactive_field]: true,
         [this.inactive_field + "Step"]: this.#game.timer.step
-      })
+      });
+      this.modding.data.lastAliveStep = this.#game.timer.step
     }
     catch (e) {}
-    this.modding.data.lastAliveStep = this.#game.timer.step
+
   }
 
   markAsSpawned () {
