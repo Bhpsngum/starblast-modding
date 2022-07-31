@@ -167,3 +167,9 @@ let game = container.getGame();
 
 let node = container.getNode();
 ```
+
+## Support
+* [Support Discord Server](https://bhpsngum.github.io/redirect?id=starblast-modding_Discord_Support)
+* Discord: Bhpsngum#2623
+* Email: bhpsngumproductions@gmail.com
+* [Buy me a coffee](https://www.buymeacoffee.com/bhpsngum)

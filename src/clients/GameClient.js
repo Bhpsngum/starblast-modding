@@ -1,6 +1,6 @@
 'use strict';
 
-const GameSocket = require("../GameSocket.js");
+const GameSocket = require("../utils/GameSocket.js");
 const TeamManager = require("../managers/TeamManager.js");
 const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
@@ -27,7 +27,7 @@ class GameClient {
   #api
 
   connect (ip, id, port) {
-    let socket = GameSocket.create(ip, port), interval, game = this.#game, api = this.#api;
+    let socket = GameSocket.create(ip, port, null, this.#api.compressWSMessages), interval, game = this.#game, api = this.#api;
     socket.on("open", function () {
       this.send(JSON.stringify({
         name: "join",

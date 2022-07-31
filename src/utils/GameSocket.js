@@ -3,10 +3,11 @@
 const { WebSocket } = require("ws");
 const GameSocket = {};
 
-GameSocket.create = function(ip, port, origin) {
+GameSocket.create = function(ip, port, origin, perMessageDeflate) {
   ip = (ip || "").replace(/\./g,"-"), port = port || "";
   return new WebSocket("wss://"+ip+".starblast.io:"+port+"/", {
-    origin: origin ?? "https://starblast.io"
+    origin: origin ?? "https://starblast.io",
+    perMessageDeflate: !!perMessageDeflate
   })
 }
 

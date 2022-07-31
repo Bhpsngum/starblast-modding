@@ -9,6 +9,7 @@ class ModdingAPI {
     this.cacheECPKey = !!options?.cacheECPKey;
     this.cacheOptions = !!options?.cacheOptions;
     this.cacheEvents = !!options?.cacheEvents;
+    this.compressWSMessages = !!options?.compressWSMessages;
     this.gameClient = new (require("../clients/GameClient.js"))(this.game, this),
     this.events = require("../resources/Events.js");
     this.handlers = {

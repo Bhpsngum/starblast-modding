@@ -1,9 +1,9 @@
 'use strict';
 
-const GameSocket = require("../GameSocket.js");
+const GameSocket = require("../utils/GameSocket.js");
 
-module.exports = function (address, ECPKey) {
-  let success, socket = GameSocket.create(address.ip, address.port);
+module.exports = function (address, ECPKey, perMessageDeflate) {
+  let success, socket = GameSocket.create(address.ip, address.port, null, perMessageDeflate);
   socket.onopen = function () {
     this.send(JSON.stringify({
       name: "modding_token",

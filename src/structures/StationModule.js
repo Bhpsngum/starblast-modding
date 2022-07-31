@@ -154,7 +154,7 @@ class StationModule extends Entity {
    */
 
   get angle () {
-    return ((-(this.lastAliveStep / 60 / 3600 % 1 * 2) * 3 * Math.PI / Math.PI - this._dir / 2) % 2 + 2) % 2 * 180
+    return ((-(this.lastAliveStep / 60 / 3600 % 1 * 2) * 3 - this._dir / 2) % 2 + 2) % 2 * 180
   }
 
   /**

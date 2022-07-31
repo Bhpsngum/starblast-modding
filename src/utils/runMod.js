@@ -6,5 +6,5 @@ const getToken = require("./getToken.js");
 
 module.exports = async function(obj) {
   let address = await PrivateServerFinder(obj.configuration.region);
-  return await EventManager.create(obj, address, await getToken(address, obj.configuration.ECPKey))
+  return await EventManager.create(obj, address, await getToken(address, obj.configuration.ECPKey, obj.compressWSMessages))
 }

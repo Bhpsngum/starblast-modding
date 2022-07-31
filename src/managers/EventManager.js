@@ -1,6 +1,6 @@
 'use strict';
 
-const GameSocket = require("../GameSocket.js");
+const GameSocket = require("../utils/GameSocket.js");
 const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js");
@@ -12,7 +12,7 @@ module.exports.create = function (api, address, token) {
     api.game.error("Mod will be run with empty options instead")
   }
   delete api.encodeOptionsError
-  let socket = GameSocket.create(address.ip, address.port, "https://starblast.data.neuronality.com");
+  let socket = GameSocket.create(address.ip, address.port, "https://starblast.data.neuronality.com", api.compressWSMessages);
   socket.on("open", function() {
     this.send(JSON.stringify({
       name: "run_mod",

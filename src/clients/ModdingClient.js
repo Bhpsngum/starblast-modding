@@ -24,9 +24,10 @@ const cloneObj = function (obj) {
  * The Modding Client Instance.
  * @extends {EventEmitter}
  * @param {object} options - options for calling the object
- * @param {boolean} options.cacheECPKey - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
- * @param {boolean} options.cacheOptions - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise
- * @param {boolean} options.cacheEvents - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise
+ * @param {boolean} [options.cacheECPKey = false] - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
+ * @param {boolean} [options.cacheOptions = false] - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise
+ * @param {boolean} [options.cacheEvents = false] - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise
+ * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. <code>true</code> will use less bandwith but also create potential memory leaks, and <code>false</code> will do the opposite.
  */
 
 class ModdingClient extends EventEmitter {
