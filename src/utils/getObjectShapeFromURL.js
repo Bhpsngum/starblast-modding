@@ -4,6 +4,8 @@ const THREE = require('three');
 
 const URLFetcher = require("./URLFetcher.js");
 
+const version = require("../../package.json").dependencies.three.match(/(\d|\.)+/)[0];
+
 var shapePoint = function(e, t, i) {
   var s, o, l;
   return l = i.length, s = Math.atan2(t, -e), s = Math.round((s + 2 * Math.PI) / (2 * Math.PI) * l) % l, o = Math.sqrt(e * e + t * t), i[s] = Math.max(i[s], o)
@@ -40,7 +42,7 @@ var getShape = function(obj,e) {
 
 const getObjectShapeFromURL = async function getObjectShapeFromURL (url) {
   let rawData = await URLFetcher(url);
-  Function("THREE", "console", await URLFetcher("https://cdn.jsdelivr.net/npm/three@0.142.0/examples/js/loaders/OBJLoader.js"))(THREE, {log: function(){}, error: function(){}, warn: function(){}});
+  Function("THREE", "console", await URLFetcher("https://cdn.jsdelivr.net/npm/three@" + version + "/examples/js/loaders/OBJLoader.js"))(THREE, {log: function(){}, error: function(){}, warn: function(){}});
   try {
     return getShape(new THREE.OBJLoader().parse(rawData).children[0])
   }
