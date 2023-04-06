@@ -59,10 +59,11 @@ class GameClient {
             interval = setInterval(function(){socket.send(0)}, 1000);
             break;
           case "player_name":
-            let custom = data.custom ?? {finish: "zinc", laser: "0"}; /* lasers = ["single", "double", "lightning", "digital"]; */
-            custom.badge = custom.badge ?? null;
-            custom.laser = custom.laser ?? null;
-            data.customization = defineProperties({}, custom);
+            data.customization = defineProperties({}, {
+              badge: data.custom?.badge ?? null,
+              finish: data.custom?.finish ?? "zinc",
+              laser: data.custom?.laser ?? "0"
+            });
             getEntity(game, data, game.ships).update(data, true);
             break;
         }
