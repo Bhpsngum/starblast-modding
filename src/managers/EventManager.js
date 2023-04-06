@@ -5,6 +5,7 @@ const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js");
 const defineProperties = require("../utils/defineProperties.js");
+const getJoinPacketName = require("../utils/getJoinPacketName.js");
 
 module.exports.create = function (api, address, token) {
   if (api.encodeOptionsError) {
@@ -39,8 +40,10 @@ module.exports.create = function (api, address, token) {
             });
             for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
             api.mod_data.options = data.options;
-            api.gameClient.connect(address.ip, data.id, address.port);
-            api.gameClient.initTeamStats();
+            getJoinPacketName().then(packet => {
+              api.gameClient.connect(address.ip, data.id, address.port, packet);
+              api.gameClient.initTeamStats();
+            }).catch(e => this.error("Failed to establish extensive connection to the game. Customization and extended team data might not be available."));
             while (api.preflight_requests.length > 0) api.set(api.preflight_requests.shift()).send();
             resolve(this.link);
             this.emit(events.MOD_STARTED, this.link, this.options);

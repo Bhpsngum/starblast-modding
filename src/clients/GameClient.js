@@ -26,11 +26,11 @@ class GameClient {
   #game;
   #api
 
-  connect (ip, id, port) {
+  connect (ip, id, port, joinPacketName) {
     let socket = GameSocket.create(ip, port, null, this.#api.compressWSMessages), interval, game = this.#game, api = this.#api;
     socket.on("open", function () {
       this.send(JSON.stringify({
-        name: "join",
+        name: joinPacketName,
         data: {
           player_name: "starblast-modding",
           preferred: id
@@ -38,7 +38,8 @@ class GameClient {
       }))
     });
     socket.on("message", function (event, isBinary) {
-      if (!isBinary && game.started && !game.stopped) {
+      if (!game.started || game.stopped) return socket.close();
+      if (!isBinary) {
         let parsed;
         try { parsed = JSON.parse(event.toString()) ?? {} } catch (e) { parsed = {} }
         let data = parsed.data
@@ -58,11 +59,11 @@ class GameClient {
             interval = setInterval(function(){socket.send(0)}, 1000);
             break;
           case "player_name":
-            let custom = data.custom ?? {finish: "zinc", laser: "0"}, lasers = ["single", "double", "lightning", "digital"];
-            custom.badge = "string" == typeof custom.badge ? custom.badge.replace(/^https{0,1}\:\/\/starblast\.io\/ecp\/(.+)\..+$/,"$1") : null;
-            custom.laser = lasers[custom.laser] ?? lasers[0];
+            let custom = data.custom ?? {finish: "zinc", laser: "0"}; /* lasers = ["single", "double", "lightning", "digital"]; */
+            custom.badge = custom.badge ?? null;
+            custom.laser = custom.laser ?? null;
             data.customization = defineProperties({}, custom);
-            getEntity(game, data, game.ships).update(data, true)
+            getEntity(game, data, game.ships).update(data, true);
             break;
         }
       }

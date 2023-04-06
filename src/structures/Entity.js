@@ -3,6 +3,11 @@
 const Structure = require("./Structure.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const defineProperties = require("../utils/defineProperties.js");
+const parseCoords = function (val, game) {
+  let hSize = game.options.map_size * 5, size = hSize * 2;
+  val += hSize;
+  return (val - Math.floor(val / size) * size) - hSize;
+}
 
 /**
  * The Entity Instance - represents any entity in the game
@@ -70,7 +75,8 @@ class Entity extends Structure {
    */
 
   get x () {
-    return +(this.modding.data.x + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vx) : 0)) || 0
+    let rawX = +(this.modding.data.x + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vx) : 0)) || 0;
+    return parseCoords(rawX, this.#game);
   }
 
   /**
@@ -80,7 +86,8 @@ class Entity extends Structure {
    */
 
   get y () {
-    return +(this.modding.data.y + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vy) : 0)) || 0
+    let rawY = +(this.modding.data.y + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vy) : 0)) || 0;
+    return parseCoords(rawY, this.#game);
   }
 
   /**
