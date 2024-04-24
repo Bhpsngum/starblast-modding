@@ -2,7 +2,6 @@
 
 const EntityManager = require("./EntityManager.js");
 const Collectible = require("../structures/Collectible.js");
-const defineProperties = require("../utils/defineProperties.js");
 
 /**
  * The Collectible Manager Instance.
@@ -29,12 +28,9 @@ class CollectibleManager extends EntityManager {
     return 50
   }
 
-  [Symbol.toStringTag] = 'CollectibleManager'
+  [Symbol.toStringTag] = 'CollectibleManager';
+  manager_name = "collectible";
+  StructureConstructor = Collectible;
 }
-
-defineProperties(CollectibleManager.prototype, {
-  manager_name: "collectible",
-  StructureConstructor: Collectible
-});
 
 module.exports = CollectibleManager

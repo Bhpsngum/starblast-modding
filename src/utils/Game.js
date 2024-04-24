@@ -1,3 +1,21 @@
+const hookClass = function(game, origin, addtionalHookFunc) {
+  let oldClass = origin.StructureConstructor;
+  let newClass = class HookedStructure extends oldClass {
+    get game () {
+      return game;
+    }
+
+    [Symbol.toStringTag] = `HookedClass (${oldClass.name})`;
+  }
+
+  if ("function" == typeof addtionalHookFunc) addtionalHookFunc(newClass);
+
+  origin.StructureConstructor = newClass;
+  origin.isInstance = function (entity) {
+    return entity instanceof oldClass;
+  }
+}
+
 class Game {
   constructor (node) {
     this.#node = node;
@@ -5,6 +23,17 @@ class Game {
       echo: node.log.bind(node),
       error: node.error.bind(node)
     }
+
+    // hook the classes
+    for (let i of ["alien", "asteroid", "collectible"]) {
+      hookClass(this, node[i + "s"]);
+    }
+
+    hookClass(this, node.ships, function (newClass) {
+      Object.defineProperty(newClass.prototype, 'stats', {
+        get () { return this.modding.data.stats.reduce((a, b) => a * 10 + b, 0)}
+      });
+    });
   }
 
   #node;

@@ -1,7 +1,6 @@
 'use strict';
 
 const Structure = require("./Structure.js");
-const Station = require("./Station.js");
 const defineProperties = require("../utils/defineProperties.js");
 
 /**

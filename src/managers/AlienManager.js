@@ -2,7 +2,6 @@
 
 const EntityManager = require("./EntityManager.js");
 const Alien = require("../structures/Alien.js");
-const defineProperties = require("../utils/defineProperties.js");
 
 /**
  * The Alien Manager Instance.
@@ -22,12 +21,9 @@ class AlienManager extends EntityManager {
     return 300
   }
 
-  [Symbol.toStringTag] = 'AlienManager'
+  [Symbol.toStringTag] = 'AlienManager';
+  manager_name = "alien";
+  StructureConstructor = Alien;
 }
-
-defineProperties(AlienManager.prototype, {
-  manager_name: "alien",
-  StructureConstructor: Alien
-});
 
 module.exports = AlienManager

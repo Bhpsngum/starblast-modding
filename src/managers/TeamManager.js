@@ -68,12 +68,9 @@ class TeamManager extends StructureManager {
     return this.#game.options.friendly_colors
   }
 
-  [Symbol.toStringTag] = 'TeamManager'
+  [Symbol.toStringTag] = 'TeamManager';
+  StructureConstructor = Team;
+  manager_name = "team"
 }
-
-defineProperties(TeamManager.prototype, {
-  manager_name: "team",
-  StructureConstructor: Team
-});
 
 module.exports = TeamManager

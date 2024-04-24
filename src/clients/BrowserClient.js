@@ -38,17 +38,6 @@ class BrowserClient {
       this.#handle(context?.[spec]?.bind(context), ...params)
     }.bind(this);
 
-    for (let i of ["ship", "alien", "asteroid", "collectible"]) {
-      Object.defineProperty(node[i + "s"].StructureConstructor.prototype, 'game', {
-        get () { return _this.#game },
-        set (value) {}
-      });
-    }
-
-    Object.defineProperty(node.ships.StructureConstructor.prototype, 'stats', {
-      get () { return this.modding.data.stats.reduce((a, b) => a * 10 + b, 0)}
-    })
-
     node.on(ModdingEvents.TICK, function (tick) {
       _this.#game?.modding?.tick?.();
       handle('tick')

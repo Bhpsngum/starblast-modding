@@ -2,7 +2,6 @@
 
 const EntityManager = require("./EntityManager.js");
 const Asteroid = require("../structures/Asteroid.js");
-const defineProperties = require("../utils/defineProperties.js");
 
 /**
  * The Asteroid Manager Instance.
@@ -22,12 +21,9 @@ class AsteroidManager extends EntityManager {
     return 300
   }
 
-  [Symbol.toStringTag] = 'AsteroidManager'
+  [Symbol.toStringTag] = 'AsteroidManager';
+  manager_name = "asteroid";
+  StructureConstructor = Asteroid;
 }
-
-defineProperties(AsteroidManager.prototype, {
-  manager_name: "asteroid",
-  StructureConstructor: Asteroid
-});
 
 module.exports = AsteroidManager

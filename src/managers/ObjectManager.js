@@ -80,12 +80,9 @@ class ObjectManager extends StructureManager {
     return this
   }
 
-  [Symbol.toStringTag] = 'ObjectManager'
+  [Symbol.toStringTag] = 'ObjectManager';
+  manager_name = "object";
+  StructureConstructor = Object3D;
 }
-
-defineProperties(ObjectManager.prototype, {
-  manager_name: "object",
-  StructureConstructor: Object3D
-});
 
 module.exports = ObjectManager

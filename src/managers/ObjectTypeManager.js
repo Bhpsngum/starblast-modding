@@ -2,7 +2,6 @@
 
 const StructureManager = require("./StructureManager.js");
 const ObjectType = require("../structures/ObjectType.js");
-const defineProperties = require("../utils/defineProperties.js");
 
 /**
  * The Object Type Manager Instance.
@@ -24,13 +23,9 @@ class ObjectTypeManager extends StructureManager {
     return this
   }
 
-  [Symbol.toStringTag] = 'ObjectTypeManager'
+  [Symbol.toStringTag] = 'ObjectTypeManager';
+  manager_name = "object_type";
+  StructureConstructor = ObjectType
 }
-
-
-defineProperties(ObjectTypeManager.prototype, {
-  manager_name: "object_type",
-  StructureConstructor: ObjectType
-});
 
 module.exports = ObjectTypeManager

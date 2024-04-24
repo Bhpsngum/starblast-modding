@@ -47,12 +47,9 @@ class StationModuleManager extends StructureManager {
     return limits[this.#game.options.station_size - 1] || limits[1]
   }
 
-  [Symbol.toStringTag] = 'StationModuleManager'
+  [Symbol.toStringTag] = 'StationModuleManager';
+  manager_name = "station_module";
+  StructureConstructor = StationModule;
 }
-
-defineProperties(StationModuleManager.prototype, {
-  manager_name: "station_module",
-  StructureConstructor: StationModule
-});
 
 module.exports = StationModuleManager

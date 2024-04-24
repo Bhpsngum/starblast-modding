@@ -2,7 +2,6 @@
 
 const EntityManager = require("./EntityManager.js");
 const Ship = require("../structures/Ship.js");
-const defineProperties = require("../utils/defineProperties.js");
 const parseUI = require("../utils/parseUI.js");
 const parseIntermission = require("../utils/parseIntermission.js");
 
@@ -115,12 +114,9 @@ class ShipManager extends EntityManager {
     return this.#game.options.max_players
   }
 
-  [Symbol.toStringTag] = 'ShipManager'
+  [Symbol.toStringTag] = 'ShipManager';
+  manager_name = "ship";
+  StructureConstructor = Ship;
 }
-
-defineProperties(ShipManager.prototype, {
-  manager_name: "ship",
-  StructureConstructor: Ship
-});
 
 module.exports = ShipManager
