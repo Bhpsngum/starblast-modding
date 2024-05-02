@@ -62,7 +62,7 @@ class ObjectManager extends StructureManager {
 
   /**
    * Remove an object based on ID
-   * @param {number} id - The object's ID needs to be killed, <code>null</code> to remove all objects in the scene
+   * @param {number} id - The object's ID needs to be killed, `null` to remove all objects in the scene
    * @returns {Object3D}
    */
 

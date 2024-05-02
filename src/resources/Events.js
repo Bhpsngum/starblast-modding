@@ -10,19 +10,19 @@ let EVENTS = {
     */
   MOD_STARTED: "start",
   /**
-    * Fires when there is error message from server (and sometimes client, use <code>ModdingClient.prototype.error</code> to do so)
+    * Fires when there is error message from server (and sometimes client, use `ModdingClient.prototype.error` to do so)
     * @event ModdingClient#error
-    * @param {Error} error - The <code>Error</code> object
+    * @param {Error} error - The `Error` object
     */
   ERROR: "error",
   /**
-    * Fires after each evocation of <code>ModdingClient.prototype.log</code>
+    * Fires after each evocation of `ModdingClient.prototype.log`
     * @event ModdingClient#log
     * @param {...string} messages - The messages
     */
   LOG: "log",
   /**
-    * Fires each tick, similar to <code>this.tick</code> in browser modding
+    * Fires each tick, similar to `this.tick` in browser modding
     * @event ModdingClient#tick
     * @param {number} step - Game step
     */
@@ -49,7 +49,7 @@ let EVENTS = {
     * Fires when a ship is destroyed (available in unspecified root mode only)
     * @event ModdingClient#shipDestroy
     * @param {Ship} ship - The ship object
-    * @param {Ship} killer - The killer ship object or <code>null</code>
+    * @param {Ship} killer - The killer ship object or `null`
     */
   SHIP_DESTROYED: "shipDestroy",
   /**
@@ -76,7 +76,7 @@ let EVENTS = {
     * Fires when an alien is destroyed
     * @event ModdingClient#alienDestroy
     * @param {Alien} alien - The alien object
-    * @param {Ship} killer - The killer ship object or <code>null</code>
+    * @param {Ship} killer - The killer ship object or `null`
     */
   ALIEN_DESTROYED: "alienDestroy",
   // Asteroid events
@@ -90,7 +90,7 @@ let EVENTS = {
     * Fires when an asteroid is destroyed
     * @event ModdingClient#asteroidDestroy
     * @param {Asteroid} asteroid - The asteroid object
-    * @param {Ship} killer - The killer ship object or <code>null</code>
+    * @param {Ship} killer - The killer ship object or `null`
     */
   ASTEROID_DESTROYED: "asteroidDestroy",
   // Collectible events

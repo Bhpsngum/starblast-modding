@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * The Time Manager (Timer) Instance.<br>Please note that all functions running in the timer will be bound to its parent <code>ModdingClient</code> object by default.
+ * The Time Manager (Timer) Instance.<br>Please note that all functions running in the timer will be bound to its parent `ModdingClient` object by default.
  * @abstract
  */
 

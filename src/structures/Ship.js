@@ -260,7 +260,7 @@ class Ship extends Entity {
   }
 
   /**
-   * Ship hue
+   * Ship hue. <br>Please note that is property is provided through an external loader, you should not read this on first-spawned event of ships.
    * @type {number}
    * @readonly
    */
@@ -270,9 +270,9 @@ class Ship extends Entity {
   }
 
   /**
-   * Ship customization, could be <code>null</code>
+   * Ship customization, could be `null`. <br>Please note that is property is provided through an external loader, you should not read this on first-spawned event of ships.
    * @type {object}
-   * @property {string} badge - Badge name of the ship, or <code>null</code> if the ship doesn't have any
+   * @property {string} badge - Badge name of the ship, or `null` if the ship doesn't have any
    * @property {string} finish - Finish name of the ship
    * @property {number} hue - Initial hue when user joins the game
    * @readonly
@@ -334,7 +334,7 @@ class Ship extends Entity {
   /**
    * Set ship's idle state
    * @method Ship#setIdle
-   * @param {boolean} idle - The idle state to set (<code>true</code> for true and vice versa)
+   * @param {boolean} idle - The idle state to set (`true` for true and vice versa)
    * @returns {Ship}
    */
 
@@ -355,7 +355,7 @@ class Ship extends Entity {
   /**
    * Set ship's healing state
    * @method Ship#setHealing
-   * @param {boolean} healing - The healing state to set (<code>true</code> for true and vice versa)
+   * @param {boolean} healing - The healing state to set (`true` for true and vice versa)
    * @returns {Ship}
    */
 
@@ -383,7 +383,7 @@ class Ship extends Entity {
   /**
    * Set ship's collider (ability to interact with game objects and ships)
    * @method Ship#setCollider
-   * @param {boolean} collider - The collider state to set (<code>true</code> for true and vice versa)
+   * @param {boolean} collider - The collider state to set (`true` for true and vice versa)
    * @returns {Ship}
    */
 

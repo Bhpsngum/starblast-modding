@@ -13,16 +13,18 @@ const Game = require("../utils/Game.js");
 const URLFetcher = require("../utils/URLFetcher.js");
 
 /**
- * The Browser Client Instance for supporting mod codes running in Browser Modding.<br><b>Warning:</b><br><ul><li>This client doesn't support undocumented features like accessing through <code>game.modding</code>, etc.</li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
+ * The Browser Client Instance for supporting mod codes running in Browser Modding.<br><b>Warning:</b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc.</li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
  * @param {object} options - options for calling the object.<br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
- * @param {boolean} [options.cacheECPKey = false] - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
- * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not<br><b>Note:</b> This feature only works when you call <code>loadCodeFromString</code>, <code>loadCodeFromLocal</code> or <code>loadCodeFromExternal</code> methods, and not during the auto-update process
- * @param {boolean} [options.crashOnException = false] - when tick or event function, or mod code execution fails, the mod will crash (true)
- * @param {boolean} options.crashOnError - alias of the property <code>options.crashOnException</code>
+ * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
+ * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not<br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
+ * @param {boolean} [options.asynchronous = true] - allow asynchronous execution (using `async`/`await`) in mod code
+ * @param {boolean} options.async - alias of the property `options.asynchronous`
+ * @param {boolean} [options.crashOnException = false] - when tick or event function, or mod code execution fails, the mod will crash
+ * @param {boolean} options.crashOnError - alias of the property `options.crashOnException`
  * @param {boolean} [options.logErrors = true] - game will log any errors or not
- * @param {boolean} options.logExceptions - alias of the property <code>options.logErrors</code>
+ * @param {boolean} options.logExceptions - alias of the property `options.logErrors`
  * @param {boolean} [options.logMessages = true] - game will log any in-game logs or not
- * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. <code>true</code> will use less bandwith but also create potential memory leaks, and <code>false</code> will do the opposite.
+ * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. `true` will use less bandwith but also create potential memory leaks, and `false` will do the opposite.
  */
 
 class BrowserClient {
@@ -30,6 +32,7 @@ class BrowserClient {
     this.#sameCodeExecution = !!options?.sameCodeExecution;
     let logErrors = this.#logErrors = !!(options?.logErrors ?? options.logExceptions ?? true);
     let logMessages = this.#logMessages = !!(options?.logMessages ?? true);
+    this.#asynchronous = !!(options?.asynchronous ?? options?.async ?? true);
     let crashOnError = this.#crashOnError = !!(options?.crashOnException ?? options?.crashOnError);
     let node = this.#node = new ModdingClient({...options, cacheEvents: true, cacheOptions: false});
 
@@ -153,7 +156,7 @@ class BrowserClient {
   }
 
   /**
-   * Get the game object, which acts the same as the <code>game</code> object in browser
+   * Get the game object, which acts the same as the `game` object in browser
    * @returns {object}
    */
 
@@ -179,6 +182,7 @@ class BrowserClient {
 
   #logErrors;
   #logMessages;
+  #asynchronous;
 
   #handle (func, ...params) {
     try { func?.(...params, this.#game) }
@@ -199,17 +203,18 @@ class BrowserClient {
   /**
    * Load the mod code from a script string
    * @param {string} text - The code string to execute
+   * @param {boolean} asynchronous - Whether to apply asynchronous execution (for this loaded code only). Leave blank or set to `null` to use default configuration.
    * @returns {BrowserClient}
    */
 
-  async loadCodeFromString (text) {
+  async loadCodeFromString (text, asynchronous) {
     this.#path = null;
     this.#URL = null;
     this.#code = text;
 
     this.#setWatchInterval(false, null);
 
-    if (this.#node.processStarted) await this.#applyChanges(true);
+    if (this.#node.processStarted) await this.#applyChanges(true, asynchronous);
     return this
   }
 
@@ -217,18 +222,19 @@ class BrowserClient {
    * Load the mod code from a local file (File on your device)
    * @param {string} path - The path to the local file
    * @param {boolean} [watchChanges = false] - Whether to watch for changes on the file or not
-   * @param {number} [interval = 5000] - The interval between watchs (if <code>watchChanges<code> is set to <code>true</code>)
+   * @param {number} [interval = 5000] - The interval between watches (if `watchChanges` is set to `true`)
+   * @param {boolean} asynchronous - Whether to apply asynchronous execution (for this loaded code only). Leave blank or set to `null` to use default configuration.
    * @returns {BrowserClient}
    */
 
-  async loadCodeFromLocal (path, watchChanges = false, interval = 5000) {
+  async loadCodeFromLocal (path, watchChanges = false, interval = 5000, asynchronous) {
     this.#path = path;
     this.#URL = null;
     this.#code = null;
 
     this.#setWatchInterval(watchChanges, interval);
 
-    if (this.#node.processStarted) await this.#applyChanges(true);
+    if (this.#node.processStarted) await this.#applyChanges(true, asynchronous);
     return this
   }
 
@@ -236,18 +242,19 @@ class BrowserClient {
    * Load the mod code from an external URL file
    * @param {string} URL - The URL to the file
    * @param {boolean} [watchChanges = false] - Whether to watch for changes on the URL or not
-   * @param {number} [interval = 5000] - The interval between watchs (if <code>watchChanges<code> is set to <code>true</code>)
+   * @param {number} [interval = 5000] - The interval between watchs (if `watchChanges` is set to `true`)
+   * @param {boolean} asynchronous - Whether to apply asynchronous execution (for this loaded code only). Leave blank or set to `null` to use default configuration.
    * @returns {BrowserClient}
    */
 
-  async loadCodeFromExternal (URL, watchChanges = false, interval = 5000) {
+  async loadCodeFromExternal (URL, watchChanges = false, interval = 5000, asynchronous) {
     this.#path = null;
     this.#URL = URL;
     this.#code = null;
 
     this.#setWatchInterval(watchChanges, interval);
 
-    if (this.#node.processStarted) await this.#applyChanges(true);
+    if (this.#node.processStarted) await this.#applyChanges(true, asynchronous);
     return this
   }
 
@@ -259,7 +266,7 @@ class BrowserClient {
     return URLFetcher(this.#URL)
   }
 
-  async #applyChanges (forced) {
+  async #applyChanges (forced, asynchronous) {
     try {
       let lastCode = this.#lastCode;
       this.#lastCode = this.#URL ? (await this.#fromExternal()) : (this.#path ? (await this.#fromLocal()) : this.#code);
@@ -273,7 +280,14 @@ class BrowserClient {
         if (!this.#node.processStarted) this.#game = new Game(this.#node);
         else try { this.#game.modding.context = {} } catch (e) {};
         let game = this.#game;
-        await new AsyncFunction("game", "echo", "window", "global", this.#lastCode).call(game.modding.context, game, game.modding.terminal.echo, global, void 0)
+        let args = ["game", "echo", "window", "global", this.#lastCode];
+        let callArguments = [game.modding.context, game, game.modding.terminal.echo, global, void 0];
+        if (asynchronous ?? this.#asynchronous) {
+          await new AsyncFunction(...args).call(...callArguments)
+        }
+        else {
+          new Function(...args).call(...callArguments)
+        }
       }
 
     }

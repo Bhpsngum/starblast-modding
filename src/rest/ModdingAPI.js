@@ -1,7 +1,6 @@
 'use strict';
 
 const runMod = require("../utils/runMod.js");
-const defineProperties = require("../utils/defineProperties.js");
 
 class ModdingAPI {
   constructor(game, options) {

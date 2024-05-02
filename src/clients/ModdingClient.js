@@ -24,10 +24,10 @@ const cloneObj = function (obj) {
  * The Modding Client Instance.
  * @extends {EventEmitter}
  * @param {object} options - options for calling the object
- * @param {boolean} [options.cacheECPKey = false] - set to <code>true</code> if you want to reuse ECP Key for the next run, <code>false</code> otherwise
- * @param {boolean} [options.cacheOptions = false] - set to <code>true</code> if you want to reuse request options for the next run, <code>false</code> otherwise
- * @param {boolean} [options.cacheEvents = false] - set to <code>true</code> if you want to reuse all event handlers for the next run, <code>false</code> otherwise
- * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. <code>true</code> will use less bandwith but also create potential memory leaks, and <code>false</code> will do the opposite.
+ * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
+ * @param {boolean} [options.cacheOptions = false] - set to `true` if you want to reuse request options for the next run, `false` otherwise
+ * @param {boolean} [options.cacheEvents = false] - set to `true` if you want to reuse all event handlers for the next run, `false` otherwise
+ * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. `true` will use less bandwith but also create potential memory leaks, and `false` will do the opposite.
  */
 
 class ModdingClient extends EventEmitter {
@@ -70,7 +70,7 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
-   * Trigger the <code>onError</code> event.
+   * Trigger the `onError` event.
    * @param {string} message - Error message
    * @returns {boolean}
    */
@@ -80,7 +80,7 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
-   * Trigger the <code>onLog</code> event.
+   * Trigger the `onLog` event.
    * @param {...string} messages - Log messages strings
    * @returns {boolean}
    */
@@ -103,7 +103,7 @@ class ModdingClient extends EventEmitter {
 
   /**
    * Set the options for the modded game
-   * @param {options} options - game options, same as <code>this.options</code> uses in browser modding
+   * @param {options} options - game options, same as `this.options` uses in browser modding
    * @returns {ModdingClient}
    */
 
@@ -144,7 +144,7 @@ class ModdingClient extends EventEmitter {
 
   /**
    * Set the game state to "open"(true) (still attracts new players) or "closed"(false) (not attract new players)
-   * @param {boolean} isOpen - <code>true</code> to keep the game open, <code>false</code> otherwise.
+   * @param {boolean} isOpen - `true` to keep the game open, `false` otherwise.
    * @returns {ModdingClient}
    */
 
@@ -167,7 +167,7 @@ class ModdingClient extends EventEmitter {
   /**
    * Find a structrue based on its UUID
    * @param {string} uuid - An UUID (Universal Unique Identifier) to search for
-   * @returns {Structure} - The structure object, <code>null</code> if not found any.
+   * @returns {Structure} - The structure object, `null` if not found any.
    */
 
   findStructureByUUID (uuid, includeInactive = false) {
@@ -283,7 +283,7 @@ class ModdingClient extends EventEmitter {
   }
 
   /**
-   * The team manager of the game. Coule be <code>null</code> if the modded game is not team-based.
+   * The team manager of the game. Coule be `null` if the modded game is not team-based.
    * @type {TeamManager}
    * @readonly
    */

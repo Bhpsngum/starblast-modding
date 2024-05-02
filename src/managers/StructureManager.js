@@ -66,7 +66,7 @@ class StructureManager extends ArrayMap {
    * Find a structure inside the manager with the given ID
    * @param {number} - The Structure ID to be search for
    * @param {includeInactive} - To show whether it needs to search through inactive structures or not
-   * @returns {Structure} The structure, <code>null</code> if not found any
+   * @returns {Structure} The structure, `null` if not found any
    */
 
   findById (id, includeInactive = false) {
