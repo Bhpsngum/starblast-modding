@@ -10,22 +10,22 @@ const ObjectType = require("../structures/ObjectType.js");
  */
 
 class ObjectTypeManager extends StructureManager {
-  constructor(game, api) {
-    super(game, api);
-    this.#game = game;
-  }
+	constructor(game, api) {
+		super(game, api);
+		this.#game = game;
+	}
 
-  #game;
+	#game;
 
-  update () {
-    this.filterList().clear();
-    this.all.forEach(objectType => this._UUIDset(objectType));
-    return this
-  }
+	update () {
+		this.filterList().clear();
+		this.all.forEach(objectType => this._UUIDset(objectType));
+		return this
+	}
 
-  [Symbol.toStringTag] = 'ObjectTypeManager';
-  manager_name = "object_type";
-  StructureConstructor = ObjectType
+	[Symbol.toStringTag] = 'ObjectTypeManager';
+	manager_name = "object_type";
+	StructureConstructor = ObjectType
 }
 
 module.exports = ObjectTypeManager

@@ -13,43 +13,43 @@ const limits = [6, 12, 18, 36, 48];
  */
 
 class StationModuleManager extends StructureManager {
-  constructor(game, api, parent) {
-    super(game, api);
-    this.#game = game;
-    /**
-     * Parent station of the modules
-     * @type {Station}
-     * @readonly
-     */
-    defineProperties(this, {parent})
-  }
+	constructor(game, api, parent) {
+		super(game, api);
+		this.#game = game;
+		/**
+		 * Parent station of the modules
+		 * @type {Station}
+		 * @readonly
+		 */
+		defineProperties(this, {parent})
+	}
 
-  #game;
+	#game;
 
-  update () {
-    this.clear();
-    this.filterList().all.forEach(modul => modul.isActive() && this._UUIDset(modul));
-    return this
-  }
+	update () {
+		this.clear();
+		this.filterList().all.forEach(modul => modul.isActive() && this._UUIDset(modul));
+		return this
+	}
 
-  updateShield (shield) {
-    if (shield) {
-      let i = 0;
-      try {
-        while (true) getEntity(this.#game, {id: i}, this, this.parent).updateShield(shield.getUint8(i++))
-      }
-      catch (e) {}
-    }
-    this.update()
-  }
+	updateShield (shield) {
+		if (shield) {
+			let i = 0;
+			try {
+				while (true) getEntity(this.#game, {id: i}, this, this.parent).updateShield(shield.getUint8(i++))
+			}
+			catch (e) {}
+		}
+		this.update()
+	}
 
-  get limit () {
-    return limits[this.#game.options.station_size - 1] || limits[1]
-  }
+	get limit () {
+		return limits[this.#game.options.station_size - 1] || limits[1]
+	}
 
-  [Symbol.toStringTag] = 'StationModuleManager';
-  manager_name = "station_module";
-  StructureConstructor = StationModule;
+	[Symbol.toStringTag] = 'StationModuleManager';
+	manager_name = "station_module";
+	StructureConstructor = StationModule;
 }
 
 module.exports = StationModuleManager

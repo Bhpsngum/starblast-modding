@@ -10,20 +10,20 @@ const Alien = require("../structures/Alien.js");
  */
 
 class AlienManager extends EntityManager {
-  constructor(game, api) {
-    super(game, api);
-    this.#game = game;
-  }
+	constructor(game, api) {
+		super(game, api);
+		this.#game = game;
+	}
 
-  #game;
+	#game;
 
-  get limit () {
-    return 300
-  }
+	get limit () {
+		return 300
+	}
 
-  [Symbol.toStringTag] = 'AlienManager';
-  manager_name = "alien";
-  StructureConstructor = Alien;
+	[Symbol.toStringTag] = 'AlienManager';
+	manager_name = "alien";
+	StructureConstructor = Alien;
 }
 
 module.exports = AlienManager

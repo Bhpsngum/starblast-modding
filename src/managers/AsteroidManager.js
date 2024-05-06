@@ -10,20 +10,20 @@ const Asteroid = require("../structures/Asteroid.js");
  */
 
 class AsteroidManager extends EntityManager {
-  constructor(game, api) {
-    super(game, api);
-    this.#game = game;
-  }
+	constructor(game, api) {
+		super(game, api);
+		this.#game = game;
+	}
 
-  #game;
+	#game;
 
-  get limit () {
-    return 300
-  }
+	get limit () {
+		return 300
+	}
 
-  [Symbol.toStringTag] = 'AsteroidManager';
-  manager_name = "asteroid";
-  StructureConstructor = Asteroid;
+	[Symbol.toStringTag] = 'AsteroidManager';
+	manager_name = "asteroid";
+	StructureConstructor = Asteroid;
 }
 
 module.exports = AsteroidManager

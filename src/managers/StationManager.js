@@ -10,26 +10,26 @@ const Station = require("../structures/Station.js");
  */
 
 class StationManager extends StructureManager {
-  constructor (game, api) {
-    super(game, api);
-    this.#game = game;
-  }
+	constructor (game, api) {
+		super(game, api);
+		this.#game = game;
+	}
 
-  #game;
+	#game;
 
-  update () {
-    this.clear();
-    this.filterList().all.forEach(station => station.isActive() && this._UUIDset(station));
-    return this
-  }
+	update () {
+		this.clear();
+		this.filterList().all.forEach(station => station.isActive() && this._UUIDset(station));
+		return this
+	}
 
-  get limit () {
-    return this.#game.options.friendly_colors
-  }
+	get limit () {
+		return this.#game.options.friendly_colors
+	}
 
-  [Symbol.toStringTag] = 'StationManager';
-  manager_name = "station";
-  StructureConstructor = Station;
+	[Symbol.toStringTag] = 'StationManager';
+	manager_name = "station";
+	StructureConstructor = Station;
 }
 
 module.exports = StationManager;

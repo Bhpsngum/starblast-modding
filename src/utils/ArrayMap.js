@@ -7,36 +7,36 @@
  */
 
 class ArrayMap extends Map {
-  constructor (...args) {
-    super(...args)
-  }
+	constructor (...args) {
+		super(...args)
+	}
 
-  /**
-   * Get an array from this object
-   * @returns {array}
-   */
+	/**
+	 * Get an array from this object
+	 * @returns {array}
+	 */
 
-  toArray () {
-    return [...this.entries()].map(structure => structure[1])
-  }
+	toArray () {
+		return [...this.entries()].map(structure => structure[1])
+	}
 
-  /**
-   * Length of this object, same as `Map.prototype.size`
-   * @type {number}
-   * @readonly
-   */
+	/**
+	 * Length of this object, same as `Map.prototype.size`
+	 * @type {number}
+	 * @readonly
+	 */
 
-  get length () {
-    return this.size
-  }
+	get length () {
+		return this.size
+	}
 
-  _UUIDset (value) {
-    return Map.prototype.set.call(this, value?.uuid, value)
-  }
+	_UUIDset (value) {
+		return Map.prototype.set.call(this, value?.uuid, value)
+	}
 
-  [Symbol.iterator] () {
-    return this.toArray()[Symbol.iterator]()
-  }
+	[Symbol.iterator] () {
+		return this.toArray()[Symbol.iterator]()
+	}
 }
 
 module.exports = ArrayMap

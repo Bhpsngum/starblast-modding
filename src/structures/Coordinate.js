@@ -10,41 +10,41 @@ const defineProperties = require("../utils/defineProperties.js");
  */
 
 class Coordinate {
-  constructor (position) {
-    /**
-     * X Coordinate
-     * @name Coordinate#x
-     * @type {number}
-     * @readonly
-     */
+	constructor (position) {
+		/**
+		 * X Coordinate
+		 * @name Coordinate#x
+		 * @type {number}
+		 * @readonly
+		 */
 
-    /**
-    * Y Coordinate
-    * @name Coordinate#y
-    * @type {number}
-    * @readonly
-    */
+		/**
+		* Y Coordinate
+		* @name Coordinate#y
+		* @type {number}
+		* @readonly
+		*/
 
-    /**
-     * Z Coordinate
-     * @name Coordinate#z
-     * @type {number}
-     * @readonly
-     */
-    defineProperties(this, {
-      x: "number" == typeof position?.x ? position.x : 0,
-      y: "number" == typeof position?.y ? position.y : 0,
-      z: "number" == typeof position?.z ? position.z : 0,
-    })
-  }
+		/**
+		 * Z Coordinate
+		 * @name Coordinate#z
+		 * @type {number}
+		 * @readonly
+		 */
+		defineProperties(this, {
+			x: "number" == typeof position?.x ? position.x : 0,
+			y: "number" == typeof position?.y ? position.y : 0,
+			z: "number" == typeof position?.z ? position.z : 0,
+		})
+	}
 
-  toJSON () {
-    return {
-      x: this.x,
-      y: this.y,
-      z: this.z
-    }
-  }
+	toJSON () {
+		return {
+			x: this.x,
+			y: this.y,
+			z: this.z
+		}
+	}
 }
 
 module.exports = Coordinate

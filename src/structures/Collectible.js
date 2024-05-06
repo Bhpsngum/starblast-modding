@@ -12,43 +12,43 @@ const defineProperties = require("../utils/defineProperties.js");
  */
 
 class Collectible extends Entity {
-  constructor(game, api, options) {
-    super(game, api);
-    this.#game = game;
+	constructor(game, api, options) {
+		super(game, api);
+		this.#game = game;
 
-    /**
-     * Collectible code
-     * @name Collectible#code
-     * @type {number}
-     * @readonly
-     */
+		/**
+		 * Collectible code
+		 * @name Collectible#code
+		 * @type {number}
+		 * @readonly
+		 */
 
-    defineProperties(this, {code: options?.code ?? CollectibleCodes[0]});
-    let _this = this.modding.data;
-    _this.x = options?.x ?? 0;
-    _this.y = options?.y ?? 0;
-    _this.vx = _this.vy = 0;
-    _this.lastUpdatedStep = game.timer.step;
-  }
+		defineProperties(this, {code: options?.code ?? CollectibleCodes[0]});
+		let _this = this.modding.data;
+		_this.x = options?.x ?? 0;
+		_this.y = options?.y ?? 0;
+		_this.vx = _this.vy = 0;
+		_this.lastUpdatedStep = game.timer.step;
+	}
 
-  #game;
+	#game;
 
-  set () {
+	set () {
 
-  }
+	}
 
-  kill () {
+	kill () {
 
-  }
+	}
 
-  toJSON () {
-    return limitedJSON(this, ["x", "y", "request_id", "code"])
-  }
+	toJSON () {
+		return limitedJSON(this, ["x", "y", "request_id", "code"])
+	}
 }
 
 defineProperties(Collectible.prototype, {
-  structure_type: "collectible",
-  inactive_field: "vaporized"
+	structure_type: "collectible",
+	inactive_field: "vaporized"
 });
 
 module.exports = Collectible
