@@ -2,7 +2,6 @@
 
 const Structure = require("./Structure.js");
 const Coordinate = require("./Coordinate.js");
-const getObjectShapeFromURL = require("../utils/getObjectShapeFromURL.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const toString = require("../utils/toString.js");
