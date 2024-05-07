@@ -30,10 +30,12 @@ Please see [this link](https://bhpsngum.github.io/starblast/starblast-modding/)
 ## Example
 ### ModdingClient usage
 This is an example on how to run a team-mode modded game:
+
+(along with available events to listen on)
 ```js
 const StarblastModding = require("starblast-modding");
 
-global.game = new StarblastModding.Client({
+const game = new StarblastModding.Client({
   cacheECPKey: true,
   cacheEvents: false,
   cacheOptions: true
@@ -117,11 +119,11 @@ game.on('asteroidDestroy', function(asteroid, killer) {
 
 });
 
-game.on('collectibleCreate', function(asteroid) {
+game.on('collectibleCreate', function(collectible) {
 
 });
 
-game.on('collectiblePick', function(asteroid, ship) {
+game.on('collectiblePick', function(collectible, ship) {
 
 });
 

@@ -1,8 +1,6 @@
 'use strict';
 
 const Structure = require("./Structure.js");
-const MassRename = require("../utils/MassivePrototypeDefinition.js");
-const defineProperties = require("../utils/defineProperties.js");
 const parseCoords = function (val, game) {
 	let hSize = game.options.map_size * 5, size = hSize * 2;
 	val += hSize;
