@@ -16,11 +16,11 @@ class Team extends Structure {
 		this.markAsSpawned(true);
 
 		/**
-		* Team faction name
-		* @name Team#faction
-		* @type {string}
-		* @readonly
-		*/
+		 * Team faction name
+		 * @name Team#faction
+		 * @type {string}
+		 * @readonly
+		 */
 
 		defineProperties(this, {
 			id: options.id,

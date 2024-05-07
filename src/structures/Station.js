@@ -27,32 +27,32 @@ class Station extends Entity {
 		(Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
 
 		/**
-		* Station name
-		* @name Station#name
-		* @type {string}
-		* @readonly
-		*/
+		 * Station name
+		 * @name Station#name
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* Station team id
-		* @name Station#team
-		* @type {number}
-		* @readonly
-		*/
+		 * Station team id
+		 * @name Station#team
+		 * @type {number}
+		 * @readonly
+		 */
 
 		/**
-		* Station modules list
-		* @name Station#modules
-		* @type {StationModuleManager}
-		* @readonly
-		*/
+		 * Station modules list
+		 * @name Station#modules
+		 * @type {StationModuleManager}
+		 * @readonly
+		 */
 
 		/**
-		* Station phase (in degrees)
-		* @name Station#phase
-		* @type {string}
-		* @readonly
-		*/
+		 * Station phase (in degrees)
+		 * @name Station#phase
+		 * @type {string}
+		 * @readonly
+		 */
 
 		defineProperties(this, {
 			name: "string" == typeof options?.name ? options.name : "Unknown",

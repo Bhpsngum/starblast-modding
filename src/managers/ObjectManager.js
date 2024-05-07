@@ -50,11 +50,11 @@ class ObjectManager extends StructureManager {
 	}
 
 	/**
-	* Set options to an object based on ID
-	* @param {number} id - The object's ID
-	* @param {object} data - Options to be set on the object
-	* @returns {Object3D}
-	*/
+	 * Set options to an object based on ID
+	 * @param {number} id - The object's ID
+	 * @param {object} data - Options to be set on the object
+	 * @returns {Object3D}
+	 */
 
 	setById (id, data) {
 		this.set(Object.assign({}, data, {id}))

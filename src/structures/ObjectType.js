@@ -28,99 +28,99 @@ class ObjectType extends Structure {
 		else if (!physics.autoShape) defineProperties(physics, {shape: []});
 		
 		/**
-		* ObjectType ID
-		* @name ObjectType#id
-		* @type {string}
-		* @readonly
-		*/
+		 * ObjectType ID
+		 * @name ObjectType#id
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType model link (.obj file)
-		* @name ObjectType#obj
-		* @type {string}
-		* @readonly
-		*/
+		 * ObjectType model link (.obj file)
+		 * @name ObjectType#obj
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType diffuse texture link
-		* @name ObjectType#diffuse
-		* @type {string}
-		* @readonly
-		*/
+		 * ObjectType diffuse texture link
+		 * @name ObjectType#diffuse
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType emissive texture link
-		* @name ObjectType#emissive
-		* @type {string}
-		* @readonly
-		*/
+		 * ObjectType emissive texture link
+		 * @name ObjectType#emissive
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType specular texture link
-		* @name ObjectType#specular
-		* @type {string}
-		* @readonly
-		*/
+		 * ObjectType specular texture link
+		 * @name ObjectType#specular
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType bump texture link
-		* @name ObjectType#bump
-		* @type {string}
-		* @readonly
-		*/
+		 * ObjectType bump texture link
+		 * @name ObjectType#bump
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType diffuse color
-		* @name ObjectType#diffuseColor
-		* @type {(string|number)}
-		* @readonly
-		*/
+		 * ObjectType diffuse color
+		 * @name ObjectType#diffuseColor
+		 * @type {(string|number)}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType emissive color
-		* @name ObjectType#emissiveColor
-		* @type {(string|number)}
-		* @readonly
-		*/
+		 * ObjectType emissive color
+		 * @name ObjectType#emissiveColor
+		 * @type {(string|number)}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType specular color
-		* @name ObjectType#specularColor
-		* @type {(string|number)}
-		* @readonly
-		*/
+		 * ObjectType specular color
+		 * @name ObjectType#specularColor
+		 * @type {(string|number)}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType bump scale
-		* @name ObjectType#bumpScale
-		* @type {(string|number)}
-		* @readonly
-		*/
+		 * ObjectType bump scale
+		 * @name ObjectType#bumpScale
+		 * @type {(string|number)}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType transparency
-		* @name ObjectType#transparent
-		* @type {boolean}
-		* @readonly
-		*/
+		 * ObjectType transparency
+		 * @name ObjectType#transparent
+		 * @type {boolean}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType shininess
-		* @name ObjectType#shininess
-		* @type {boolean}
-		* @readonly
-		*/
+		 * ObjectType shininess
+		 * @name ObjectType#shininess
+		 * @type {boolean}
+		 * @readonly
+		 */
 
 		/**
-		* ObjectType physics
-		* @name ObjectType#physics
-		* @type {object}
-		* @property {array} shape - Object type's hitbox shape
-		* @property {number} mass - The mass of the object type
-		* @property {boolean} fixed - Indicates if the object type is movable or not (honestly this doesn't do anything much)
-		* @property {boolean} autoShape - Indicates if the object type's hitbox shape will be/was rendered automatically
-		* @readonly
-		*/
+		 * ObjectType physics
+		 * @name ObjectType#physics
+		 * @type {object}
+		 * @property {array} shape - Object type's hitbox shape
+		 * @property {number} mass - The mass of the object type
+		 * @property {boolean} fixed - Indicates if the object type is movable or not (honestly this doesn't do anything much)
+		 * @property {boolean} autoShape - Indicates if the object type's hitbox shape will be/was rendered automatically
+		 * @readonly
+		 */
 
 		defineProperties(this, {
 			id: toString(type?.id),

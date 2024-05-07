@@ -46,11 +46,11 @@ class Alien extends Entity {
 		 */
 
 		/**
-		* The amount of crystals dropped after the alien is killed
-		* @name Alien#crytal_drop
-		* @type {number}
-		* @readonly
-		*/
+		 * The amount of crystals dropped after the alien is killed
+		 * @name Alien#crytal_drop
+		 * @type {number}
+		 * @readonly
+		 */
 
 		defineProperties(this, {
 			weapon_drop: CollectibleCodes[weapon_drop] ?? null,

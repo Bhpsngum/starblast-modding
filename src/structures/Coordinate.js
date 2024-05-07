@@ -19,11 +19,11 @@ class Coordinate {
 		 */
 
 		/**
-		* Y Coordinate
-		* @name Coordinate#y
-		* @type {number}
-		* @readonly
-		*/
+		 * Y Coordinate
+		 * @name Coordinate#y
+		 * @type {number}
+		 * @readonly
+		 */
 
 		/**
 		 * Z Coordinate

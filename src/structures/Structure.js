@@ -31,18 +31,18 @@ class Structure {
 		 */
 
 		/**
-		* Structure's ID
-		* @name Structure#id
-		* @type {number}
-		* @readonly
-		*/
+		 * Structure's ID
+		 * @name Structure#id
+		 * @type {number}
+		 * @readonly
+		 */
 
 		/**
-		* Structure's creation step
-		* @name Structure#createdStep
-		* @type {number}
-		* @readonly
-		*/
+		 * Structure's creation step
+		 * @name Structure#createdStep
+		 * @type {number}
+		 * @readonly
+		 */
 		defineProperties(this, {modding: {data: {}}, uuid: createUUID()})
 	}
 

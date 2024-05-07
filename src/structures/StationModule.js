@@ -38,25 +38,25 @@ class StationModule extends Entity {
 		this.markAsSpawned();
 
 		/**
-		* The parent station of this module
-		* @name StationModule#parent
-		* @type {Station}
-		* @readonly
-		*/
+		 * The parent station of this module
+		 * @name StationModule#parent
+		 * @type {Station}
+		 * @readonly
+		 */
 
 		/**
-		* Module type
-		* @name StationModule#type
-		* @type {string}
-		* @readonly
-		*/
+		 * Module type
+		 * @name StationModule#type
+		 * @type {string}
+		 * @readonly
+		 */
 
 		/**
-		* Module class
-		* @name StationModule#class
-		* @type {number}
-		* @readonly
-		*/
+		 * Module class
+		 * @name StationModule#class
+		 * @type {number}
+		 * @readonly
+		 */
 
 		defineProperties(this, {
 			parent,

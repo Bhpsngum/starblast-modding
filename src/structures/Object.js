@@ -20,11 +20,11 @@ class Object3D extends Structure {
 		this.#api = api;
 
 		/**
-		* Object ID
-		* @name Object3D#id
-		* @type {string}
-		* @readonly
-		*/
+		 * Object ID
+		 * @name Object3D#id
+		 * @type {string}
+		 * @readonly
+		 */
 
 		defineProperties(this, {id: toString(options?.id)});
 		Object.defineProperties(this, {
@@ -103,40 +103,40 @@ class Object3D extends Structure {
 	}
 
 	/**
-	* Object type
-	* @type {ObjectType}
-	* @readonly
-	*/
+	 * Object type
+	 * @type {ObjectType}
+	 * @readonly
+	 */
 
 	get type () {
 		return this.modding.data.type
 	}
 
 	/**
-	* Object position
-	* @type {Coordinate}
-	* @readonly
-	*/
+	 * Object position
+	 * @type {Coordinate}
+	 * @readonly
+	 */
 
 	get position () {
 		return this.modding.data.position
 	}
 
 	/**
-	* Object rotation
-	* @type {Coordinate}
-	* @readonly
-	*/
+	 * Object rotation
+	 * @type {Coordinate}
+	 * @readonly
+	 */
 
 	get rotation () {
 		return this.modding.data.rotation
 	}
 
 	/**
-	* Object scale
-	* @type {Coordinate}
-	* @readonly
-	*/
+	 * Object scale
+	 * @type {Coordinate}
+	 * @readonly
+	 */
 
 	get scale () {
 		return this.modding.data.scale
