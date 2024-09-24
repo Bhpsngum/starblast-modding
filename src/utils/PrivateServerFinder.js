@@ -3,18 +3,18 @@
 const URLFetcher = require("./URLFetcher");
 
 module.exports = async function PrivateServerFinder (region) {
-	let server;
+	let servers, server;
 	try {
-		server = await URLFetcher("https://starblast.io/simstatus.json")
+		servers = await URLFetcher("https://starblast.io/simstatus.json")
 	}
 	catch (e) {
-		throw new Error("Failed to connect to the database")
+		throw new Error("Failed to connect to server listing")
 	}
 	try {
-		server = JSON.parse(server).filter(server => server.modding && server.location === region).sort((a,b) => a.usage.cpu - b.usage.cpu)[0];
+		server = servers.filter(server => server.modding && server.location === region).sort((a,b) => a.usage.cpu - b.usage.cpu)[0];
 	}
 	catch (e) {
-		throw new Error("Server database malformed or updated")
+		throw new Error("Server listing malformed or updated")
 	}
 	if (!server) throw new Error("Could not find any servers with the specified region");
 	let data = server.address.split(":");
