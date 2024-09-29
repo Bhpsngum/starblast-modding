@@ -154,7 +154,10 @@ class ObjectType extends Structure {
 	}
 
 	toJSON () {
-		return Object.assign(limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess"]), {physics: limitedJSON(this.physics, ["mass", "shape"])})
+		let raw = Object.assign(limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess"]), {physics: limitedJSON(this.physics, ["mass", "shape"])});
+		// remove any fields with nullish value since it causes client to completely ignore this object
+		for (let i in raw) if (raw[i] == null) delete raw[i];
+		return raw;
 	}
 }
 
