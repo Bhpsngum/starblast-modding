@@ -22,6 +22,10 @@ class Entity extends Structure {
 
 	#game;
 	#api;
+	#xStep;
+	#yStep;
+	#lastX = 0;
+	#lastY = 0;
 
 	/**
 	 * Set the entity with given data
@@ -73,8 +77,15 @@ class Entity extends Structure {
 	 */
 
 	get x () {
-		let rawX = +(this.modding.data.x + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vx) : 0)) || 0;
-		return parseCoords(rawX, this.#game);
+		if (this.#xStep !== this.#game.timer.step) {
+			this.#xStep = this.#game.timer.step;
+			if (this.#game?.options) {
+				let rawX = +(this.modding.data.x + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vx) : 0)) || 0;
+				this.#lastX = parseCoords(rawX, this.#game);
+			}
+		}
+
+		return this.#lastX;
 	}
 
 	/**
@@ -84,8 +95,15 @@ class Entity extends Structure {
 	 */
 
 	get y () {
-		let rawY = +(this.modding.data.y + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vy) : 0)) || 0;
-		return parseCoords(rawY, this.#game);
+		if (this.#yStep !== this.#game.timer.step) {
+			this.#yStep = this.#game.timer.step;
+			if (this.#game?.options) {
+				let rawY = +(this.modding.data.y + (this.isSpawned() ? ((this.lastAliveStep - this.lastUpdatedStep) * this.vy) : 0)) || 0;
+				this.#lastY = parseCoords(rawY, this.#game);
+			}
+		}
+
+		return this.#lastY;
 	}
 
 	/**
