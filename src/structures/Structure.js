@@ -62,7 +62,7 @@ class Structure {
 	}
 
 	markAsSpawned () {
-		defineProperties(this, {spawned: true})
+		try { defineProperties(this, {spawned: true}) } catch (e) {}
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Structure {
 	 */
 
 	get lastAliveStep () {
-		let aliveData = this.modding.data.alive, alive = this.isActive() && this.alive;
+		let alive = this.isActive() && this.alive;
 		return alive ? this.#game.timer.step : this.modding.data.lastAliveStep;
 	}
 }

@@ -13,7 +13,7 @@ class Team extends Structure {
 	constructor(game, api, options) {
 		super(game, api);
 		this.#game = game;
-		this.markAsSpawned(true);
+		this.markAsSpawned();
 
 		/**
 		 * Team faction name

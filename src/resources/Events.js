@@ -40,13 +40,13 @@ let EVENTS = {
 	 */
 	SHIP_RESPAWNED: "shipRespawn",
 	/**
-	 * Fires when a ship spawns (available in unspecified root mode only)
+	 * Fires when a ship first spawns
 	 * @event ModdingClient#shipSpawn
 	 * @param {Ship} ship - The ship object
 	 */
 	SHIP_SPAWNED: "shipSpawn",
 	/**
-	 * Fires when a ship is destroyed (available in unspecified root mode only)
+	 * Fires when a ship is destroyed
 	 * @event ModdingClient#shipDestroy
 	 * @param {Ship} ship - The ship object
 	 * @param {Ship} killer - The killer ship object or `null`

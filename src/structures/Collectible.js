@@ -1,17 +1,17 @@
 'use strict';
 
-const Entity = require("./Entity.js");
+const ImmutableEntity = require("./ImmutableEntity.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const CollectibleCodes = require("../utils/collectibleCodes.js");
 const defineProperties = require("../utils/defineProperties.js");
 
 /**
  * The Collectible Instance
- * @extends {Entity}
+ * @extends {ImmutableEntity}
  * @abstract
  */
 
-class Collectible extends Entity {
+class Collectible extends ImmutableEntity {
 	constructor(game, api, options) {
 		super(game, api);
 		this.#game = game;
@@ -32,14 +32,6 @@ class Collectible extends Entity {
 	}
 
 	#game;
-
-	set () {
-
-	}
-
-	kill () {
-
-	}
 
 	toJSON () {
 		return limitedJSON(this, ["x", "y", "request_id", "code"])

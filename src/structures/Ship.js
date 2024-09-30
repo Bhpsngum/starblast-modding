@@ -37,14 +37,14 @@ class Ship extends Entity {
 		return !!this.modding.data.alive
 	}
 
-	update (data, fromGameClient) {
+	update (data, fromGameClient, markSpawn) {
 		let _this = this.modding.data;
 		if (fromGameClient) {
 			_this.customization = data.customization;
 			_this.hue = data.hue
 		}
 		else {
-			this.entityUpdate(data);
+			this.entityUpdate(data, !markSpawn);
 			_this.name = data.player_name;
 			_this.angle = data.r * 180 / Math.PI; // convert from radian back to degree
 			_this.idle = data.idle;

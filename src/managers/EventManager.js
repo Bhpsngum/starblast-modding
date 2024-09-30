@@ -7,6 +7,8 @@ const events = require("../resources/Events.js");
 const defineProperties = require("../utils/defineProperties.js");
 const getJoinPacketName = require("../utils/getJoinPacketName.js");
 
+const standard_modes = ["survival", "team", "invasion", "deathmatch", "battleroyale"];
+
 module.exports.create = function (api, address, token) {
 	if (api.encodeOptionsError) {
 		api.game.error("Failed to encode game options");
@@ -86,8 +88,31 @@ module.exports.create = function (api, address, token) {
 					}
 					case "ship_update": {
 						let ship = getEntity(api.game, event, this.ships);
-						if (!ship.isSpawned()) this.objects.forEach(object => api.clientMessage(ship.id, "set_object", {object: object}).send())
-						ship.update(event);
+						let evt, args, spawned = ship.isSpawned(), isStandardMode = standard_modes.includes(api.game.options.root_mode);
+						if (!spawned) this.objects.forEach(object => api.clientMessage(ship.id, "set_object", {object: object}).send());
+						// support some missing ship events in standard modes
+						if (isStandardMode) {
+							if (spawned) {
+								if (ship.alive) {
+									if (!event.alive) {
+										evt = events.SHIP_DESTROYED;
+										args = [ship, null];
+									}
+								}
+								else if (event.alive) {
+									evt = events.SHIP_RESPAWNED;
+									args = [ship];
+								}
+							}
+							else {
+								evt = events.SHIP_SPAWNED;
+								args = [ship];
+							}
+						}
+						// somehow ship update packet comes first before the spawning event packet
+						// do this to prevent any first update packet to overwrite spawned status
+						ship.update(event, false, isStandardMode);
+						if (evt) this.emit(evt, ...args);
 						break;
 					}
 					case "alien_update":
@@ -151,8 +176,11 @@ module.exports.create = function (api, address, token) {
 							case "ship_spawned": {
 								data.id = data.ship;
 								let ship = getEntity(api.game, data, this.ships);
-								let event_name = ship.isSpawned() ? events.SHIP_SPAWNED : events.SHIP_RESPAWNED;
-								if (!ship.isSpawned()) ship.markAsSpawned();
+								let event_name = events.SHIP_RESPAWNED;
+								if (!ship.isSpawned()) {
+									ship.markAsSpawned();
+									event_name = events.SHIP_SPAWNED;
+								}
 								this.ships.update();
 								this.emit(event_name, ship);
 								break;
