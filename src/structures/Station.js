@@ -1,6 +1,6 @@
 'use strict';
 
-const ImmutableEntity = require("./ImmutableEntity.js");
+const BaseEntity = require("./BaseEntity.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
 const defineProperties = require("../utils/defineProperties.js");
 const getAngle = function (phase, step) {
@@ -12,11 +12,11 @@ const getRadius = function (game, api) {
 
 /**
  * The Station Instance
- * @extends {ImmutableEntity}
+ * @extends {BaseEntity}
  * @abstract
  */
 
-class Station extends ImmutableEntity {
+class Station extends BaseEntity {
 	constructor(game, api, options) {
 		super(game, api);
 		this.#game = game;

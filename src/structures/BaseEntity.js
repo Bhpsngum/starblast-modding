@@ -1,5 +1,6 @@
 'use strict';
 
+const limitedJSON = require("../utils/limitedJSON.js");
 const Structure = require("./Structure.js");
 const parseCoords = function (val, game) {
 	if (!game?.options) return val;
@@ -9,12 +10,12 @@ const parseCoords = function (val, game) {
 }
 
 /**
- * The ImmutableEntity Instance - represents any entity whose properties cannot be changed after spawning
+ * Most basic class of entity without stats modification ability
  * @extends {Structure}
  * @abstract
  */
 
-class ImmutableEntity extends Structure {
+class BaseEntity extends Structure {
 	constructor (game, api) {
 		super(game, api);
 		this.#game = game;
@@ -100,6 +101,10 @@ class ImmutableEntity extends Structure {
 		let step = this.modding.data.lastUpdatedStep;
 		return Number.isNaN(step) ? -1 : Math.max(0, step);
 	}
+
+	toJSON () {
+		return limitedJSON(this, ["x", "y", "vx", "vy"]);
+	}
 }
 
-module.exports = ImmutableEntity
+module.exports = BaseEntity

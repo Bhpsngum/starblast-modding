@@ -395,7 +395,10 @@ class Ship extends Entity {
 	 */
 
 	toJSON () {
-		return limitedJSON(this, ["name", "x", "y", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization"])
+		return {
+			...super.toJSON(),
+			...limitedJSON(this, ["name", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization"])
+		}
 	}
 }
 
@@ -404,6 +407,6 @@ defineProperties(Ship.prototype, {
 	inactive_field: "disconnected"
 });
 
-MassRename(Ship, ["x", "y", "vx", "vy", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
+MassRename(Ship, ["type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
 
 module.exports = Ship

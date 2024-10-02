@@ -100,34 +100,6 @@ class Alien extends Entity {
 	}
 
 	/**
-	 * Set alien's X position
-	 * @method Alien#setX
-	 * @param {number} x - The X position to set
-	 * @returns {Alien}
-	 */
-
-	/**
-	 * Set alien's Y position
-	 * @method Alien#setY
-	 * @param {number} y - The Y position to set
-	 * @returns {Alien}
-	 */
-
-	/**
-	 * Set alien speed along the x Axis
-	 * @method Alien#setVx
-	 * @param {number} vx - The speed to set along the x Axis, can be negative
-	 * @returns {Alien}
-	 */
-
-	/**
-	 * Set alien speed along the y Axis
-	 * @method Alien#setVy
-	 * @param {number} vy - The speed to set along the y Axis, can be negative
-	 * @returns {Alien}
-	 */
-
-	/**
 	 * Set alien shield
 	 * @method Alien#setShield
 	 * @param {number} shield - The shield to set
@@ -163,7 +135,10 @@ class Alien extends Entity {
 	 */
 
 	toJSON () {
-		return limitedJSON(this, ["x", "y", "request_id", "vx", "vy", "shield", "regen", "points", "damage", "laser_speed", "rate", "code", "level", "weapon_drop", "crystal_drop"])
+		return {
+			...super.toJSON(),
+			...limitedJSON(this, ["request_id", "shield", "regen", "points", "damage", "laser_speed", "rate", "code", "level", "weapon_drop", "crystal_drop"])
+		}
 	}
 }
 
@@ -172,6 +147,6 @@ defineProperties(Alien.prototype, {
 	inactive_field: "killed"
 });
 
-MassRename(Alien, ["x", "y", "vx", "vy", "shield", "regen", "damage", ["laserSpeed", "laser_speed"], "rate"]);
+MassRename(Alien, ["shield", "regen", "damage", ["laserSpeed", "laser_speed"], "rate"]);
 
 module.exports = Alien
