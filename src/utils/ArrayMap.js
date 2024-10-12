@@ -12,12 +12,21 @@ class ArrayMap extends Map {
 	}
 
 	/**
+	 * Get element at index, Equivalent to `Array.prototype.at`
+	 * @returns {any | undefined} The value at index
+	 */
+	
+	at (index) {
+		return this.toArray().at(index);
+	}
+
+	/**
 	 * Get an array from this object
 	 * @returns {array}
 	 */
 
 	toArray () {
-		return [...this.entries()].map(structure => structure[1])
+		return [...this.values()];
 	}
 
 	/**
@@ -35,7 +44,11 @@ class ArrayMap extends Map {
 	}
 
 	[Symbol.iterator] () {
-		return this.toArray()[Symbol.iterator]()
+		return this.values();
+	}
+
+	toJSON () {
+		return this.toArray();
 	}
 }
 

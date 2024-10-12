@@ -61,7 +61,7 @@ let EVENTS = {
 	/**
 	 * Fires when a ship clicks an UIComponent
 	 * @event ModdingClient#UIComponentClick
-	 * @param {string} id - The UIComponent's ID
+	 * @param {UIComponent} component - The UIComponent being clicked, note that individual components are prioritized first
 	 * @param {Ship} ship - The ship object
 	 */
 	UI_COMPONENT_CLICKED: "UIComponentClick",

@@ -1,5 +1,11 @@
 'use strict';
 
 module.exports = function (obj, properties = []) {
-	return ["id", "uuid", ...properties].reduce((a,b)=>(a[b]=obj[b],a),{})
+	let res = {};
+
+	for (let k of properties) {
+		res[k] = obj[k];
+	}
+
+	return res;
 }

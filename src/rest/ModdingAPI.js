@@ -103,7 +103,7 @@ class ModdingAPI {
 
 	clientMessage (id, name, data) {
 		this.name("client_message");
-		data = Object.assign({}, data, {name: name});
+		data = Object.assign({}, data, { name });
 		return this.data({id, data})
 	}
 
@@ -123,7 +123,7 @@ class ModdingAPI {
 				switch (action) {
 					case "create":
 					case "destroy": {
-						let hanlder = this.handlers[action], reject = handler.get(uuid)?.reject;
+						let handler = this.handlers[action], reject = handler.get(uuid)?.reject;
 						handler.delete(uuid);
 						this.game.findStructureByUUID(uuid)?.markAsInactive?.();
 						reject?.(error);

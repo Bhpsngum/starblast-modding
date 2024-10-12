@@ -1,10 +1,7 @@
 'use strict';
 
 const defineProperties = require("../utils/defineProperties.js");
-const crypto = require("crypto");
-const createUUID = function () {
-	return crypto.randomUUID({ disableEntropyCache: true }).toUpperCase()
-}
+const createUUID = require("../utils/createUUID.js");
 
 /**
  * The Structure Instance - represents any structrure in the game
@@ -43,7 +40,8 @@ class Structure {
 		 * @type {number}
 		 * @readonly
 		 */
-		defineProperties(this, {modding: {data: {}}, uuid: createUUID()})
+		defineProperties(this, {modding: {data: {}}}, false);
+		defineProperties(this, {uuid: createUUID()});
 	}
 
 	#game;
@@ -58,7 +56,6 @@ class Structure {
 			this.modding.data.lastAliveStep = this.#game.timer.step
 		}
 		catch (e) {}
-
 	}
 
 	markAsSpawned () {
@@ -104,6 +101,14 @@ class Structure {
 	get lastAliveStep () {
 		let alive = this.isActive() && this.alive;
 		return alive ? this.#game.timer.step : this.modding.data.lastAliveStep;
+	}
+
+	toJSON () {
+		return {
+			...limitedJSON(this, ["id", "uuid", "alive", "createdStep"]),
+			active: this.isActive(),
+			spawned: this.isSpawned()
+		}
 	}
 }
 

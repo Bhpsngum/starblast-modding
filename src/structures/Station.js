@@ -3,6 +3,7 @@
 const BaseEntity = require("./BaseEntity.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
 const defineProperties = require("../utils/defineProperties.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 const getAngle = function (phase, step) {
 	return (phase / 180 + step / 60 / 3600 % 1 * 2) * Math.PI
 }
@@ -34,9 +35,16 @@ class Station extends BaseEntity {
 		 */
 
 		/**
-		 * Station team id
-		 * @name Station#team
+		 * Station hue
+		 * @name Station#hue
 		 * @type {number}
+		 * @readonly
+		 */
+
+		/**
+		 * The team this station belongs to
+		 * @name Station#team
+		 * @type {Team}
 		 * @readonly
 		 */
 
@@ -55,9 +63,10 @@ class Station extends BaseEntity {
 		 */
 
 		defineProperties(this, {
-			name: "string" == typeof options?.name ? options.name : "Unknown",
+			name: "string" == typeof options?.base_name ? options.base_name : "Unknown",
 			id: options?.id,
-			team: options?.id,
+			team: options?.team,
+			hue: options?.hue || 0,
 			modules,
 			phase: options?.phase * 180 / Math.PI
 		});
@@ -141,6 +150,15 @@ class Station extends BaseEntity {
 
 	get crystals_max () {
 		return this.modding.data.crystals_max
+	}
+
+	toJSON () {
+		return {
+			...super.toJSON(),
+			team_id: this.team.id,
+			team_uuid: this.team.uuid,
+			...limitedJSON(this, ["name", "modules", "phase", "size", "level", "crystals", "crystals_max"])
+		}
 	}
 }
 

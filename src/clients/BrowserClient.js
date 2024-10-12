@@ -41,9 +41,8 @@ class BrowserClient {
 			this.#handle(context?.[spec]?.bind(context), ...params)
 		}.bind(this);
 
-		node.on(ModdingEvents.TICK, function (tick) {
-			_this.#game?.modding?.tick?.();
-			handle('tick')
+		node.on(ModdingEvents.TICK, (tick) => {
+			this.#handle(this.#game?.modding?.tick?.bind?.(this.#game?.modding), tick);
 		});
 
 		// events
@@ -119,7 +118,7 @@ class BrowserClient {
 			handle('event', {name: "station_module_repaired", module})
 		});
 
-		node.on(ModdingEvents.UI_COMPONENT_CLICKED, function (id, ship) {
+		node.on(ModdingEvents.UI_COMPONENT_CLICKED, function ({ id }, ship) {
 			handle('event', {name: "ui_component_clicked", id, ship})
 		});
 	}
@@ -152,7 +151,7 @@ class BrowserClient {
 	 */
 
 	getNode () {
-		return this.#node
+		return this.#node;
 	}
 
 	/**

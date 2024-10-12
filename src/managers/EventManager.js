@@ -1,7 +1,6 @@
 'use strict';
 
 const GameSocket = require("../utils/GameSocket.js");
-const GameClient = require("../clients/GameClient.js");
 const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js");
 const defineProperties = require("../utils/defineProperties.js");
@@ -89,7 +88,11 @@ module.exports.create = function (api, address, token) {
 					case "ship_update": {
 						let ship = getEntity(api.game, event, this.ships);
 						let evt, args, spawned = ship.isSpawned(), isStandardMode = standard_modes.includes(api.game.options.root_mode);
-						if (!spawned) this.objects.forEach(object => api.clientMessage(ship.id, "set_object", {object: object}).send());
+						if (!spawned && !ship.modding.data.initialized) {
+							this.objects.forEach(object => api.clientMessage(ship.id, "set_object", {object: object}).send());
+							this.ships.ui_components.forEach(component => component.persistent && api.clientMessage(ship.id, "set_ui_component", { component: component.raw.backup }).send());
+							ship.modding.data.initialized = true;
+						}
 						// support some missing ship events in standard modes
 						if (isStandardMode) {
 							if (spawned) {
@@ -197,7 +200,15 @@ module.exports.create = function (api, address, token) {
 							case "ui_component_clicked":
 								let id = data.id;
 								data.id = data.ship;
-								this.emit(events.UI_COMPONENT_CLICKED, id, getEntity(api.game, data, this.ships));
+								let ship = getEntity(api.game, data, this.ships);
+								let ship_component = ship.ui_components.findById(id);
+								if (ship_component?.raw?.lastClickable) {
+									this.emit(events.UI_COMPONENT_CLICKED, ship_component, ship);
+								}
+								else {
+									let global_component = this.ships.ui_components.findById(id);
+									if (global_component?.raw?.lastClickable) this.emit(events.UI_COMPONENT_CLICKED, global_component, ship);
+								}
 								break;
 						}
 						break;
@@ -209,6 +220,7 @@ module.exports.create = function (api, address, token) {
 			let isStarted = this.started;
 			api.clientReset(this);
 			if (!isStarted) reject(new Error("Failed to run the mod"));
+			console.log("Stopped");
 			this.emit(events.MOD_STOPPED);
 		}.bind(api.game))
 	}.bind(api))

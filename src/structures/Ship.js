@@ -4,9 +4,8 @@ const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
-const toString = require("../utils/toString.js");
-const parseUI = require("../utils/parseUI.js");
 const parseIntermission = require("../utils/parseIntermission.js");
+const UIComponentManager = require("../managers/UIComponentManager.js");
 const convertStats = function(data) {
 	if (isNaN(data)) return 0;
 	let stats = [];
@@ -28,6 +27,7 @@ class Ship extends Entity {
 		super(game, api);
 		this.#game = game;
 		this.#api = api;
+		this.modding.data.ui_components = new UIComponentManager(game, api, this);
 	}
 
 	#game;
@@ -93,17 +93,6 @@ class Ship extends Entity {
 	}
 
 	/**
-	 * Set the UI Component to the ship
-	 * @param {object} UIComponent - UI component options
-	 * @returns {Ship}
-	 */
-
-	setUIComponent (component) {
-		this.#api.clientMessage(this.id, "set_ui_component", {component: parseUI(component)}).send();
-		return this
-	}
-
-	/**
 	 * Show intermission screen to the ship
 	 * @param {object} data - Data to show on the screen
 	 * @param {boolean} gameOver - To indicate whether it's a gameover screen or not
@@ -147,6 +136,16 @@ class Ship extends Entity {
 	emptyWeapons () {
 		this.#api.name("empty_weapons").prop("ship", this.id).send();
 		return this
+	}
+
+	/**
+	 * The UI Component Manager for this ship
+	 * @type {UIComponentManager}
+	 * @readonly
+	 */
+
+	get ui_components () {
+		return this.modding.data.ui_components.update();
 	}
 
 	/**

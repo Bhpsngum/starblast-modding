@@ -30,8 +30,11 @@ class Game {
 		}
 
 		hookClass(this, node.ships, function (newClass) {
+			newClass.prototype.setUIComponent = function (data) {
+				this.ui_components.set(data);
+			};
 			Object.defineProperty(newClass.prototype, 'stats', {
-				get () { return this.modding.data.stats.reduce((a, b) => a * 10 + b, 0)}
+				get () { return this.modding.data.stats?.reduce?.((a, b) => a * 10 + b, 0) ?? 0 }
 			});
 		});
 	}
@@ -42,8 +45,9 @@ class Game {
 		game: this,
 		context: {},
 		commands: {},
-		tick: function () {
-			this.game?.tick?.()
+		tick: function (tick) {
+			this.game.tick(tick);
+			this.context.tick?.(this.game);
 		}
 	}
 
@@ -76,7 +80,7 @@ class Game {
 	}
 
 	get ships () {
-		return this.#node.ships.array(true).filter(ship => !ship.isSpawned() || ship.isActive())
+		return this.#node.ships.array(true).filter(ship => ship.isActive())
 	}
 
 	get aliens () {
@@ -123,7 +127,7 @@ class Game {
 	}
 
 	setUIComponent (...data) {
-		this.#node.ships.setUIComponent(...data)
+		this.#node.ships.ui_components.set(...data)
 	}
 
 	setObject (...data) {
@@ -136,7 +140,7 @@ class Game {
 		this.#node.objects.remove(...data)
 	}
 
-	tick () {
+	tick (tick) {
 
 	}
 

@@ -313,6 +313,15 @@ class ModdingClient extends EventEmitter {
 	}
 
 	/**
+	 * Whether is the game is running (mod is already active)
+	 * @returns {boolean}
+	 */
+
+	isRunning () {
+		return this.#api.started && !this.#api.stopped;
+	}
+
+	/**
 	 * The game link
 	 * @type {string}
 	 * @readonly
@@ -320,7 +329,7 @@ class ModdingClient extends EventEmitter {
 
 	get link () {
 		let api = this.#api;
-		return (api.started && !api.stopped) ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null
+		return this.isRunning() ? "https://starblast.io/#" + api.id + "@" + api.ip + ":" + api.port : null;
 	}
 }
 

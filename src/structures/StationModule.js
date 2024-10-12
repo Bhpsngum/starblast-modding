@@ -2,6 +2,7 @@
 
 const BaseEntity = require("./BaseEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 const typeMap = new Map([
 	["st", "structure"],
 	["d", "deposit"],
@@ -179,6 +180,15 @@ class StationModule extends BaseEntity {
 
 	get finish () {
 		return this.modding.data.finish
+	}
+
+	toJSON () {
+		return {
+			...super.toJSON(),
+			parent_id: this.parent.id,
+			parent_uuid: this.parent.uuid,
+			...limitedJSON(this, ["type", "class", "offsetX", "offsetY", "offsetVx", "offsetVy", "angle", "shield", "finish"])
+		}
 	}
 }
 

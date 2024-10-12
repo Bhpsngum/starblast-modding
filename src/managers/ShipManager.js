@@ -2,8 +2,8 @@
 
 const EntityManager = require("./EntityManager.js");
 const Ship = require("../structures/Ship.js");
-const parseUI = require("../utils/parseUI.js");
 const parseIntermission = require("../utils/parseIntermission.js");
+const UIComponentManager = require("./UIComponentManager.js");
 
 /**
  * The Ship Manager Instance.
@@ -16,10 +16,12 @@ class ShipManager extends EntityManager {
 		super(game, api);
 		this.#game = game;
 		this.#api = api;
+		this.#ui_components = new UIComponentManager(game, api, null);
 	}
 
 	#game;
 	#api;
+	#ui_components;
 
 	async add () {
 		throw new Error("Entity class 'ship' could not be added through the Modding API")
@@ -27,7 +29,7 @@ class ShipManager extends EntityManager {
 
 	/**
 	 * Shows instructor screen to every ships in the game
-	 * @returns {Ship}
+	 * @returns {ShipManager}
 	 */
 
 	showInstructor () {
@@ -39,7 +41,7 @@ class ShipManager extends EntityManager {
 	 * Says something to every ships in the game using instructor screen with given instructor
 	 * @param {string} message - The message needs to be delivered
 	 * @param {string} character - The instructor's name
-	 * @returns {Ship}
+	 * @returns {ShipManager}
 	 */
 
 	instructorSays (text, character) {
@@ -52,7 +54,7 @@ class ShipManager extends EntityManager {
 
 	/**
 	 * Hide instructor screen from every ships in the game
-	 * @returns {Ship}
+	 * @returns {ShipManager}
 	 */
 
 	hideInstructor () {
@@ -61,21 +63,10 @@ class ShipManager extends EntityManager {
 	}
 
 	/**
-	 * Sets an UIComponent to every ships in the game
-	 * @param {object} UIComponent - the UIComponent options
-	 * @returns {Ship}
-	 */
-
-	setUIComponent (component) {
-		this.#api.globalMessage("set_ui_component", {component: parseUI(component)}).send();
-		return this
-	}
-
-	/**
 	 * Shows intermission to every ships in the game
 	 * @param {object} data - message data
 	 * @param {boolean} gameOver - to indicate if that intermission screen will gameover the player or not
-	 * @returns {Ship}
+	 * @returns {ShipManager}
 	 */
 
 	intermission (data, gameOver) {
@@ -86,7 +77,7 @@ class ShipManager extends EntityManager {
 	/**
 	 * Show game over screen to every ships in the game
 	 * @param {data} data - message data
-	 * @returns {Ship}
+	 * @returns {ShipManager}
 	 */
 
 	gameOver (data) {
@@ -96,7 +87,7 @@ class ShipManager extends EntityManager {
 	/**
 	 * Show game over screen to every ships in the game
 	 * @param {data} data - message data
-	 * @returns {Ship}
+	 * @returns {ShipManager}
 	 */
 
 	gameover (data) {
@@ -108,6 +99,16 @@ class ShipManager extends EntityManager {
 		this.clear();
 		this.all.forEach(ship => ship.isActive() && this._UUIDset(ship));
 		return this
+	}
+
+	/**
+	 * The global UI Component Manager
+	 * @type {UIComponentManager}
+	 * @readonly
+	 */
+
+	get ui_components () {
+		return this.#ui_components.update();
 	}
 
 	get limit () {
