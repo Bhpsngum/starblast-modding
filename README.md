@@ -139,7 +139,7 @@ game.on('stationModuleRepair', function(station_module) {
   console.log("Repaired:", station_module)
 });
 
-game.on('UIComponentClick', function (component_id, ship) {
+game.on('UIComponentClick', function (component, ship) {
 
 });
 
