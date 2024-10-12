@@ -6,7 +6,6 @@ const UITextBasedElement = require("./TextBased.js");
 
 /**
  * The UI Text Element instance
- * @class StarblastModding.UI.PlayerElement
  * @extends {UITextBasedElement}
  * @param {number} data.id - Ship ID to get info from
  */

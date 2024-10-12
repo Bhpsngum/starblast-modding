@@ -11,7 +11,6 @@ const toString = require("../../utils/toString.js");
 /**
  * The UI Element Group instance - allows grouping and scaling of UI Elements as a whole
  * @extends {UIBaseElement}
- * @class StarblastModding.UI.ElementGroup
  * @param {Object[]} data.components Raw (or parsed) object component list
  */
 
@@ -231,6 +230,7 @@ class UIElementGroup extends UIBaseElement {
 
 	serialize () {
 		return {
+			type: "group",
 			...super.toJSON(),
 			components: this.components.map(c => c.serialize())
 		}

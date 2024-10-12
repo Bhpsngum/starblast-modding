@@ -4,7 +4,6 @@ const UIBasicShapeElement = require("./BasicShape.js");
 
 /**
  * The UI Round Element instance
- * @class StarblastModding.UI.RoundElement
  * @extends {UIBasicShapeElement}
  */
 

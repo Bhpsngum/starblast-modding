@@ -5,7 +5,6 @@ const UITextBasedElement = require("./TextBased.js");
 
 /**
  * The UI Text Element instance
- * @class StarblastModding.UI.TextElement
  * @extends {UITextBasedElement}
  * @param {string} data.value - String value of this text element
  */

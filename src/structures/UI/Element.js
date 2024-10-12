@@ -24,7 +24,7 @@ class UIBaseElement {
 	 * Sets data to this element
 	 * @param {Object} data - Options to set to. Absent fields from this object will keep the old value
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
-	 * @returns {UIElement} The UI Element in question
+	 * @returns {UIBaseElement} The UI Element in question
 	 */
 
 	set (data, strictMode = false) {
@@ -37,7 +37,7 @@ class UIBaseElement {
 	 * Sets position of this UI Element
 	 * @param {number[]} position - Position array [x, y, width, height] to set
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
-	 * @returns {UIElement} The UI Element in question
+	 * @returns {UIBaseElement} The UI Element in question
 	 */
 
 	setPosition (position, strictMode = false) {

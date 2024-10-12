@@ -25,7 +25,6 @@ const specialComponents = new Map([
  * The UI Component instance, representing visual and interactable components in-game.
  * This is an extension of UIElementGroup, but has more features and acts at the upmost parent of any UI Component.
  * @extends {UIElementGroup}
- * @name StarblastModding.UI.Component
  * @param {string} data.id Custom ID for this UI Component
  * @param {boolean} [data.id=true] Component visibility
  * @param {boolean} [data.clickable=false] Component clickability (and will yield event when clicked)

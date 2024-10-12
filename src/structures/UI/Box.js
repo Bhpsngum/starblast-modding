@@ -5,7 +5,6 @@ const UIBasicShapeElement = require("./BasicShape.js");
 /**
  * The UI Box Element instance
  * @extends {UIBasicShapeElement}
- * @class StarblastModding.UI.BoxElement
  */
 
 class UIBoxElement extends UIBasicShapeElement {
