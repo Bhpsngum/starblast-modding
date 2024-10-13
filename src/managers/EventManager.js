@@ -26,6 +26,7 @@ module.exports.create = function (api, address, token) {
 		}))
 	});
 	return new Promise(function (resolve, reject) {
+		api.lastRejectHandler = reject;
 		socket.on("message", function(event, isBinary) {
 			if (!isBinary) {
 				try { event = JSON.parse(event.toString()) ?? {} } catch (e) { event = {} }
@@ -40,18 +41,25 @@ module.exports.create = function (api, address, token) {
 							started: true,
 							stopped: false
 						});
-						for (let key of ["map_name", "map_id"]) delete data.options[key]; // in GameClient.js
 						api.mod_data.options = data.options;
-						getJoinPacketName().then(packet => {
-							api.gameClient.connect(address.ip, data.id, address.port, packet);
-							api.gameClient.initTeamStats();
-						}).catch(e => {
-							this.error("Failed to establish extensive connection to the game. Customization and extended team data might not be available.");
-							if (!api.mod_data.optionsLocked) {
-								deepFreeze(api.mod_data.options);
-								api.mod_data.optionsLocked = true;
-							}
-						});
+						if (api.extendedMode) {
+							// introduce extra connection to game
+							getJoinPacketName().then(packet => {
+								if (api.stopTriggered) return;
+								api.gameClient.connect(address.ip, data.id, address.port, packet);
+								api.gameClient.initTeamStats();
+							}).catch(e => {
+								if (!api.gameClient.socket.requestClose) this.error("Failed to establish extensive connection to the game. Customization and extended team data might not be available.");
+								if (!api.mod_data.optionsLocked && api.mod_data.options != null && "object" === typeof api.mod_data.options) {
+									deepFreeze(api.mod_data.options);
+									api.mod_data.optionsLocked = true;
+								}
+							});
+						}
+						else {
+							deepFreeze(api.mod_data.options);
+							api.mod_data.optionsLocked = true;
+						}
 						while (api.preflight_requests.length > 0) api.set(api.preflight_requests.shift()).send();
 						resolve(this.link);
 						this.emit(events.MOD_STARTED, this.link, this.options);
@@ -225,11 +233,17 @@ module.exports.create = function (api, address, token) {
 			}
 		}.bind(api.game));
 		socket.on("close", function () {
-			if (GameSocket.OPEN === api.gameClient.socket?.readyState) api.gameClient.socket.close();
-			let isStarted = this.started;
-			api.clientReset(this);
-			if (!isStarted) reject(new Error("Failed to run the mod"));
-			this.emit(events.MOD_STOPPED);
-		}.bind(api.game))
+			switch (api.gameClient?.socket?.readyState) {
+				case GameSocket.OPEN:
+					api.gameClient.socket.close();
+				case GameSocket.CONNECTING:
+				case GameSocket.CLOSING:
+					return api.gameClient.socket.requestClose = true;
+				case GameSocket.CLOSED:
+					api.gameClient.socket.requestClose = true;
+				default:
+					return api.triggerStopEvent();
+			}
+		});
 	}.bind(api))
 }

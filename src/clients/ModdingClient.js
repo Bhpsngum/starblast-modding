@@ -1,6 +1,6 @@
 'use strict';
 
-const EventEmitter = require("events");
+const { EventEmitter } = require("node:events");
 const defineProperties = require("../utils/defineProperties.js");
 const toString = require("../utils/toString.js");
 const StructureManager = require("../managers/StructureManager.js");
@@ -27,13 +27,14 @@ const cloneObj = function (obj) {
  * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
  * @param {boolean} [options.cacheOptions = false] - set to `true` if you want to reuse request options for the next run, `false` otherwise
  * @param {boolean} [options.cacheEvents = false] - set to `true` if you want to reuse all event handlers for the next run, `false` otherwise
- * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. `true` will use less bandwith but also create potential memory leaks, and `false` will do the opposite.
+ * @param {boolean} [options.compressWSMessages = false] - To decide whether to compress messages in WebSocket requests or not. `true` will use less bandwith but may also be CPU-intensive, and `false` will do the opposite.
+ * @param {boolean} [options.extendedMode = false] - Whether to enable extended listener (which includes extended events and ship properties such as station-related events or ship customization)
  */
 
 class ModdingClient extends EventEmitter {
 
 	constructor (options) {
-		super();
+		super(options);
 		this.#api = new (require("../rest/ModdingAPI.js"))(this, options);
 	}
 

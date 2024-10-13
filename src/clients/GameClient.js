@@ -28,7 +28,7 @@ class GameClient {
 	#api
 
 	connect (ip, id, port, joinPacketName) {
-		let socket = GameSocket.create(ip, port, null, this.#api.compressWSMessages), interval, game = this.#game, api = this.#api;
+		let socket = this.socket = GameSocket.create(ip, port, null, this.#api.compressWSMessages), interval, game = this.#game, api = this.#api, ended = false;
 		socket.on("open", function () {
 			this.send(JSON.stringify({
 				name: joinPacketName,
@@ -39,7 +39,13 @@ class GameClient {
 			}))
 		});
 		socket.on("message", function (event, isBinary) {
-			if (!game.started || game.stopped) return socket.close();
+			if (socket.requestClose) {
+				if (!ended) {
+					socket.close();
+					ended = true;
+				}
+				return;
+			}
 			if (!isBinary) {
 				let parsed;
 				try { parsed = JSON.parse(event.toString()) ?? {} } catch (e) { parsed = {} }
@@ -52,7 +58,6 @@ class GameClient {
 						});
 						deepFreeze(api.mod_data.options);
 						api.mod_data.optionsLocked = true;
-						this.socket = socket;
 						for (let ship of game.ships) socket.send(JSON.stringify({
 							name: "get_name",
 							data: {
@@ -77,11 +82,13 @@ class GameClient {
 			} catch (e) {}
 		}.bind(this));
 		socket.on("close", function () {
-			if (interval != null) clearInterval(interval)
+			if (interval != null) clearInterval(interval);
+			api.triggerStopEvent();
 		})
 	}
 
 	initTeamStats () {
+		if (this.#api.stopTriggered) return;
 		let teams = JSON.parse(JSON.stringify(this.#game.options.teams ?? null));
 		if (Array.isArray(teams)) {
 			let teamManager = new TeamManager(this.#game, this.#api);

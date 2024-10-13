@@ -13,7 +13,8 @@ const URLFetcher = require("../utils/URLFetcher.js");
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
- * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
+ * @param {boolean} [options.cacheECPKey = false] - same with option specified at {@link ModdingClient}
+ * @param {boolean} [options.extendedMode = false] - same with option specified at {@link ModdingClient}
  * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not. <br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
  * @param {boolean} [options.asynchronous = true] - allow asynchronous execution (using `async`/`await`) in mod code
  * @param {boolean} options.async - alias of the property `options.asynchronous`
@@ -22,7 +23,7 @@ const URLFetcher = require("../utils/URLFetcher.js");
  * @param {boolean} [options.logErrors = true] - game will log any errors or not
  * @param {boolean} options.logExceptions - alias of the property `options.logErrors`
  * @param {boolean} [options.logMessages = true] - game will log any in-game logs or not
- * @param {boolean} [options.compressWSMessages = true] - To decide whether to compress messages in WebSocket requests or not. `true` will use less bandwith but also create potential memory leaks, and `false` will do the opposite.
+ * @param {boolean} [options.compressWSMessages = false] - same with option specified at {@link ModdingClient}
  */
 
 class BrowserClient {

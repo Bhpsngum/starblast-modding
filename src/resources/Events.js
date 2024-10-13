@@ -1,7 +1,11 @@
 'use strict';
 
+/**
+ * General modding events
+ * @enum {string}
+ */
+
 let EVENTS = {
-	// General Modding events
 	/**
 	 * Fires when the game is about to start
 	 * @event ModdingClient#start
@@ -10,13 +14,13 @@ let EVENTS = {
 	 */
 	MOD_STARTED: "start",
 	/**
-	 * Fires when there is error message from server (and sometimes client, use `ModdingClient.prototype.error` to do so)
+	 * Fires when there is error message from server (and sometimes client, use {@link ModdingClient#error} to do so). <br>It is recommended to add a listener for this event ({@link https://nodejs.org/api/events.html#error-events|reference}), since unexpected error message from the server can also crash your mod.
 	 * @event ModdingClient#error
 	 * @param {Error} error - The `Error` object
 	 */
 	ERROR: "error",
 	/**
-	 * Fires after each evocation of `ModdingClient.prototype.log`
+	 * Fires after each evocation of {@link ModdingClient#log}
 	 * @event ModdingClient#log
 	 * @param {...string} messages - The messages
 	 */
@@ -28,8 +32,9 @@ let EVENTS = {
 	 */
 	TICK: "tick",
 	/**
-	 * Fires when the mod stops
+	 * Fires when the mod stops.
 	 * @event ModdingClient#stop
+	 * @param {ModdingClient} client - The client object bound to this event, with properties and data right before mod is stopped and being renewed
 	 */
 	MOD_STOPPED: "stop",
 	// Ship events

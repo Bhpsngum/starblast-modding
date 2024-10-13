@@ -10,7 +10,8 @@ class ModdingAPI {
 		this.cacheOptions = !!options?.cacheOptions;
 		this.cacheEvents = !!options?.cacheEvents;
 		this.compressWSMessages = !!options?.compressWSMessages;
-		this.gameClient = new (require("../clients/GameClient.js"))(this.game, this),
+		this.extendedMode = !!options?.extendedMode;
+		this.gameClient = new (require("../clients/GameClient.js"))(this.game, this);
 		this.events = require("../resources/Events.js");
 		this.handlers = {
 			create: new Map(),
@@ -19,7 +20,7 @@ class ModdingAPI {
 		this.configuration = {};
 		this.create_requests = [];
 		this.mod_data = {};
-		this.onstop = [];
+		this.stopHandlers = [];
 		this.clientReset(this.game);
 		this.stopped = false;
 	}
@@ -53,13 +54,15 @@ class ModdingAPI {
 		this.stopped = true;
 		this.processStarted = false;
 		this.preflight_requests = [];
+		this.gameClient.socket = null;
 		this.clear();
 		if (!this.cacheECPKey) delete this.configuration.ECPKey;
 		if (!this.cacheOptions) delete this.configuration.options;
 		if (!this.cacheEvents) this.game.removeAllListeners();
-		if (this.game.listeners('error').length == 0) this.game.on('error', function () {});
-		let onstops = this.onstop.splice(0);
-		onstops.forEach(onstop => onstop?.resolve?.(this.game))
+		while (this.stopHandlers.length > 0) {
+			let { resolve } = this.stopHandlers.shift();
+			resolve?.(this.game);
+		}
 	}
 
 	async start () {
@@ -77,7 +80,7 @@ class ModdingAPI {
 
 	stop () {
 		return new Promise(function(resolve, reject) {
-			this.onstop.push({resolve, reject});
+			this.stopHandlers.push({resolve, reject});
 			this.name("stop").send(null, "stop")
 		}.bind(this))
 	}
@@ -128,11 +131,15 @@ class ModdingAPI {
 						handler.delete(uuid);
 						this.game.findStructureByUUID(uuid)?.markAsInactive?.();
 						reject?.(error);
-						break
-					}
-					case "stop":
-						this.onstop.shift()?.reject?.(error);
 						break;
+					}
+					case "stop": {
+						while (this.stopHandlers.length > 0) {
+							let { reject } = this.stopHandlers.shift();
+							reject?.(error);
+						}
+						break;
+					}
 					default:
 						globalMessage = 1;
 				}
@@ -171,6 +178,15 @@ class ModdingAPI {
 			step: -1
 		});
 		this.reset();
+	}
+
+	triggerStopEvent () {
+		if (this.stopTriggered) return;
+		this.stopTriggered = true;
+		let isStarted = this.game.started;
+		if (!isStarted) this.lastRejectHandler?.call?.(this.game, new Error("Failed to run the mod"));
+		this.game.emit(this.events.MOD_STOPPED);
+		this.clientReset(this.game);
 	}
 }
 
