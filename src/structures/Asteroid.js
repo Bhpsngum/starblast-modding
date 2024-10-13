@@ -12,7 +12,7 @@ const defineProperties = require("../utils/defineProperties.js");
  */
 
 class Asteroid extends Entity {
-	constructor(game, options) {
+	constructor(game, api, options) {
 		super(game, api);
 		this.#game = game;
 		let _this = this.modding.data;

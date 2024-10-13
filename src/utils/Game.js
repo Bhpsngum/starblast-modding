@@ -1,8 +1,18 @@
 const hookClass = function(game, origin, addtionalHookFunc) {
 	let oldClass = origin.StructureConstructor;
 	let newClass = class HookedStructure extends oldClass {
+		id = -1;
+		
 		get game () {
 			return game;
+		}
+
+		get killed () {
+			return !!this.modding.data[this.inactive_field];
+		}
+
+		get last_updated () {
+			return this.lastUpdatedStep;
 		}
 
 		[Symbol.toStringTag] = `HookedClass (${oldClass.name})`;
@@ -33,8 +43,13 @@ class Game {
 			newClass.prototype.setUIComponent = function (data) {
 				this.ui_components.set(data);
 			};
-			Object.defineProperty(newClass.prototype, 'stats', {
-				get () { return this.modding.data.stats?.reduce?.((a, b) => a * 10 + b, 0) ?? 0 }
+			Object.defineProperties(newClass.prototype, {
+				stats: {
+					get () { return this.modding.data.stats?.reduce?.((a, b) => a * 10 + b, 0) ?? 0 }
+				},
+				r: {
+					get () { return this.angle * Math.PI / 180 }
+				}
 			});
 		});
 	}
@@ -80,19 +95,19 @@ class Game {
 	}
 
 	get ships () {
-		return this.#node.ships.array(true).filter(ship => ship.isActive())
+		return this.#node.ships.array(true).filter(ship => ship.isActive());
 	}
 
 	get aliens () {
-		return this.#node.aliens.array(true).filter(alien => !alien.isSpawned() || alien.isActive())
+		return this.#node.aliens.array(true).filter(alien => !alien.killed);
 	}
 
 	get asteroids () {
-		return this.#node.asteroids.array(true).filter(asteroid => !asteroid.isSpawned() || asteroid.isActive())
+		return this.#node.asteroids.array(true).filter(asteroid => !asteroid.killed);
 	}
 
 	get collectibles () {
-		return this.#node.collectibles.array(true).filter(collectible => !collectible.isSpawned() || collectible.isActive())
+		return this.#node.collectibles.array(true).filter(collectible => !collectible.killed);
 	}
 
 	findShip (id) {
@@ -111,19 +126,25 @@ class Game {
 		return this.collectibles.find(collectible => collectible.id === id) ?? null
 	}
 
-	addAlien (...data) {
-		this.#node.aliens.add(...data).then(a => {}).catch(e => this.#node.error(e));
-		return this.aliens.slice(-1)[0]
+	addAlien (data) {
+		let { aliens } = this.#node;
+		let alien = aliens.create(data); 
+		aliens.add(alien).then(a => {}).catch(e => this.#node.error(e));
+		return alien;
 	}
 
-	addAsteroid (...data) {
-		this.#node.asteroids.add(...data).then(a => {}).catch(e => this.#node.error(e));
-		return this.asteroids.slice(-1)[0]
+	addAsteroid (data) {
+		let { asteroids } = this.#node;
+		let asteroid = asteroids.create(data); 
+		asteroids.add(asteroid).then(a => {}).catch(e => this.#node.error(e));
+		return asteroid;
 	}
 
-	addCollectible (...data) {
-		this.#node.collectibles.add(...data).then(a => {}).catch(e => this.#node.error(e));
-		return this.collectibles.slice(-1)[0]
+	addCollectible (data) {
+		let { collectibles } = this.#node;
+		let collectible = collectibles.create(data); 
+		collectibles.add(collectible).then(a => {}).catch(e => this.#node.error(e));
+		return collectible;
 	}
 
 	setUIComponent (...data) {

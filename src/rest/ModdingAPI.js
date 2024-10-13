@@ -1,6 +1,7 @@
 'use strict';
 
 const runMod = require("../utils/runMod.js");
+const deepFreeze = require("../utils/deepFreeze.js");
 
 class ModdingAPI {
 	constructor(game, options) {
@@ -63,11 +64,11 @@ class ModdingAPI {
 
 	async start () {
 		try {
-			this.configuration.options = JSON.parse(JSON.stringify(this.configuration.options ?? {}));
+			this.configuration.options = deepFreeze(JSON.parse(JSON.stringify(this.configuration.options ?? {})));
 			this.encodeOptionsError = false
 		}
 		catch (e) {
-			this.configuration.options = {}
+			this.configuration.options = deepFreeze({});
 			this.encodeOptionsError = true
 		}
 		this.processStarted = true;
@@ -119,7 +120,7 @@ class ModdingAPI {
 		}
 		catch(e) {
 			if (arguments.length > 0) {
-				let error = new Error("Failed to encoding request"), globalMessage;
+				let error = new Error("Failed to encode request"), globalMessage;
 				switch (action) {
 					case "create":
 					case "destroy": {

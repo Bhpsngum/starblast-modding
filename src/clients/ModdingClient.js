@@ -219,7 +219,7 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	get requestOptions () {
-		return cloneObj(this.#api.getRequestOptions())
+		return this.#api.getRequestOptions();
 	}
 
 	/**
@@ -309,7 +309,8 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	get options () {
-		return cloneObj(this.#api.mod_data.options)
+		let opts = this.#api.mod_data.options;
+		return this.#api.mod_data.optionsLocked ? opts : cloneObj(opts);
 	}
 
 	/**

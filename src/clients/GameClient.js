@@ -4,6 +4,7 @@ const GameSocket = require("../utils/GameSocket.js");
 const TeamManager = require("../managers/TeamManager.js");
 const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
+const deepFreeze = require("../utils/deepFreeze.js");
 const readBinaries = function (data, game) {
 	let dataView = new DataView(data), eventID = dataView.getUint8(0);
 	dataView = new DataView(data.slice(1));
@@ -49,6 +50,8 @@ class GameClient {
 							map_name: data.name,
 							map_id: data.seed
 						});
+						deepFreeze(api.mod_data.options);
+						api.mod_data.optionsLocked = true;
 						this.socket = socket;
 						for (let ship of game.ships) socket.send(JSON.stringify({
 							name: "get_name",

@@ -70,6 +70,7 @@ class StructureManager extends ArrayMap {
 	 */
 
 	findById (id, includeInactive = false) {
+		if (id == null) return null;
 		this.update();
 		return this.array(includeInactive).find(entity => Object.is(entity.id, id)) ?? null
 	}

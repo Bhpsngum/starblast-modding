@@ -83,7 +83,9 @@ class UIComponent extends UIElementGroup {
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
-		if (data?.hasOwnProperty?.("visible")) this.setVisible(data.visible, strictMode);
+		// can't do this since visibility at nullish is "true"
+		// if (data?.hasOwnProperty?.("visible"))
+		this.setVisible(data.visible, strictMode);
 
 		if (data?.hasOwnProperty?.("clickable")) this.setClickable(data.clickable, strictMode);
 

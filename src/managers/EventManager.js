@@ -5,6 +5,7 @@ const getEntity = require("../utils/getEntity.js");
 const events = require("../resources/Events.js");
 const defineProperties = require("../utils/defineProperties.js");
 const getJoinPacketName = require("../utils/getJoinPacketName.js");
+const deepFreeze = require("../utils/deepFreeze.js");
 
 const standard_modes = ["survival", "team", "invasion", "deathmatch", "battleroyale"];
 
@@ -44,7 +45,13 @@ module.exports.create = function (api, address, token) {
 						getJoinPacketName().then(packet => {
 							api.gameClient.connect(address.ip, data.id, address.port, packet);
 							api.gameClient.initTeamStats();
-						}).catch(e => this.error("Failed to establish extensive connection to the game. Customization and extended team data might not be available."));
+						}).catch(e => {
+							this.error("Failed to establish extensive connection to the game. Customization and extended team data might not be available.");
+							if (!api.mod_data.optionsLocked) {
+								deepFreeze(api.mod_data.options);
+								api.mod_data.optionsLocked = true;
+							}
+						});
 						while (api.preflight_requests.length > 0) api.set(api.preflight_requests.shift()).send();
 						resolve(this.link);
 						this.emit(events.MOD_STARTED, this.link, this.options);
@@ -173,7 +180,7 @@ module.exports.create = function (api, address, token) {
 								let uuid = entity.uuid, handler = api.handlers.destroy, resolve = handler.get(uuid)?.resolve;
 								handler.delete(uuid);
 								resolve?.(entity);
-								this.emit(events[entity_name.toUpperCase()], entity, killer);
+								this.emit(events[data.name.toUpperCase()], entity, killer);
 								break;
 							}
 							case "ship_spawned": {
@@ -197,8 +204,9 @@ module.exports.create = function (api, address, token) {
 								this.emit(events.COLLECTIBLE_PICKED, collectible, ship);
 								break;
 							}
-							case "ui_component_clicked":
+							case "ui_component_clicked": {
 								let id = data.id;
+								if (["scoreboard", "radar_background"].includes(id)) break;
 								data.id = data.ship;
 								let ship = getEntity(api.game, data, this.ships);
 								let ship_component = ship.ui_components.findById(id);
@@ -210,6 +218,7 @@ module.exports.create = function (api, address, token) {
 									if (global_component?.raw?.lastClickable) this.emit(events.UI_COMPONENT_CLICKED, global_component, ship);
 								}
 								break;
+							}
 						}
 						break;
 				}
@@ -220,7 +229,6 @@ module.exports.create = function (api, address, token) {
 			let isStarted = this.started;
 			api.clientReset(this);
 			if (!isStarted) reject(new Error("Failed to run the mod"));
-			console.log("Stopped");
 			this.emit(events.MOD_STOPPED);
 		}.bind(api.game))
 	}.bind(api))

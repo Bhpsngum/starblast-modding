@@ -1,11 +1,11 @@
 'use strict';
 
 const defineProperties = require("../utils/defineProperties.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 
 /**
  * The Coordinate Instance
  * @param {object} position - The position object
- * @param {object} options - Instance options
  * @abstract
  */
 
@@ -32,18 +32,14 @@ class Coordinate {
 		 * @readonly
 		 */
 		defineProperties(this, {
-			x: "number" == typeof position?.x ? position.x : 0,
-			y: "number" == typeof position?.y ? position.y : 0,
-			z: "number" == typeof position?.z ? position.z : 0,
-		})
+			x: +position?.x || 0,
+			y: +position?.y || 0,
+			z: +position?.z || 0
+		});
 	}
 
 	toJSON () {
-		return {
-			x: this.x,
-			y: this.y,
-			z: this.z
-		}
+		return limitedJSON(this, ["x", "y", "z"]);
 	}
 }
 

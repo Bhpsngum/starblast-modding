@@ -27,14 +27,6 @@ class Object3D extends Structure {
 		 */
 
 		defineProperties(this, {id: toString(options?.id)});
-		Object.defineProperties(this, {
-			[this.inactive_field]: {
-				get () { return this.modding.data[this.inactive_field]}
-			},
-			[this.inactive_field + "Step"]: {
-				get () { return this.modding.data[this.inactive_field + "Step"]}
-			}
-		})
 		this.assign(options, true)
 	}
 
@@ -44,13 +36,7 @@ class Object3D extends Structure {
 	markAsActive () {
 		let _this = this.modding.data;
 		_this[this.inactive_field] = false;
-		delete _this[this.inactive_field + "Step"]
-	}
-
-	markAsInactive () {
-		let _this = this.modding.data;
-		_this[this.inactive_field] = true
-		_this[this.inactive_field + "Step"] = this.#game.timer.step
+		_this[this.inactive_field + "Step"] = _this.lastAliveStep = null;
 	}
 
 	assign(options, forceAssign = false) {

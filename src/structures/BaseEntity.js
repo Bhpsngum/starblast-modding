@@ -99,7 +99,7 @@ class BaseEntity extends Structure {
 
 	get lastUpdatedStep () {
 		let step = this.modding.data.lastUpdatedStep;
-		return Number.isNaN(step) ? -1 : Math.max(0, step);
+		return (step == null || Number.isNaN(step)) ? -1 : Math.max(0, step);
 	}
 
 	toJSON () {

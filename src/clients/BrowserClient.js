@@ -1,6 +1,4 @@
 const fs = require('fs').promises;
-const https = require('https');
-const http = require('http');
 
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
@@ -13,10 +11,10 @@ const Game = require("../utils/Game.js");
 const URLFetcher = require("../utils/URLFetcher.js");
 
 /**
- * The Browser Client Instance for supporting mod codes running in Browser Modding.<br><b>Warning:</b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc.</li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
- * @param {object} options - options for calling the object.<br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
+ * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
+ * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
  * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
- * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not<br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
+ * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not. <br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
  * @param {boolean} [options.asynchronous = true] - allow asynchronous execution (using `async`/`await`) in mod code
  * @param {boolean} options.async - alias of the property `options.asynchronous`
  * @param {boolean} [options.crashOnException = false] - when tick or event function, or mod code execution fails, the mod will crash
@@ -36,7 +34,7 @@ class BrowserClient {
 		let crashOnError = this.#crashOnError = !!(options?.crashOnException ?? options?.crashOnError);
 		let node = this.#node = new ModdingClient({...options, cacheEvents: true, cacheOptions: false});
 
-		let _this = this, handle = function (spec, ...params) {
+		let handle = function (spec, ...params) {
 			let context = this.#game.modding?.context;
 			this.#handle(context?.[spec]?.bind(context), ...params)
 		}.bind(this);
@@ -61,8 +59,9 @@ class BrowserClient {
 			handle('event', {name: "mod_started", link})
 		});
 
-		node.on(ModdingEvents.MOD_STOPPED, function () {
-			_this.#setWatchInterval(false, null);
+		node.on(ModdingEvents.MOD_STOPPED, () => {
+			this.#clearWatch();
+			this.#lastCode = null;
 			node.log("Mod stopped");
 			handle('event', {name: "mod_stopped"})
 		});
@@ -191,8 +190,13 @@ class BrowserClient {
 		}
 	}
 
-	#setWatchInterval (watchChanges, interval) {
+	#clearWatch () {
 		clearInterval(this.#watchIntervalID);
+		this.#assignedWatch = false;
+	}
+
+	#setWatchInterval (watchChanges, interval) {
+		this.#clearWatch();
 		this.#assignedWatch = false;
 		this.#watchChanges = !!watchChanges;
 		if (this.#watchChanges) this.#watchInterval = Math.max(1, Math.floor(interval)) || 5000;
@@ -270,12 +274,12 @@ class BrowserClient {
 			let lastCode = this.#lastCode;
 			this.#lastCode = this.#URL ? (await this.#fromExternal()) : (this.#path ? (await this.#fromLocal()) : this.#code);
 			if (this.#watchChanges && (this.#URL != null || this.#path != null) && !this.#assignedWatch) {
-				clearInterval(this.#watchIntervalID);
+				this.#clearWatch();
 				this.#watchIntervalID = setInterval(this.#applyChanges.bind(this), this.#watchInterval);
 				this.#assignedWatch = true;
 			}
 			let sameCode = this.#lastCode == lastCode;
-			if (forced ? (!sameCode || this.#sameCodeExecution) : !sameCode) {
+			if (!sameCode || (forced && this.#sameCodeExecution)) {
 				if (!this.#node.processStarted) this.#game = new Game(this.#node);
 				else try { this.#game.modding.context = {} } catch (e) {};
 				let game = this.#game;

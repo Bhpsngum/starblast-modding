@@ -27,7 +27,7 @@ class EntityManager extends StructureManager {
 	 */
 
 	add (data) {
-		let entity = this.create(data);
+		let entity = (this.isInstance(data) && data.request_id == null) ? data: this.create(data);
 		defineProperties(entity, {request_id: entity.uuid});
 		this.insert(entity);
 		let rawEntity = JSON.parse(JSON.stringify(entity));

@@ -40,6 +40,7 @@ class Structure {
 		 * @type {number}
 		 * @readonly
 		 */
+		
 		defineProperties(this, {modding: {data: {}}}, false);
 		defineProperties(this, {uuid: createUUID()});
 	}
@@ -48,18 +49,12 @@ class Structure {
 	#api;
 
 	markAsInactive () {
-		try {
-			defineProperties(this, {
-				[this.inactive_field]: true,
-				[this.inactive_field + "Step"]: this.#game.timer.step
-			});
-			this.modding.data.lastAliveStep = this.#game.timer.step
-		}
-		catch (e) {}
+		this.modding.data[this.inactive_field] = true;
+		this.modding.data[this.inactive_field + "Step"] = this.modding.data.lastAliveStep = this.#game.timer.step;
 	}
 
 	markAsSpawned () {
-		try { defineProperties(this, {spawned: true}) } catch (e) {}
+		this.modding.data.spawned = true;
 	}
 
 	/**
@@ -68,8 +63,7 @@ class Structure {
 	 */
 
 	isActive () {
-		try { this[this.inactive_field] = false } catch(e) {}
-		return this.isSpawned() && !this[this.inactive_field]
+		return this.isSpawned() && !this.modding.data[this.inactive_field];
 	}
 
 	/**
@@ -78,8 +72,7 @@ class Structure {
 	 */
 
 	isSpawned () {
-		try { this.spawned = false } catch(e) {}
-		return !!this.spawned
+		return !!this.modding.data.spawned;
 	}
 
 	/**
@@ -93,14 +86,14 @@ class Structure {
 	}
 
 	/**
-	 * The latest alive step of the structure
-	 * @type {number}
+	 * The latest alive step of the structure (or null if the structure is never alive)
+	 * @type {number | null}
 	 * @readonly
 	 */
 
 	get lastAliveStep () {
 		let alive = this.isActive() && this.alive;
-		return alive ? this.#game.timer.step : this.modding.data.lastAliveStep;
+		return (alive ? this.#game.timer.step : this.modding.data.lastAliveStep) ?? null;
 	}
 
 	toJSON () {
