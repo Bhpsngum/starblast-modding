@@ -2,7 +2,9 @@
 
 /**
  * General modding events
+ * @name ModdingEvents
  * @enum {string}
+ * @readonly
  */
 
 let EVENTS = {
