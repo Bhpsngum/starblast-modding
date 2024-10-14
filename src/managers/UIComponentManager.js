@@ -51,7 +51,7 @@ class UIComponentManager extends StructureManager {
 
 	/**
 	 * Set/add an UI Component
-	 * @param {Object} data - Raw (on resolved) UI Component data
+	 * @param {Object} data - Raw (or resolved) UI Component data
 	 * @returns {UIComponentManager} This manager
 	 */
 
@@ -61,7 +61,7 @@ class UIComponentManager extends StructureManager {
 
 	/**
 	 * Set/add an UI Component
-	 * @param {Object} data - Raw (on resolved) UI Component data
+	 * @param {Object} data - Raw (or resolved) UI Component data
 	 * @returns {UIComponentManager} This manager
 	 */
 
@@ -71,7 +71,7 @@ class UIComponentManager extends StructureManager {
 
 	/**
 	 * Create/Clone an UI Component with data
-	 * @param {Object} data - Raw (on resolved) UI Component data
+	 * @param {Object} data - Raw (or resolved) UI Component data
 	 * @returns {UIComponent} The resolved component
 	 */
 

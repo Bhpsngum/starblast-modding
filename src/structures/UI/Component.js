@@ -270,6 +270,16 @@ class UIComponent extends UIElementGroup {
 	}
 
 	/**
+	 * Parent manager of this UI Component
+	 * @type {UIComponentManager}
+	 * @readonly
+	 */
+	
+	get parent () {
+		return this.raw.parent;
+	}
+
+	/**
 	 * Whether this component is active (active status indicates that this UI component has an active parent and is shown to player)
 	 * @returns {boolean} The active status
 	 */
