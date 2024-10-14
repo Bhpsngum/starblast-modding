@@ -41,28 +41,32 @@ class UIElementGroup extends UIBaseElement {
 	#visitedRecursiveFinder (typeConst, findInHirearchy, initial, visited) {
 		if (visited.includes(initial)) return null;
 
-		let found = initial.find(v => v instanceof typeConst);
+		let { components } = initial;
+		
+		let found = components.find(v => v instanceof typeConst);
 		
 		if (found == null && findInHirearchy) {
 			visited.push(initial);
-			let groups = initial.filter(c => c instanceof UIElementGroup);
+			let groups = components.filter(c => c instanceof UIElementGroup);
 			for (let group of groups) {
 				let res = this.#visitedRecursiveFinder(typeConst, true, group, visited);
 				if (res != null) return res;
 			}
 		}
 
-		return null;
+		return found ?? null;
 	}
 
 	#visitedRecursiveFilter (typeConst, findInHirearchy, initial, visited, result) {
 		if (visited.includes(initial)) return result;
+
+		let { components } = initial;
 		
-		result.push(...initial.filter(v => v instanceof typeConst));
+		result.push(...components.filter(v => v instanceof typeConst));
 		
 		if (findInHirearchy) {
 			visited.push(initial);
-			initial.filter(c => c instanceof UIElementGroup).forEach(group => this.#visitedRecursiveFilter(typeConst, true, group, visited, result));
+			components.filter(c => c instanceof UIElementGroup).forEach(group => this.#visitedRecursiveFilter(typeConst, true, group, visited, result));
 		}
 
 		return result;
@@ -70,28 +74,28 @@ class UIElementGroup extends UIBaseElement {
 
 	/**
 	 * Find an element of type
-	 * @param {string} type - Type name to find
+	 * @param {string | UIBaseElement} type - Type name/class to find
 	 * @param {boolean} [findInHirearchy = false] - Whether to find in hirearchy if result is not found in current group
 	 * @returns {UIBaseElement | null} Finding result
 	 */
 
 	getComponentOfType (type, findInHirearchy = false) {
-		let typeConst = UIElementGroup.#checkTypeMap(type, true);
+		let typeConst = type?.prototype instanceof UIBaseElement ? type : UIElementGroup.#checkTypeMap(type, true);
 
-		return this.#visitedRecursiveFinder(typeConst, findInHirearchy, this.raw.components, []);
+		return this.#visitedRecursiveFinder(typeConst, findInHirearchy, this, []);
 	}
 
 	/**
 	 * Returns array of elements matching given type
-	 * @param {string} type - Type name to lookup
+	 * @param {string | UIBaseElement} type - Type name/class to lookup
 	 * @param {boolean} [findInHirearchy = false] - Whether to include search results in hirearchy
 	 * @returns {UIBaseElement[]} The resulting array
 	 */
 
 	getComponentsOfType (type, findInHirearchy = false) {
-		let typeConst = UIElementGroup.#checkTypeMap(type, true);
+		let typeConst = type?.prototype instanceof UIBaseElement ? type : UIElementGroup.#checkTypeMap(type, true);
 
-		return this.#visitedRecursiveFilter(typeConst, findInHirearchy, this.raw.components, [], []);
+		return this.#visitedRecursiveFilter(typeConst, findInHirearchy, this, [], []);
 	}
 
 	/**
@@ -134,7 +138,9 @@ class UIElementGroup extends UIBaseElement {
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
-		if (data?.hasOwnProperty?.("components")) this.setComponents(data.components, strictMode);
+		data = data || {};
+
+		if ("components" in data) this.setComponents(data.components, strictMode);
 
 		return this;
 	}
@@ -207,7 +213,7 @@ class UIElementGroup extends UIBaseElement {
 	 * Transform the given group with given position array
 	 * @param {number[]} position - The original position array ([x, y, width, height])
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
-	 * @returns {UIElement[]} The transfrormed array of elements
+	 * @returns {UIBaseElement[]} The transfrormed array of elements
 	 */
 	transform (position, strictMode = false) {
 		position = UIPositionVerifier(position, strictMode);
@@ -215,16 +221,15 @@ class UIElementGroup extends UIBaseElement {
 		position = position.value;
 		
 		return this.components.map(component => {
-			let transformed_width = component.position[2] * position[2] / 100;
-			let transformed_height = component.position[3] * position[3] / 100;
-			let new_transform = [
-				position[0] + component.position[0] * transformed_width / 100,
-				position[1] + component.position[1] * transformed_height / 100,
-				transformed_width,
-				transformed_height
-			];
+			let transformed_width = position[2] / 100;
+			let transformed_height = position[3] / 100;
 
-			return component.clone().setPosition(new_transform);
+			return component.clone().setPosition([
+				component.position[0] * transformed_width + position[0],
+				component.position[1] * transformed_height + position[1],
+				component.position[2] * transformed_width,
+				component.position[3] * transformed_height
+			]);
 		});
 	}
 

@@ -83,15 +83,17 @@ class UIComponent extends UIElementGroup {
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
+		data = data || {};
+
 		// can't do this since visibility at nullish is "true"
-		// if (data?.hasOwnProperty?.("visible"))
+		// if ("visible" in data)
 		this.setVisible(data.visible, strictMode);
 
-		if (data?.hasOwnProperty?.("clickable")) this.setClickable(data.clickable, strictMode);
+		if ("clickable" in data) this.setClickable(data.clickable, strictMode);
 
-		if (data?.hasOwnProperty?.("persistent")) this.setPersistent(data.persistent);
+		if ("persistent" in data) this.setPersistent(data.persistent);
 
-		if (data?.hasOwnProperty?.("shortcut")) this.setShortcut(data.shortcut, strictMode);
+		if ("shortcut" in data) this.setShortcut(data.shortcut, strictMode);
 
 		return this;
 	}
@@ -302,32 +304,29 @@ class UIComponent extends UIElementGroup {
 	toJSON () {
 		let raw = limitedJSON(this, ["id", "position", "visible", "clickable", "shortcut", "components"]);
 		
-		let isActive = this.isActive();
-		
-		if (specialComponents.has(this.id) || !isActive) {
-			if (isActive) delete raw.position;
-			delete raw.clickable;
-			delete raw.visible;
-			delete raw.shortcut;
-			if (!isActive || raw.components.length < 1) delete raw.components;
+		if (!this.isActive()) raw.visible = raw.clickable = false;
 
-			return raw;
+		if (!raw.visible || (raw.position[2] === 0 && raw.position[3] === 0)) {
+			raw.components = [];
 		}
 		
-		if (
-			!raw.visible || raw.components.length < 1 ||
-			(raw.position[0] === 0 && raw.position[1] === 0 && raw.position[2] === 0 && raw.position[3] === 0)
-		) {
+		if (!raw.visible) {
 			raw.position = [0, 0, 0, 0];
-			delete raw.components;
+			if (!raw.clickable) delete raw.visible;
 		}
-		else delete raw.visible;
+
+		if (raw.components.length < 1) delete raw.components;
+		else raw.components = JSON.parse(JSON.stringify(raw.components)).flat(1);
+
+		if (raw.visible) delete raw.visible;
 
 		if (!raw.clickable) {
 			delete raw.shortcut;
 			delete raw.clickable;
 		}
 		else if (raw.shortcut == null) delete raw.shortcut;
+
+		if (specialComponents.has(this.id)) delete raw.position;
 
 		return raw;
 	}

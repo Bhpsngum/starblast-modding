@@ -13,6 +13,8 @@ const UITextBasedElement = require("./TextBased.js");
 class UIPlayerElement extends UITextBasedElement {
 	constructor (data, strictMode = false) {
 		super(data, strictMode);
+
+		this.raw.align = "left";
 		
 		this.setId(data?.id, strictMode);
 	}
@@ -20,9 +22,9 @@ class UIPlayerElement extends UITextBasedElement {
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
-		this.raw.align = "left";
+		data = data || {};
 
-		if (data?.hasOwnProperty?.("id")) this.setId(data.id, strictMode);
+		if ("id" in data) this.setId(data.id, strictMode);
 
 		return this;
 	}

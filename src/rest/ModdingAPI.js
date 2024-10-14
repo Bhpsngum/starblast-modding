@@ -185,7 +185,7 @@ class ModdingAPI {
 		this.stopTriggered = true;
 		let isStarted = this.game.started;
 		if (!isStarted) this.lastRejectHandler?.call?.(this.game, new Error("Failed to run the mod"));
-		this.game.emit(this.events.MOD_STOPPED);
+		this.game.emit(this.events.MOD_STOPPED, this.game);
 		this.clientReset(this.game);
 	}
 }

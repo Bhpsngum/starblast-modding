@@ -19,7 +19,9 @@ class UITextElement extends UITextBasedElement {
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
-		if (data?.hasOwnProperty?.("value")) this.setValue(data.value, strictMode);
+		data = data || {};
+
+		if ("value" in data) this.setValue(data.value, strictMode);
 
 		return this;
 	}

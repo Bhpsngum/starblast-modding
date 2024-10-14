@@ -1,12 +1,5 @@
 'use strict';
 
-/**
- * General modding events
- * @name ModdingEvents
- * @enum {string}
- * @readonly
- */
-
 let EVENTS = {
 	/**
 	 * Fires when the game is about to start

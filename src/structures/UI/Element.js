@@ -5,7 +5,6 @@ const UIPositionVerifier = require("../../utils/UIPositionVerifier.js");
 
 /**
  * Base UI Element instance
- * @abstract
  * @param {Object} data - Data to initialize this element
  * @param {number[]} data.posistion - Position of this element ([x, y, width, height])
  * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
@@ -17,7 +16,7 @@ class UIBaseElement {
 			raw: {}
 		}, false);
 
-		this.setPosition(data?.position);
+		this.setPosition(data?.position, strictMode);
 	}
 
 	/**
@@ -28,7 +27,9 @@ class UIBaseElement {
 	 */
 
 	set (data, strictMode = false) {
-		if (data?.hasOwnProperty?.("position")) this.setPosition(data.position, strictMode);
+		data = data || {};
+		
+		if ("position" in data) this.setPosition(data.position, strictMode);
 
 		return this;
 	}

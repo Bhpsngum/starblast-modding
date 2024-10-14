@@ -27,6 +27,9 @@ pnpm add starblast-modding
 ## Documentation
 Please see [this link](https://bhpsngum.github.io/starblast/starblast-modding/)
 
+## Changelog
+Please see [here](./CHANGELOG.md)
+
 ## Example
 ### ModdingClient usage
 This is an example on how to run a team-mode modded game:

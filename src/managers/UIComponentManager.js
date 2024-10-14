@@ -34,8 +34,6 @@ class UIComponentManager extends StructureManager {
 	
 		component.show();
 	
-		this.update();
-	
 		// overwrite components with same ID on individual ships
 		if (this.#parent == null) for (let ship of this.#game.ships) {
 			let ui = ship.ui_components.findById(component.id);
@@ -46,7 +44,7 @@ class UIComponentManager extends StructureManager {
 			}
 		}
 	
-		return component;
+		return this.update();
 	}
 
 	/**

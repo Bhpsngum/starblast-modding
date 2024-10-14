@@ -7,7 +7,6 @@ const limitedJSON = require("../../utils/limitedJSON.js");
 
 /**
  * The UI BasicShape Element instance
- * @abstract
  * @extends {UIBaseElement}
  * @param {string|number} [data.fill = "hsla(0,0%,0%,0)"] - Background fill color of this element, in CSS value or color hex value (ARGB or RGB format)
  * @param {string|number} [data.stroke = "hsla(0,0%,0%,0)"] - Border color of this element, in CSS value or color hex value (ARGB or RGB format)
@@ -24,11 +23,13 @@ class UIBasicShapeElement extends UIBaseElement {
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
-		if (data?.hasOwnProperty?.("fill")) this.setFill(data.fill, strictMode);
+		data = data || {};
+		
+		if ("fill" in data) this.setFill(data.fill, strictMode);
 
-		if (data?.hasOwnProperty?.("width")) this.setWidth(data.width, strictMode);
+		if ("width" in data) this.setWidth(data.width, strictMode);
 
-		if (data?.hasOwnProperty?.("stroke")) this.setStroke(data.stroke, strictMode);
+		if ("stroke" in data) this.setStroke(data.stroke, strictMode);
 
 		return this;
 	}
