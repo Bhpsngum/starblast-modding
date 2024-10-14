@@ -95,5 +95,7 @@
 - Add station-related events
 ## 1.0.2-alpha6
 - Minor fixes
+## 1.0.1-alpha6
+- Minor fixes
 ## 1.0.0-alpha6
 - Initial release
