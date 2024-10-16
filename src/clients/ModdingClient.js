@@ -4,6 +4,7 @@ const { EventEmitter } = require("node:events");
 const defineProperties = require("../utils/defineProperties.js");
 const toString = require("../utils/toString.js");
 const StructureManager = require("../managers/StructureManager.js");
+const packageInfo = require("../../package.json");
 const managers = [
 	{ path: ["ships"] },
 	{ path: ["asteroids"] },
@@ -91,19 +92,18 @@ class ModdingClient extends EventEmitter {
 	}
 
 	/**
-	 * Set the region of the client.
+	 * Set the region of the client. If this is called when mod already started process, this will apply for next run
 	 * @param {string} regionName - region name, must be either Asia, America or Europe
 	 * @returns {ModdingClient}
 	 */
 
 	setRegion (region) {
-		if (this.processStarted) return this.error("Could not set region while the process is running");
 		this.#api.setRegion(region);
 		return this
 	}
 
 	/**
-	 * Set the options for the modded game
+	 * Set the options for the modded game. If this is called when mod already started process, this will apply for next run
 	 * @param {options} options - game options, same as `this.options` uses in browser modding
 	 * @returns {ModdingClient}
 	 */
@@ -115,7 +115,7 @@ class ModdingClient extends EventEmitter {
 	}
 
 	/**
-	 * Set the ECP key that client will use for requests
+	 * Set the ECP key that client will use for requests. If this is called when mod already started process, this will apply for next run
 	 * @param {string} ECPKey - The ECP key
 	 * @returns {ModdingClient}
 	 */
@@ -127,7 +127,7 @@ class ModdingClient extends EventEmitter {
 	}
 
 	/**
-	 * Configure the client
+	 * Configure the client. If this is called when mod already started process, this will apply for next run
 	 * @param {object} options - An options object
 	 * @param {object} options.options - Modded game options
 	 * @param {string} options.region - Modded game region
@@ -214,6 +214,16 @@ class ModdingClient extends EventEmitter {
 	}
 
 	/**
+	 * This package version
+	 * @type {string}
+	 * @readonly
+	 */
+
+	get version () {
+		return packageInfo.version;
+	}
+
+	/**
 	 * Returns a copy of the options object that was sent to the server from the start
 	 * @type {object}
 	 * @readonly
@@ -224,13 +234,13 @@ class ModdingClient extends EventEmitter {
 	}
 
 	/**
-	 * Game region
+	 * Game region for this modded game, or configured region if mod isn't started yet
 	 * @type {string}
 	 * @readonly
 	 */
 
 	get region () {
-		return this.started && !this.stopped ? this.#api.getRegion() : null;
+		return this.#api.getRegion();
 	}
 
 	/**

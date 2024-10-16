@@ -99,8 +99,8 @@ class UIElementGroup extends UIBaseElement {
 	}
 
 	/**
-	 * Create a component (but doesn't not add to this group's hierachy yet).
-	 * Note that passing an already-resolved UIBaseElement object will return its clone instead
+	 * Create a component (but does not add to this group's hierachy yet).
+	 * Note that passing an already-resolved {@link UIBaseElement} object will return its clone instead
 	 * @param {Object} data Raw (or resolved) component data
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
 	 * @returns {UIBaseElement | null} The created element (or null if invalid element type is passed in non-strict mode)

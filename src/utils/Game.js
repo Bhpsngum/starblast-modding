@@ -34,6 +34,37 @@ class Game {
 			error: node.error.bind(node)
 		}
 
+		Object.assign(this.modding.commands, {
+			start: function () {
+				node.start();
+			},
+			stop: function () {
+				node.stop();
+			},
+			test: function () {
+				if (!node.started) throw new Error("Mod isn't started. Use 'start' first");
+				return "Test link: " + node.link;
+			},
+			region: function (e) {
+				let region = e.split(" ")[1];
+				node.setRegion(region);
+				return "Region set to " + region;
+			},
+			help: function () {
+				return ("\n" +
+					"-----------------------------CONSOLE HELP-----------------------------\n" +
+					"start                     launch modded game\n" +
+					"stop                      kill modded game\n" +
+					"region <region>           change server region.\n" +
+					"  ex: region Europe\n" +
+					"anything JavaScript       execute JavaScript code (permission required)\n" + 
+					"  ex: game.addAlien()\n" +
+					"help                      display this help\n\n" +
+					`starblast-modding Browser Client v${node.version}`
+				);
+			}
+		})
+
 		// hook the classes
 		for (let i of ["alien", "asteroid", "collectible"]) {
 			hookClass(this, node[i + "s"]);
@@ -59,7 +90,11 @@ class Game {
 	modding = {
 		game: this,
 		context: {},
-		commands: {},
+		commands: {
+			clear: function () {
+				console.clear();
+			}
+		},
 		tick: function (tick) {
 			this.game.tick(tick);
 			this.context.tick?.(this.game);

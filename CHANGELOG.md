@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.7-alpha6
+- Add `BrowserClient#execute()` method to allow executing custom command (and JavaScript), please be careful.
+- Add `ModdingClient#version` property to show package version
+- `ModdingClient#setRegion()`, `ModdingClient#setOptions()` and `ModdingClient#setECPKey()` methods now no longer throws error if called while mod is running, instead it will apply to the next run (if caching is enabled).
+- `ModdingClient#region` and `ModdingClient#requestOptions` now should reflect correct configuration
+- Polyfill `test`, `help`, `start`, `stop`, `region` and `clear` in `BrowserClient` "user-commands"
 ## 1.4.6-alpha6
 - Fixed wrong transform in `UIElementGroup.transform()` method
 - Exposes more Element classes under `StarblastModding.UI` object

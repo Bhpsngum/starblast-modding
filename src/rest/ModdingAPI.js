@@ -21,6 +21,7 @@ class ModdingAPI {
 		this.create_requests = [];
 		this.mod_data = {};
 		this.stopHandlers = [];
+		this.instanced = {};
 		this.clientReset(this.game);
 		this.stopped = false;
 	}
@@ -30,15 +31,18 @@ class ModdingAPI {
 	}
 
 	setOptions (options) {
-		return this.configuration.options = options
+		let setup = (this.processStarted ? this.instanced : this.configuration);
+		return setup.options = options;
 	}
 
 	setRegion (region) {
-		return this.configuration.region = region
+		let setup = (this.processStarted ? this.instanced : this.configuration);
+		return setup.region = region;
 	}
 
 	setECPKey (ECPKey) {
-		return this.configuration.ECPKey = ECPKey
+		let setup = (this.processStarted ? this.instanced : this.configuration);
+		return setup.ECPKey = ECPKey;
 	}
 
 	getRequestOptions () {
@@ -56,8 +60,15 @@ class ModdingAPI {
 		this.preflight_requests = [];
 		this.gameClient.socket = null;
 		this.clear();
+
 		if (!this.cacheECPKey) delete this.configuration.ECPKey;
+		else this.configuration.ECPKey = this.instanced.ECPKey;
+
 		if (!this.cacheOptions) delete this.configuration.options;
+		else this.configuration.options = this.instanced.options;
+
+		this.configuration.region = this.instanced.region;
+
 		if (!this.cacheEvents) this.game.removeAllListeners();
 		while (this.stopHandlers.length > 0) {
 			let { resolve } = this.stopHandlers.shift();
@@ -75,6 +86,11 @@ class ModdingAPI {
 			this.encodeOptionsError = true
 		}
 		this.processStarted = true;
+		Object.assign(this.instanced, {
+			region: this.configuration.region,
+			options: this.configuration.options,
+			ECPKey: this.configuration.ECPKey
+		});
 		return await runMod(this)
 	}
 
