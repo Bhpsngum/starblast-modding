@@ -12,6 +12,8 @@ const URLFetcher = require("../utils/URLFetcher.js");
 
 const toString = require("../utils/toString.js");
 
+const NodeVM = require("node:vm");
+
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
@@ -287,21 +289,43 @@ class BrowserClient {
 			if (!sameCode || (forced && this.#sameCodeExecution)) {
 				if (!this.#node.processStarted) this.#game = new Game(this.#node);
 				else try { this.#game.modding.context = {} } catch (e) {};
-				let game = this.#game;
-				let args = ["game", "echo", "window", "global", this.#lastCode];
-				let callArguments = [game.modding.context, game, game.modding.terminal.echo, global, void 0];
+				let args = ["game", this.#lastCode];
+				let code;
 				if (asynchronous ?? this.#asynchronous) {
-					await new AsyncFunction(...args).call(...callArguments)
+					code = new AsyncFunction(...args);
 				}
 				else {
-					new Function(...args).call(...callArguments)
+					code = new Function(...args);
 				}
+
+				code = "(" + code.toString() + ").call(this.game?.modding?.context, this.game);";
+
+				this.#vmExec(code);
 			}
 
 		}
 		catch (e) {
 			this.#handle(function () { throw e })
 		}
+	}
+
+	#vmExec (code) {
+		try {
+			return new NodeVM.Script(code, {
+				filename: "BrowserClient.VM",
+				importModuleDynamically: async function (moduleName) {
+					throw new Error("Module import is not supported.");
+				}
+			}).runInNewContext({
+				get window () { return this },
+				game: this.#game,
+				echo: this.#game?.modding?.terminal?.echo
+			}, {
+				microtaskMode: "afterEvaluate",
+				contextName: "BrowserClient.VM"
+			});
+		}
+		catch (e) { this.#node.error(e) }
 	}
 
 	/**
@@ -340,13 +364,11 @@ class BrowserClient {
 				throw new Error("Unknown terminal command: " + cmdName);
 			}
 			else {
-				output = (function (game, echo, window, global, cmd, cmdName, allowEval, captureOutput) {
-					return eval(command);
-				}).call(this.#game, this.#game, this.#game?.modding?.terminal?.echo, global);
+				output = this.#vmExec(command);
 			}
 
 			if (captureOutput) return { success: true, output };
-			this.#node.log(output);
+			if (output !== undefined) this.#node.log(output);
 			return { success: true };
 		} catch (e) {
 			if (captureOutput) return { success: false, output: e };

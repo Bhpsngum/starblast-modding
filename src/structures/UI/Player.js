@@ -3,6 +3,7 @@
 const toString = require("../../utils/toString.js");
 const limitedJSON = require("../../utils/limitedJSON.js");
 const UITextBasedElement = require("./TextBased.js");
+const UITextElement = require("./Text.js");
 
 /**
  * The UI Text Element instance
@@ -16,21 +17,25 @@ class UIPlayerElement extends UITextBasedElement {
 
 		this.raw.align = "left";
 		
-		this.setId(data?.id, strictMode);
+		this.setId(data?.id, strictMode).setFontSize(data?.fontSize, strictMode);
 	}
 
 	set (data, strictMode = false) {
 		super.set(data, strictMode);
 
+		this.raw.fontSize = null;
+
 		data = data || {};
 
 		if ("id" in data) this.setId(data.id, strictMode);
+
+		if ("fontSize" in data) this.setFontSize(data.fontSize, strictMode);
 
 		return this;
 	}
 
 	setAlign (textAlign, strictMode = false) {
-		if (strictMode) throw new Error(`Player component's text alignment cannot be modified. It is always "left".`);
+		if (strictMode && textAlign != null) throw new Error(`Player component's text alignment cannot be modified. It is always "left".`);
 		return this;
 	}
 
@@ -56,6 +61,46 @@ class UIPlayerElement extends UITextBasedElement {
 	}
 
 	/**
+	 * Sets font size of this UI Player Element
+	 * @param {number | null} fontSize - Font size to set, non-negative (in {@link https://en.wikipedia.org/wiki/Point_(typography)|pt}) or `null`/`undefined` to inherit from previous text elements
+	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
+	 * @returns {UIPlayerElement} The UI Player Element in question
+	 */
+
+	setFontSize (fontSize, strictMode = false) {
+		if (fontSize != null) {
+			if ("number" !== typeof fontSize) {
+				if (strictMode) throw new Error(`Expects ${this.constructor.name}.fontSize to be a number. Got ${toString(fontSize)} instead.`);
+				fontSize = +fontSize;
+			}
+
+			if (isNaN(fontSize) || fontSize < 0) {
+				if (strictMode) throw new Error(`Expects ${this.constructor.name}.fontSize to be non-negative. Got ${fontSize} instead.`);
+				fontSize = 0;
+			}
+
+			if (fontSize % 1 !== 0) {
+				if (strictMode) throw new Error(`Expects ${this.constructor.name}.fontSize to be an integer. Got ${fontSize} instead.`);
+				fontSize = Math.trunc(fontSize);
+			}
+		}
+		else fontSize = null;
+
+		this.raw.fontSize = fontSize;
+		return this;
+	}
+
+	/**
+	 * Font size of current player element, a number in in {@link https://en.wikipedia.org/wiki/Point_(typography)|pt} or `null` if it's inherited from previous text elements
+	 * @type {number | null}
+	 * @readonly
+	 */
+
+	get fontSize () {
+		return this.raw.fontSize;
+	}
+
+	/**
 	 * Ship id of this text element
 	 * @type {number}
 	 * @readonly
@@ -65,14 +110,25 @@ class UIPlayerElement extends UITextBasedElement {
 		return this.raw.id;
 	}
 
-	toJSON () {
-		let raw = {
+	serialize () {
+		return {
 			type: "player",
 			...super.toJSON(),
-			id: this.id
+			...limitedJSON(this, ["id", "fontSize"])
 		};
+	}
 
-		delete raw.align;
+	toJSON () {
+		let raw = this.serialize();
+
+		let { fontSize } = raw;
+
+		delete raw.fontSize;
+
+		if (fontSize != null) return [
+			(new UITextElement({ position: [0, 0, 1, fontSize * 1.5], value: "" })).toJSON(),
+			raw,
+		] 
 
 		return raw;
 	}

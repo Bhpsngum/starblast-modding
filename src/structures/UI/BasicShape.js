@@ -16,6 +16,8 @@ const limitedJSON = require("../../utils/limitedJSON.js");
 class UIBasicShapeElement extends UIBaseElement {
 	constructor (data, strictMode = false) {
 		super(data, strictMode);
+
+		this.raw.width = null;
 		
 		this.setFill(data?.fill, strictMode).setWidth(data?.width, strictMode).setStroke(data?.stroke, strictMode);
 	}
@@ -24,7 +26,7 @@ class UIBasicShapeElement extends UIBaseElement {
 		super.set(data, strictMode);
 
 		data = data || {};
-		
+
 		if ("fill" in data) this.setFill(data.fill, strictMode);
 
 		if ("width" in data) this.setWidth(data.width, strictMode);
@@ -36,20 +38,23 @@ class UIBasicShapeElement extends UIBaseElement {
 
 	/**
 	 * Sets border width of this UI BasicShape Element
-	 * @param {number} width - Width value to set, non-negative
+	 * @param {number | null} width - Width value to set, non-negative in (1 / ({@link https://en.wikipedia.org/wiki/Pixel_density|End user screen's pixel density})) {@link https://developer.mozilla.org/en-US/docs/Glossary/CSS_pixel|pixels (px)} or `null` if to inherit from previous box or round element
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
 	 * @returns {UIBasicShapeElement} The UI BasicShape Element in question
 	 */
 
 	setWidth (width, strictMode = false) {
-		if ("number" !== typeof width) {
-			if (strictMode) throw new Error(`Expects ${this.constructor.name}.width to be a number. Got ${toString(width)} instead.`);
-			width = 0;
+		if (width != null) {
+			if ("number" !== typeof width) {
+				if (strictMode) throw new Error(`Expects ${this.constructor.name}.width to be a number. Got ${toString(width)} instead.`);
+				width = 0;
+			}
+			else if (isNaN(width) || width < 0) {
+				if (strictMode) throw new Error(`Expects ${this.constructor.name}.width to be non-negative. Got ${toString(width)} instead.`);
+				width = 0;
+			}
 		}
-		else if (isNaN(width) || width < 0) {
-			if (strictMode) throw new Error(`Expects ${this.constructor.name}.width to be non-negative. Got ${toString(width)} instead.`);
-			width = 0;
-		}
+		else width = null;
 
 		this.raw.width = width;
 		return this;
@@ -80,8 +85,8 @@ class UIBasicShapeElement extends UIBaseElement {
 	}
 
 	/**
-	 * Border width of this BasicShape element
-	 * @type {number}
+	 * Border width of this BasicShape element, a number in (1 / ({@link https://en.wikipedia.org/wiki/Pixel_density|End user screen's pixel density})) {@link https://developer.mozilla.org/en-US/docs/Glossary/CSS_pixel|pixels (px)} or `null` if inherit from previous box or round element
+	 * @type {number | null}
 	 * @readonly
 	 */
 
@@ -110,10 +115,14 @@ class UIBasicShapeElement extends UIBaseElement {
 	}
 
 	toJSON () {
-		return {
+		let raw = {
 			...super.toJSON(),
 			...limitedJSON(this, ["fill", "width", "stroke"])
 		}
+
+		if (raw.width == null) delete raw.width;
+
+		return raw;
 	}
 }
 

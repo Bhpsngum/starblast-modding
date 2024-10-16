@@ -213,7 +213,7 @@ class UIElementGroup extends UIBaseElement {
 	 * Transform the given group with given position array
 	 * @param {number[]} position - The original position array ([x, y, width, height])
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
-	 * @returns {UIBaseElement[]} The transfrormed array of elements
+	 * @returns {UIBaseElement[]} The transformed array of elements
 	 */
 	transform (position, strictMode = false) {
 		position = UIPositionVerifier(position, strictMode);
@@ -236,13 +236,13 @@ class UIElementGroup extends UIBaseElement {
 	serialize () {
 		return {
 			type: "group",
-			...super.toJSON(),
+			...super.serialize(),
 			components: this.components.map(c => c.serialize())
 		}
 	}
 
 	toJSON () {
-		return this.transform(this.position);
+		return this.transform(this.position).map(e => e.toJSON()).flat(Infinity);
 	}
 }
 

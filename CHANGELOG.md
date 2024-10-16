@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.8-alpha6
+- `UIBasicShapeElement#setWidth()` now accepts `null` as width to inherit width value from previous box or round element
+- Add `UIPlayerElement#setFontSize()` to declare font size for player elements, `null` to keep old behaviour
+- Script execution in `BrowserClient` is now passed into VM to reduce security issues
 ## 1.4.7-alpha6
 - Add `BrowserClient#execute()` method to allow executing custom command (and JavaScript), please be careful.
 - Add `ModdingClient#version` property to show package version

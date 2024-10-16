@@ -295,14 +295,18 @@ class UIComponent extends UIElementGroup {
 	}
 
 	serialize () {
-		return {
+		let raw = {
 			...limitedJSON(this, ["id", "visible", "clickable", "shortcut"]),
 			...super.serialize()
-		}
+		};
+		delete raw.type;
+		return raw;
 	}
 
 	toJSON () {
 		let raw = limitedJSON(this, ["id", "position", "visible", "clickable", "shortcut", "components"]);
+
+		raw.components = raw.components.map(e => e.toJSON()).flat(Infinity);
 		
 		if (!this.isActive()) raw.visible = raw.clickable = false;
 
@@ -316,7 +320,6 @@ class UIComponent extends UIElementGroup {
 		}
 
 		if (raw.components.length < 1) delete raw.components;
-		else raw.components = JSON.parse(JSON.stringify(raw.components)).flat(1);
 
 		if (raw.visible) delete raw.visible;
 
