@@ -26,7 +26,7 @@ const specialComponents = new Map([
  * This is an extension of UIElementGroup, but has more features and acts at the upmost parent of any UI Component.
  * @extends {UIElementGroup}
  * @param {string} data.id Custom ID for this UI Component
- * @param {boolean} [data.id=true] Component visibility
+ * @param {boolean} [data.visible=true] Component visibility
  * @param {boolean} [data.clickable=false] Component clickability (and will yield event when clicked)
  * @param {boolean} [data.persistent=false] Whether this component will also show for ships joining later from this set (only available for UI Component whose parent manager is {@link ShipManager#ui_components})
  * @param {string | null} data.shortcut Shortcut of this UI Component (if clickable)
