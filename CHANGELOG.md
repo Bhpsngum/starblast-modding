@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.9-alpha6
+- Change `BrowserClient#execute()` method to async to capture promise rejections
+- Better error-logging detection to detect error objects from VM
 ## 1.4.8-alpha6
 - `UIBasicShapeElement#setWidth()` now accepts `null` as width to inherit width value from previous box or round element
 - Add `UIPlayerElement#setFontSize()` to declare font size for player elements, `null` to keep old behaviour

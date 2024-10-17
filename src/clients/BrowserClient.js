@@ -300,32 +300,29 @@ class BrowserClient {
 
 				code = "(" + code.toString() + ").call(this.game?.modding?.context, this.game);";
 
-				this.#vmExec(code);
+				await this.#vmExec(code);
 			}
 
 		}
 		catch (e) {
-			this.#handle(function () { throw e })
+			this.#handle(function () { throw e });
 		}
 	}
 
 	#vmExec (code) {
-		try {
-			return new NodeVM.Script(code, {
-				filename: "BrowserClient.VM",
-				importModuleDynamically: async function (moduleName) {
-					throw new Error("Module import is not supported.");
-				}
-			}).runInNewContext({
-				get window () { return this },
-				game: this.#game,
-				echo: this.#game?.modding?.terminal?.echo
-			}, {
-				microtaskMode: "afterEvaluate",
-				contextName: "BrowserClient.VM"
-			});
-		}
-		catch (e) { this.#node.error(e) }
+		return new NodeVM.Script(code, {
+			filename: "BrowserClient.VM",
+			importModuleDynamically: async function (moduleName) {
+				throw new Error("Module import is not supported.");
+			}
+		}).runInNewContext({
+			get window () { return this },
+			game: this.#game,
+			echo: this.#game?.modding?.terminal?.echo
+		}, {
+			microtaskMode: "afterEvaluate",
+			contextName: "BrowserClient.VM"
+		});
 	}
 
 	/**
@@ -351,20 +348,20 @@ class BrowserClient {
 	 * @returns {({ success: boolean, output: any })} Success status (boolean) and output of given execution (if ouput capturing is enabled)
 	 */
 
-	execute (command, allowEval = false, captureOutput = false) {
+	async execute (command, allowEval = false, captureOutput = false) {
 		command = toString(command);
 		try {
 			let cmdName = command.trim().split(" ")[0] || "";
 			let cmd, output;
 			if (cmdName && "function" === typeof (cmd = this.#game?.modding?.commands?.[cmdName])) {
-				output = cmd.call(this.#game, command);
+				output = await cmd.call(this.#game, command);
 			}
 			else if (!allowEval) {
 				if (!cmdName) throw new Error("No terminal command specified");
 				throw new Error("Unknown terminal command: " + cmdName);
 			}
 			else {
-				output = this.#vmExec(command);
+				output = await this.#vmExec(command);
 			}
 
 			if (captureOutput) return { success: true, output };
@@ -372,7 +369,7 @@ class BrowserClient {
 			return { success: true };
 		} catch (e) {
 			if (captureOutput) return { success: false, output: e };
-			this.#node.error(e);
+			this.#handle(() => { throw e });
 			return { success: false };
 		}
 	}

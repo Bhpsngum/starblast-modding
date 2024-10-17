@@ -78,7 +78,10 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	error (message) {
-		return this.emit('error', message instanceof Error ? message : new Error(message))
+		return this.emit('error', (
+			message instanceof Error ||
+			(message != null && Object.prototype.toString.call(message) === '[object Error]')
+		) ? message : new Error(message));
 	}
 
 	/**
