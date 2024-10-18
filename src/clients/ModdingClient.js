@@ -112,7 +112,6 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	setOptions (options) {
-		if (this.processStarted) return this.error("Could not set options while the process is running");
 		this.#api.setOptions(options);
 		return this
 	}
@@ -124,7 +123,6 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	setECPKey (ECPKey) {
-		if (this.processStarted) return this.error("Could not set ECPKey while the process is running");
 		this.#api.setECPKey(ECPKey);
 		return this
 	}
@@ -139,10 +137,10 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	configure (options) {
-		if (this.processStarted) return this.error("Could not configure while the process is running");
-		if (options?.hasOwnProperty?.('region')) this.setRegion(options.region);
-		if (options?.hasOwnProperty?.('options')) this.setOptions(options.options);
-		if (options?.hasOwnProperty?.('ECPKey')) this.setECPKey(options.ECPKey);
+		options = options || {};
+		if ('region' in options) this.setRegion(options.region);
+		if ('options' in options) this.setOptions(options.options);
+		if ('ECPKey' in options) this.setECPKey(options.ECPKey);
 		return this
 	}
 

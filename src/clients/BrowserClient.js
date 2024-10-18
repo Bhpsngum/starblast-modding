@@ -15,13 +15,11 @@ const toString = require("../utils/toString.js");
 const NodeVM = require("node:vm");
 
 /**
- * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available</li>
+ * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available. </li><li>Using Promise-related functionalities (including async/await) in your mod code is highly DISCOURAGED since NodeJS VM doesn't work well with Promise, and will likely crash or hang the running mod.</li>
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
  * @param {boolean} [options.cacheECPKey = false] - same with option specified at {@link ModdingClient}
  * @param {boolean} [options.extendedMode = false] - same with option specified at {@link ModdingClient}
  * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not. <br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
- * @param {boolean} [options.asynchronous = true] - allow asynchronous execution (using `async`/`await`) in mod code
- * @param {boolean} options.async - alias of the property `options.asynchronous`
  * @param {boolean} [options.crashOnException = false] - when tick or event function, or mod code execution fails, the mod will crash
  * @param {boolean} options.crashOnError - alias of the property `options.crashOnException`
  * @param {boolean} [options.logErrors = true] - game will log any errors or not
@@ -35,12 +33,21 @@ class BrowserClient {
 		this.#sameCodeExecution = !!options?.sameCodeExecution;
 		let logErrors = this.#logErrors = !!(options?.logErrors ?? options.logExceptions ?? true);
 		let logMessages = this.#logMessages = !!(options?.logMessages ?? true);
-		this.#asynchronous = !!(options?.asynchronous ?? options?.async ?? true);
 		let crashOnError = this.#crashOnError = !!(options?.crashOnException ?? options?.crashOnError);
 		let node = this.#node = new ModdingClient({...options, cacheEvents: true, cacheOptions: false});
 
-		this.#game = new Game(node);
-		this.#createVMContext();
+		this.#vmContext = NodeVM.createContext({
+			console
+		}, {
+			name: "Mod Context (BrowserClient VM)"
+		});
+
+		Object.defineProperty(this.#vmContext, 'window', {
+			enumerable: true,
+			configurable: false,
+			get () { return this},
+			set (val) { return val }
+		});
 
 		let handle = function (spec, ...params) {
 			let context = this.#game.modding?.context;
@@ -144,14 +151,9 @@ class BrowserClient {
 	}
 
 	#createVMContext () {
-		this.#vmContext = NodeVM.createContext({
-			get window () { return this },
-			game: this.#game,
-			echo: this.#game?.modding?.terminal?.echo
-		}, {
-			microtaskMode: "afterEvaluate",
-			name: "Mod Context (BrowserClient VM)"
-		});
+		this.#game = new Game(this.#node);
+		this.#vmContext.game = this.#game;
+		this.#vmContext.echo = this.#game?.modding?.terminal?.echo;
 	}
 
 	/**
@@ -201,7 +203,6 @@ class BrowserClient {
 
 	#logErrors;
 	#logMessages;
-	#asynchronous;
 
 	#handle (func, ...params) {
 		try { func?.(...params, this.#game) }
@@ -216,6 +217,14 @@ class BrowserClient {
 		this.#assignedWatch = false;
 	}
 
+	#startWatch () {
+		let watchFunc = async () => {
+			await this.#applyChanges();
+			this.#watchIntervalID = setTimeout(watchFunc, this.#watchInterval);
+		};
+		this.#watchIntervalID = setTimeout(watchFunc, this.#watchInterval);
+	}
+
 	#setWatchInterval (watchChanges, interval) {
 		this.#clearWatch();
 		this.#assignedWatch = false;
@@ -227,18 +236,17 @@ class BrowserClient {
 	/**
 	 * Load the mod code from a script string
 	 * @param {string} text - The code string to execute
-	 * @param {boolean} asynchronous - Whether to apply asynchronous execution (for this loaded code only). Leave blank or set to `null` to use default configuration.
 	 * @returns {BrowserClient}
 	 */
 
-	async loadCodeFromString (text, asynchronous) {
+	async loadCodeFromString (text) {
 		this.#path = null;
 		this.#URL = null;
 		this.#code = text;
 
 		this.#setWatchInterval(false, null);
 
-		if (this.#node.processStarted) await this.#applyChanges(true, asynchronous);
+		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
 	}
 
@@ -247,18 +255,17 @@ class BrowserClient {
 	 * @param {string} path - The path to the local file
 	 * @param {boolean} [watchChanges = false] - Whether to watch for changes on the file or not
 	 * @param {number} [interval = 5000] - The interval between watches (if `watchChanges` is set to `true`)
-	 * @param {boolean} asynchronous - Whether to apply asynchronous execution (for this loaded code only). Leave blank or set to `null` to use default configuration.
 	 * @returns {BrowserClient}
 	 */
 
-	async loadCodeFromLocal (path, watchChanges = false, interval = 5000, asynchronous) {
+	async loadCodeFromLocal (path, watchChanges = false, interval = 5000) {
 		this.#path = path;
 		this.#URL = null;
 		this.#code = null;
 
 		this.#setWatchInterval(watchChanges, interval);
 
-		if (this.#node.processStarted) await this.#applyChanges(true, asynchronous);
+		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
 	}
 
@@ -267,18 +274,17 @@ class BrowserClient {
 	 * @param {string} URL - The URL to the file
 	 * @param {boolean} [watchChanges = false] - Whether to watch for changes on the URL or not
 	 * @param {number} [interval = 5000] - The interval between watchs (if `watchChanges` is set to `true`)
-	 * @param {boolean} asynchronous - Whether to apply asynchronous execution (for this loaded code only). Leave blank or set to `null` to use default configuration.
 	 * @returns {BrowserClient}
 	 */
 
-	async loadCodeFromExternal (URL, watchChanges = false, interval = 5000, asynchronous) {
+	async loadCodeFromExternal (URL, watchChanges = false, interval = 5000) {
 		this.#path = null;
 		this.#URL = URL;
 		this.#code = null;
 
 		this.#setWatchInterval(watchChanges, interval);
 
-		if (this.#node.processStarted) await this.#applyChanges(true, asynchronous);
+		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
 	}
 
@@ -290,36 +296,22 @@ class BrowserClient {
 		return URLFetcher(this.#URL)
 	}
 
-	async #applyChanges (forced, asynchronous) {
+	async #applyChanges (forced) {
 		try {
 			let lastCode = this.#lastCode;
 			this.#lastCode = this.#URL ? (await this.#fromExternal()) : (this.#path ? (await this.#fromLocal()) : this.#code);
 			if (this.#watchChanges && (this.#URL != null || this.#path != null) && !this.#assignedWatch) {
 				this.#clearWatch();
-				this.#watchIntervalID = setInterval(this.#applyChanges.bind(this), this.#watchInterval);
+				this.#startWatch();
 				this.#assignedWatch = true;
 			}
 			let sameCode = this.#lastCode == lastCode;
 			if (!sameCode || (forced && this.#sameCodeExecution)) {
-				if (!this.#node.processStarted) {
-					this.#game = new Game(this.#node);
-					this.#createVMContext();
-				}
+				if (!this.#node.processStarted) this.#createVMContext();
 				else try { this.#game.modding.context = {} } catch (e) {};
-				let args = ["game", this.#lastCode];
-				let code;
-				if (asynchronous ?? this.#asynchronous) {
-					code = new AsyncFunction(...args);
-				}
-				else {
-					code = new Function(...args);
-				}
 
-				code = "(" + code.toString() + ").call(this.game?.modding?.context, this.game);";
-
-				await this.#vmExec(code);
+				await this.#vmExec("(" + (new Function("game", this.#lastCode)).toString() + ").call(this.game?.modding?.context, this.game);");
 			}
-
 		}
 		catch (e) {
 			this.#handle(function () { throw e });
@@ -332,7 +324,7 @@ class BrowserClient {
 			importModuleDynamically: async function (moduleName) {
 				throw new Error("Module import is not supported.");
 			}
-		}).runInContext(this.#vmContext);
+		}).runInContext(this.#vmContext, { displayErrors: true });
 	}
 
 	/**
@@ -342,11 +334,11 @@ class BrowserClient {
 
 	async start () {
 		let node = this.#node;
-		if (!this.#node.processStarted) {
+		if (!node.processStarted) {
 			await this.#applyChanges(true);
 			node.setOptions(Object.assign({}, this.#game.modding?.context?.options))
 		}
-		else if (!this.#node.started) throw new Error("Mod is starting. Please be patience");
+		else if (!node.started) throw new Error("Mod is starting. Please be patience");
 		return await node.start()
 	}
 

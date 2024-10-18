@@ -27,7 +27,7 @@ const hookClass = function(game, origin, addtionalHookFunc) {
 }
 
 class Game {
-	constructor (node) {
+	constructor (node, browser) {
 		this.#node = node;
 		this.modding.terminal = {
 			echo: node.log.bind(node),
@@ -36,10 +36,10 @@ class Game {
 
 		Object.assign(this.modding.commands, {
 			start: function () {
-				node.start();
+				browser.start();
 			},
 			stop: function () {
-				node.stop();
+				browser.stop();
 			},
 			test: function () {
 				if (!node.started) throw new Error("Mod isn't started. Use 'start' first");
@@ -63,7 +63,7 @@ class Game {
 					`starblast-modding BrowserClient v${node.version}`
 				);
 			}
-		})
+		});
 
 		// hook the classes
 		for (let i of ["alien", "asteroid", "collectible"]) {
