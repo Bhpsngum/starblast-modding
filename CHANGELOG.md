@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.10
+- Fix mod context and `BrowserClient#execute()` doesn't share the same context during mod lifetime
 ## 1.4.9-alpha6
 - Change `BrowserClient#execute()` method to async to capture promise rejections
 - Better error-logging detection to detect error objects from VM

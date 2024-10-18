@@ -60,7 +60,7 @@ class Game {
 					"anything JavaScript       execute JavaScript code (permission required)\n" + 
 					"  ex: game.addAlien()\n" +
 					"help                      display this help\n\n" +
-					`starblast-modding Browser Client v${node.version}`
+					`starblast-modding BrowserClient v${node.version}`
 				);
 			}
 		})

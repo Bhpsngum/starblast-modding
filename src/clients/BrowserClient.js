@@ -40,6 +40,7 @@ class BrowserClient {
 		let node = this.#node = new ModdingClient({...options, cacheEvents: true, cacheOptions: false});
 
 		this.#game = new Game(node);
+		this.#createVMContext();
 
 		let handle = function (spec, ...params) {
 			let context = this.#game.modding?.context;
@@ -129,6 +130,8 @@ class BrowserClient {
 		});
 	}
 
+	#vmContext;
+
 	/**
 	 * Set the region of the client.
 	 * @param {string} regionName - region name, must be either Asia, America or Europe
@@ -138,6 +141,17 @@ class BrowserClient {
 	setRegion (...data) {
 		this.#node.setRegion(...data);
 		return this
+	}
+
+	#createVMContext () {
+		this.#vmContext = NodeVM.createContext({
+			get window () { return this },
+			game: this.#game,
+			echo: this.#game?.modding?.terminal?.echo
+		}, {
+			microtaskMode: "afterEvaluate",
+			name: "Mod Context (BrowserClient VM)"
+		});
 	}
 
 	/**
@@ -287,7 +301,10 @@ class BrowserClient {
 			}
 			let sameCode = this.#lastCode == lastCode;
 			if (!sameCode || (forced && this.#sameCodeExecution)) {
-				if (!this.#node.processStarted) this.#game = new Game(this.#node);
+				if (!this.#node.processStarted) {
+					this.#game = new Game(this.#node);
+					this.#createVMContext();
+				}
 				else try { this.#game.modding.context = {} } catch (e) {};
 				let args = ["game", this.#lastCode];
 				let code;
@@ -311,18 +328,11 @@ class BrowserClient {
 
 	#vmExec (code) {
 		return new NodeVM.Script(code, {
-			filename: "BrowserClient.VM",
+			filename: "VM.BrowserClient_ModContext",
 			importModuleDynamically: async function (moduleName) {
 				throw new Error("Module import is not supported.");
 			}
-		}).runInNewContext({
-			get window () { return this },
-			game: this.#game,
-			echo: this.#game?.modding?.terminal?.echo
-		}, {
-			microtaskMode: "afterEvaluate",
-			contextName: "BrowserClient.VM"
-		});
+		}).runInContext(this.#vmContext);
 	}
 
 	/**
