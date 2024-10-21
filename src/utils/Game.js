@@ -1,5 +1,8 @@
 const hookClass = function(game, origin, addtionalHookFunc) {
-	let oldClass = origin.StructureConstructor;
+	// prevent multi-hooking
+	if (origin.OldStructureConstructor != null) return;
+
+	let oldClass = origin.OldStructureConstructor = origin.StructureConstructor;
 	let newClass = class HookedStructure extends oldClass {
 		id = -1;
 		
@@ -27,43 +30,9 @@ const hookClass = function(game, origin, addtionalHookFunc) {
 }
 
 class Game {
-	constructor (node, browser) {
+	constructor (node, modding) {
 		this.#node = node;
-		this.modding.terminal = {
-			echo: node.log.bind(node),
-			error: node.error.bind(node)
-		}
-
-		Object.assign(this.modding.commands, {
-			start: function () {
-				browser.start();
-			},
-			stop: function () {
-				browser.stop();
-			},
-			test: function () {
-				if (!node.started) throw new Error("Mod isn't started. Use 'start' first");
-				return "Test link: " + node.link;
-			},
-			region: function (e) {
-				let region = e.split(" ")[1];
-				node.setRegion(region);
-				return "Region set to " + region;
-			},
-			help: function () {
-				return ("\n" +
-					"-----------------------------CONSOLE HELP-----------------------------\n" +
-					"start                     launch modded game\n" +
-					"stop                      kill modded game\n" +
-					"region <region>           change server region.\n" +
-					"  ex: region Europe\n" +
-					"anything JavaScript       execute JavaScript code (permission required)\n" + 
-					"  ex: game.addAlien()\n" +
-					"help                      display this help\n\n" +
-					`starblast-modding BrowserClient v${node.version}`
-				);
-			}
-		});
+		this.modding = modding;
 
 		// hook the classes
 		for (let i of ["alien", "asteroid", "collectible"]) {
@@ -86,20 +55,6 @@ class Game {
 	}
 
 	#node;
-
-	modding = {
-		game: this,
-		context: {},
-		commands: {
-			clear: function () {
-				console.clear();
-			}
-		},
-		tick: function (tick) {
-			this.game.tick(tick);
-			this.context.tick?.(this.game);
-		}
-	}
 
 	get custom () {
 		return this.#node.custom

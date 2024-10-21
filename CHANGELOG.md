@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.12
+- Small fix for `start` and `stop` command not working
 ## 1.4.11
 - Remove asynchronous support totally from running mod code with `BrowserClient`, as it introduces various problems with NodeJS VM
 - Terminal commands `start` and `stop` in `BrowserClient` should work as expected now

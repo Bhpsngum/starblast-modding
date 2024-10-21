@@ -50,12 +50,12 @@ class BrowserClient {
 		});
 
 		let handle = function (spec, ...params) {
-			let context = this.#game.modding?.context;
+			let context = this.#modding.context;
 			this.#handle(context?.[spec]?.bind(context), ...params)
 		}.bind(this);
 
 		node.on(ModdingEvents.TICK, (tick) => {
-			this.#handle(this.#game?.modding?.tick?.bind?.(this.#game?.modding), tick);
+			this.#handle(this.#modding?.tick?.bind?.(this.#modding), tick);
 		});
 
 		// events
@@ -138,6 +138,41 @@ class BrowserClient {
 	}
 
 	#vmContext;
+	#modding = {
+		terminal: {
+			echo: (item) => this.#node.log(item),
+			error: (item) => this.#node.error(item)
+		},
+		commands: {
+			clear: () => console.clear(),
+			start: async () => void await this.start(),
+			stop: async () => void await this.stop(),
+			test: () => {
+				if (!this.#node.started) throw new Error("Mod isn't started. Use 'start' first");
+				return "Test link: " + this.#node.link;
+			},
+			region: (e) => {
+				let region = e.split(" ")[1];
+				this.setRegion(region);
+				return "Region set to " + region;
+			},
+			help: () => ("\n" +
+				"-----------------------------CONSOLE HELP-----------------------------\n" +
+				"start                     launch modded game\n" +
+				"stop                      kill modded game\n" +
+				"region <region>           change server region.\n" +
+				"  ex: region Europe\n" +
+				"anything JavaScript       execute JavaScript code (permission required)\n" + 
+				"  ex: game.addAlien()\n" +
+				"help                      display this help\n\n" +
+				`starblast-modding BrowserClient v${this.#node.version}`
+			)
+		},
+		tick: function (tick) {
+			this.game.tick(tick);
+			this.context.tick?.(this.game);
+		}
+	};
 
 	/**
 	 * Set the region of the client.
@@ -151,9 +186,8 @@ class BrowserClient {
 	}
 
 	#createVMContext () {
-		this.#game = new Game(this.#node);
-		this.#vmContext.game = this.#game;
-		this.#vmContext.echo = this.#game?.modding?.terminal?.echo;
+		this.#vmContext.game = this.#modding.game = this.#game = new Game(this.#node, this.#modding);
+		this.#vmContext.echo = (e) => void this.#modding.terminal?.echo?.(toString(e));
 	}
 
 	/**
@@ -308,7 +342,8 @@ class BrowserClient {
 			let sameCode = this.#lastCode == lastCode;
 			if (!sameCode || (forced && this.#sameCodeExecution)) {
 				if (!this.#node.processStarted) this.#createVMContext();
-				else try { this.#game.modding.context = {} } catch (e) {};
+				
+				try { this.#modding.context = {} } catch (e) {};
 
 				await this.#vmExec("(" + (new Function("game", this.#lastCode)).toString() + ").call(this.game?.modding?.context, this.game);");
 			}
@@ -336,7 +371,7 @@ class BrowserClient {
 		let node = this.#node;
 		if (!node.processStarted) {
 			await this.#applyChanges(true);
-			node.setOptions(Object.assign({}, this.#game.modding?.context?.options))
+			node.setOptions(Object.assign({}, this.#modding.context?.options))
 		}
 		else if (!node.started) throw new Error("Mod is starting. Please be patience");
 		return await node.start()
@@ -355,7 +390,7 @@ class BrowserClient {
 		try {
 			let cmdName = command.trim().split(" ")[0] || "";
 			let cmd, output;
-			if (cmdName && "function" === typeof (cmd = this.#game?.modding?.commands?.[cmdName])) {
+			if (cmdName && "function" === typeof (cmd = this.#modding.commands?.[cmdName])) {
 				output = await cmd.call(this.#game, command);
 			}
 			else if (!allowEval) {
