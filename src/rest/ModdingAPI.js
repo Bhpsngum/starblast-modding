@@ -86,6 +86,7 @@ class ModdingAPI {
 			this.encodeOptionsError = true
 		}
 		this.processStarted = true;
+		this.stopTriggered = false;
 		Object.assign(this.instanced, {
 			region: this.configuration.region,
 			options: this.configuration.options,

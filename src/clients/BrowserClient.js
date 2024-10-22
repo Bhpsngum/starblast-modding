@@ -14,6 +14,41 @@ const toString = require("../utils/toString.js");
 
 const NodeVM = require("node:vm");
 
+const format_open_regex = /\[\[[usoibg!@]*;[^\[]*?;[^\[]*?\]/;
+const format_end_regex = /\\*\]/;
+
+const strip_formatting = function (str) {
+	// why do people love making text colors bruh
+	// strip formatting strings from text (e.g [[bg;#fff;]Example])
+
+	let match, stacks = 0, startIndex = -1;
+
+	// remove string format opener and count stacks
+	while (match = str.match(format_open_regex)) {
+		let { index } = match;
+		++stacks;
+		if (startIndex === -1) startIndex = index;
+		str = str.slice(0, index) + str.slice(index + match[0].length);
+	}
+
+	// replace string format ending
+	if (stacks > 0) {
+		let first = str.slice(0, startIndex), rest = str.slice(startIndex);
+		while (stacks > 0 && (match = rest.match(format_end_regex))) {
+			let { index } = match;
+			let sub = match[0].slice(0, -1);
+			first += rest.slice(0, index) + sub.slice(1);
+			if (sub.length % 2 == 0) --stacks;
+			else first += "]";
+			rest = rest.slice(index + match[0].length);
+		}
+		
+		str = first + rest;
+	}
+	
+	return str;
+}
+
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available. </li><li>Using Promise-related functionalities (including async/await) in your mod code is highly DISCOURAGED since NodeJS VM doesn't work well with Promise, and will likely crash or hang the running mod.</li>
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
@@ -140,7 +175,7 @@ class BrowserClient {
 	#vmContext;
 	#modding = {
 		terminal: {
-			echo: (item) => this.#node.log(item),
+			echo: (item) => this.#node.log(strip_formatting(toString(item))),
 			error: (item) => this.#node.error(item)
 		},
 		commands: {
@@ -187,7 +222,7 @@ class BrowserClient {
 
 	#createVMContext () {
 		this.#vmContext.game = this.#modding.game = this.#game = new Game(this.#node, this.#modding);
-		this.#vmContext.echo = (e) => void this.#modding.terminal?.echo?.(toString(e));
+		this.#vmContext.echo = (e) => void this.#modding.terminal?.echo?.(e);
 	}
 
 	/**

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.13
+- Strip formatting text from `BrowserClient` echo results
+- Fix an error where mod doesn't stop after 2nd start
 ## 1.4.12
 - Small fix for `start` and `stop` command not working
 ## 1.4.11
