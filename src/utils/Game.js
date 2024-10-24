@@ -18,6 +18,10 @@ const hookClass = function(game, origin, addtionalHookFunc) {
 			return this.lastUpdatedStep;
 		}
 
+		toString () {
+			return JSON.stringify(this);
+		}
+
 		[Symbol.toStringTag] = `HookedClass (${oldClass.name})`;
 	}
 
