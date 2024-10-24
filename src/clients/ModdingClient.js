@@ -24,7 +24,7 @@ const cloneObj = function (obj) {
 /**
  * The Modding Client Instance.
  * @extends {EventEmitter} - NodeJS {@link https://nodejs.org/api/events.html#class-eventemitter|EventEmitter} contsructor.
- * @param {object} options - options for calling the object
+ * @param {object} options - options for calling the object. Note that if mod fails to start, all cached data are not erased.
  * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
  * @param {boolean} [options.cacheOptions = false] - set to `true` if you want to reuse request options for the next run, `false` otherwise
  * @param {boolean} [options.cacheEvents = false] - set to `true` if you want to reuse all event handlers for the next run, `false` otherwise

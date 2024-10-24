@@ -439,7 +439,14 @@ class BrowserClient {
 			node.setOptions(Object.assign({}, this.#modding.context?.options))
 		}
 		else if (!node.started) throw new Error("Mod is starting. Please be patience");
-		return await node.start()
+		try {
+			return await node.start();
+		}
+		catch (e) {
+			this.#clearWatch();
+			this.#lastCode = null;
+			throw e;
+		}
 	}
 
 	/**

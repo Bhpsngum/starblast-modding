@@ -53,7 +53,7 @@ class ModdingAPI {
 		return this.configuration.region
 	}
 
-	reset () {
+	reset (skipStop = false) {
 		this.started = false;
 		this.stopped = true;
 		this.processStarted = false;
@@ -61,15 +61,16 @@ class ModdingAPI {
 		this.gameClient.socket = null;
 		this.clear();
 
-		if (!this.cacheECPKey) delete this.configuration.ECPKey;
+		if (!this.cacheECPKey && !skipStop) delete this.configuration.ECPKey;
 		else this.configuration.ECPKey = this.instanced.ECPKey;
 
-		if (!this.cacheOptions) delete this.configuration.options;
+		if (!this.cacheOptions && !skipStop) delete this.configuration.options;
 		else this.configuration.options = this.instanced.options;
 
 		this.configuration.region = this.instanced.region;
 
-		if (!this.cacheEvents) this.game.removeAllListeners();
+		if (!this.cacheEvents && !skipStop) this.game.removeAllListeners();
+
 		while (this.stopHandlers.length > 0) {
 			let { resolve } = this.stopHandlers.shift();
 			resolve?.(this.game);
@@ -92,7 +93,13 @@ class ModdingAPI {
 			options: this.configuration.options,
 			ECPKey: this.configuration.ECPKey
 		});
-		return await runMod(this)
+		try {
+			return await runMod(this);
+		}
+		catch (e) {
+			this.reset(true);
+			throw e;
+		}
 	}
 
 	stop () {

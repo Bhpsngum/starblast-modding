@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.17-alpha6
+- Fix the case where failed validation can block the instance from starting or stopping
 ## 1.4.16-alpha6
 - Fix invalid command binding
 ## 1.4.15-alpha6

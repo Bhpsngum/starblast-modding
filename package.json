@@ -1,6 +1,6 @@
 {
 	"name": "starblast-modding",
-	"version": "1.4.16-alpha6",
+	"version": "1.4.17-alpha6",
 	"description": "A powerful library for interacting with the Starblast Modding API",
 	"main": "./src/index.js",
 	"author": "Bhpsngum <bhpsngumproductions@gmail.com> (https://github.com/Bhpsngum)",
