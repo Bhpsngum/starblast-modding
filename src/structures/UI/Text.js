@@ -7,6 +7,7 @@ const UITextBasedElement = require("./TextBased.js");
  * The UI Text Element instance
  * @extends {UITextBasedElement}
  * @param {string} data.value - String value of this text element
+ * @since 1.4.2-alpha6
  */
 
 class UITextElement extends UITextBasedElement {

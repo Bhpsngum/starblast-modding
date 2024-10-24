@@ -30,6 +30,7 @@ const specialComponents = new Map([
  * @param {boolean} [data.clickable=false] Component clickability (and will yield event when clicked)
  * @param {boolean} [data.persistent=false] Whether this component will also show for ships joining later from this set (only available for UI Component whose parent manager is {@link ShipManager#ui_components})
  * @param {string | null} data.shortcut Shortcut of this UI Component (if clickable)
+ * @since 1.4.2-alpha6
  */
 
 class UIComponent extends UIElementGroup {

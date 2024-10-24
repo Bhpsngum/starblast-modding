@@ -12,6 +12,7 @@ const toString = require("../../utils/toString.js");
  * The UI Element Group instance - allows grouping and scaling of UI Elements as a whole
  * @extends {UIBaseElement}
  * @param {Object[]} data.components Raw (or parsed) object component list
+ * @since 1.4.2-alpha6
  */
 
 class UIElementGroup extends UIBaseElement {

@@ -112,6 +112,7 @@ let EVENTS = {
 	 * Fires when a station is destroyed
 	 * @event ModdingClient#stationDestroy
 	 * @param {Station} station - The station object
+	 * @since 1.0.3-alpha6
 	 */
 	STATION_DESTROYED: "stationDestroy",
 	// Station module events
@@ -119,12 +120,14 @@ let EVENTS = {
 	 * Fires when a station module is destroyed
 	 * @event ModdingClient#stationModuleDestroy
 	 * @param {StationModule} station_module - The station module object
+	 * @since 1.0.3-alpha6
 	 */
 	STATION_MODULE_DESTROYED: "stationModuleDestroy",
 	/**
 	 * Fires when a station module is repaired
 	 * @event ModdingClient#stationModuleRepair
 	 * @param {StationModule} station_module - The station module object
+	 * @since 1.0.3-alpha6
 	 */
 	STATION_MODULE_REPAIRED: "stationModuleRepair"
 }

@@ -118,6 +118,7 @@ class Ship extends Entity {
 	 * Show the gameover screen to the ship
 	 * @param {object} data - Data to show on the screen
 	 * @returns {Ship}
+	 * @since 1.0.4-alpha6
 	 */
 
 	gameOver (data) {
@@ -142,6 +143,7 @@ class Ship extends Entity {
 	 * The UI Component Manager for this ship
 	 * @type {UIComponentManager}
 	 * @readonly
+	 * @since 1.4.2-alpha6
 	 */
 
 	get ui_components () {
@@ -262,6 +264,7 @@ class Ship extends Entity {
 	 * Ship hue. <br>Please note that is property is provided through an external loader, you should not read this on first-spawned event of ships.
 	 * @type {number}
 	 * @readonly
+	 * @since 1.0.3-alpha6
 	 */
 
 	get hue () {
@@ -275,6 +278,7 @@ class Ship extends Entity {
 	 * @property {string} finish - Finish name of the ship
 	 * @property {number} hue - Initial hue when user joins the game
 	 * @readonly
+	 * @since 1.0.3-alpha6
 	 */
 
 	get customization () {

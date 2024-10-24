@@ -1,7 +1,5 @@
 const fs = require('fs').promises;
 
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-
 const ModdingEvents = require("../resources/Events.js");
 
 const ModdingClient = require("./ModdingClient.js");
@@ -54,6 +52,7 @@ const strip_formatting = function (str) {
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
  * @param {boolean} [options.cacheECPKey = false] - same with option specified at {@link ModdingClient}
  * @param {boolean} [options.extendedMode = false] - same with option specified at {@link ModdingClient}
+ * @param {boolean} [options.persistentContext = true] - context where mod and command is executing on will be persistent across mod runs
  * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not. <br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
  * @param {boolean} [options.crashOnException = false] - when tick or event function, or mod code execution fails, the mod will crash
  * @param {boolean} options.crashOnError - alias of the property `options.crashOnException`
@@ -61,6 +60,7 @@ const strip_formatting = function (str) {
  * @param {boolean} options.logExceptions - alias of the property `options.logErrors`
  * @param {boolean} [options.logMessages = true] - game will log any in-game logs or not
  * @param {boolean} [options.compressWSMessages = false] - same with option specified at {@link ModdingClient}
+ * @since 1.1.0-alpha6
  */
 
 class BrowserClient {
@@ -68,21 +68,11 @@ class BrowserClient {
 		this.#sameCodeExecution = !!options?.sameCodeExecution;
 		let logErrors = this.#logErrors = !!(options?.logErrors ?? options.logExceptions ?? true);
 		let logMessages = this.#logMessages = !!(options?.logMessages ?? true);
+		this.#persistentContext = !!(options?.persistentContext ?? true);
 		let crashOnError = this.#crashOnError = !!(options?.crashOnException ?? options?.crashOnError);
 		let node = this.#node = new ModdingClient({...options, cacheEvents: true, cacheOptions: false});
 
-		this.#vmContext = NodeVM.createContext({
-			console
-		}, {
-			name: "Mod Context (BrowserClient VM)"
-		});
-
-		Object.defineProperty(this.#vmContext, 'window', {
-			enumerable: true,
-			configurable: false,
-			get () { return this},
-			set (val) { return val }
-		});
+		this.resetContext();
 
 		let handle = function (spec, ...params) {
 			let context = this.#modding.context;
@@ -173,41 +163,7 @@ class BrowserClient {
 	}
 
 	#vmContext;
-	#modding = {
-		terminal: {
-			echo: (item) => this.#node.log(strip_formatting(toString(item))),
-			error: (item) => this.#node.error(item)
-		},
-		commands: {
-			clear: () => console.clear(),
-			start: async () => void await this.start(),
-			stop: async () => void await this.stop(),
-			test: () => {
-				if (!this.#node.started) throw new Error("Mod isn't started. Use 'start' first");
-				return "Test link: " + this.#node.link;
-			},
-			region: (e) => {
-				let region = e.split(" ")[1];
-				this.setRegion(region);
-				return "Region set to " + region;
-			},
-			help: () => ("\n" +
-				"-----------------------------CONSOLE HELP-----------------------------\n" +
-				"start                     launch modded game\n" +
-				"stop                      kill modded game\n" +
-				"region <region>           change server region.\n" +
-				"  ex: region Europe\n" +
-				"anything JavaScript       execute JavaScript code (permission required)\n" + 
-				"  ex: game.addAlien()\n" +
-				"help                      display this help\n\n" +
-				`starblast-modding BrowserClient v${this.#node.version}`
-			)
-		},
-		tick: function (tick) {
-			this.game.tick(tick);
-			this.context.tick?.(this.game);
-		}
-	};
+	#modding;
 
 	/**
 	 * Set the region of the client.
@@ -223,6 +179,66 @@ class BrowserClient {
 	#createVMContext () {
 		this.#vmContext.game = this.#modding.game = this.#game = new Game(this.#node, this.#modding);
 		this.#vmContext.echo = (e) => void this.#modding.terminal?.echo?.(e);
+	}
+
+	/**
+	 * Destroy and recreate the context where mod and command execution is running on.
+	 * @since 1.4.14-alpha6
+	 */
+
+	resetContext () {
+		if (this.#node.processStarted) throw new Error("Context cannot be reset because mod/process is currently running.");
+
+		// apply a new environment
+		this.#vmContext = NodeVM.createContext({
+			console
+		}, {
+			name: "Mod Context (BrowserClient VM)"
+		});
+
+		Object.defineProperty(this.#vmContext, 'window', {
+			enumerable: true,
+			configurable: false,
+			get () { return this },
+			set (val) { return val }
+		});
+
+		// reset bound values
+		this.#modding = {
+			terminal: {
+				echo: (item) => this.#node.log(strip_formatting(toString(item))),
+				error: (item) => this.#node.error(item)
+			},
+			commands: {
+				clear: () => console.clear(),
+				start: async () => void await this.start(),
+				stop: async () => void await this.stop(),
+				test: () => {
+					if (!this.#node.started) throw new Error("Mod isn't started. Use 'start' first");
+					return "Test link: " + this.#node.link;
+				},
+				region: (e) => {
+					let region = e.split(" ")[1];
+					this.setRegion(region);
+					return "Region set to " + region;
+				},
+				help: () => ("\n" +
+					"-----------------------------CONSOLE HELP-----------------------------\n" +
+					"start                     launch modded game\n" +
+					"stop                      kill modded game\n" +
+					"region <region>           change server region.\n" +
+					"  ex: region Europe\n" +
+					"anything JavaScript       execute JavaScript code (permission required)\n" + 
+					"  ex: game.addAlien()\n" +
+					"help                      display this help\n\n" +
+					`starblast-modding BrowserClient v${this.#node.version}`
+				)
+			},
+			tick: function (tick) {
+				this.game.tick(tick);
+				this.context.tick?.(this.game);
+			}
+		};
 	}
 
 	/**
@@ -272,6 +288,8 @@ class BrowserClient {
 
 	#logErrors;
 	#logMessages;
+
+	#persistentContext;
 
 	#handle (func, ...params) {
 		try { func?.(...params, this.#game) }
@@ -376,7 +394,10 @@ class BrowserClient {
 			}
 			let sameCode = this.#lastCode == lastCode;
 			if (!sameCode || (forced && this.#sameCodeExecution)) {
-				if (!this.#node.processStarted) this.#createVMContext();
+				if (!this.#node.processStarted) {
+					if (!this.#persistentContext) this.resetContext();
+					this.#createVMContext();
+				}
 				
 				try { this.#modding.context = {} } catch (e) {};
 
@@ -418,6 +439,7 @@ class BrowserClient {
 	 * @param {boolean} [allowEval = false] - Whether to allow eval the command as JavaScript or not.<br> WARNING: THIS MAY CAUSE SECURITY ISSUE TO YOUR INSTANCE
 	 * @param {boolean} [captureOutput = false] - Whether to capture execution output or pipe it to error/log events instead
 	 * @returns {({ success: boolean, output: any })} Success status (boolean) and output of given execution (if ouput capturing is enabled)
+	 * @since 1.4.7-alpha6
 	 */
 
 	async execute (command, allowEval = false, captureOutput = false) {

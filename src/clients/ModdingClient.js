@@ -23,7 +23,7 @@ const cloneObj = function (obj) {
 
 /**
  * The Modding Client Instance.
- * @extends {EventEmitter}
+ * @extends {EventEmitter} - NodeJS {@link https://nodejs.org/api/events.html#class-eventemitter|EventEmitter} contsructor.
  * @param {object} options - options for calling the object
  * @param {boolean} [options.cacheECPKey = false] - set to `true` if you want to reuse ECP Key for the next run, `false` otherwise
  * @param {boolean} [options.cacheOptions = false] - set to `true` if you want to reuse request options for the next run, `false` otherwise
@@ -55,6 +55,7 @@ class ModdingClient extends EventEmitter {
 	 * Indicates if the game alredy started its process (sending starting request to server) or not.
 	 * @type {boolean}
 	 * @readonly
+	 * @since 1.0.20-alpha6
 	 */
 
 	get processStarted () {
@@ -218,6 +219,7 @@ class ModdingClient extends EventEmitter {
 	 * This package version
 	 * @type {string}
 	 * @readonly
+	 * @since 1.4.7-alpha6
 	 */
 
 	get version () {
@@ -308,6 +310,7 @@ class ModdingClient extends EventEmitter {
 	 * The time manager (timer) of the game.
 	 * @type {TimeManager}
 	 * @readonly
+	 * @since 1.0.17-alpha6
 	 */
 
 	get timer () {

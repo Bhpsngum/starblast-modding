@@ -8,6 +8,7 @@ const UIPositionVerifier = require("../../utils/UIPositionVerifier.js");
  * @param {Object} data - Data to initialize this element
  * @param {number[]} data.posistion - Position of this element ([x, y, width, height])
  * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
+ * @since 1.4.6-alpha6
  */
 
 class UIBaseElement {

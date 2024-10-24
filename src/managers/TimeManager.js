@@ -3,6 +3,7 @@
 /**
  * The Time Manager (Timer) Instance.<br>Please note that all functions running in the timer will be bound to its parent `ModdingClient` object by default.
  * @abstract
+ * @since 1.0.17-alpha6
  */
 
 class TimeManager {

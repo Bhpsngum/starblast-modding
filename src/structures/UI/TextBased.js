@@ -10,6 +10,7 @@ const limitedJSON = require("../../utils/limitedJSON.js");
  * @extends {UIBaseElement}
  * @param {string|number} [data.color = "#000"] - Text color of this element, in CSS value or color hex value (ARGB or RGB format)
  * @param {("center" | "left" | "right" | null)} [data.align = "center"] Text alignment of this text element
+ * @since 1.4.6-alpha6
  */
 
 class UITextBasedElement extends UIBaseElement {

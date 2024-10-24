@@ -11,6 +11,7 @@ const limitedJSON = require("../../utils/limitedJSON.js");
  * @param {string|number} [data.fill = "hsla(0,0%,0%,0)"] - Background fill color of this element, in CSS value or color hex value (ARGB or RGB format)
  * @param {string|number} [data.stroke = "hsla(0,0%,0%,0)"] - Border color of this element, in CSS value or color hex value (ARGB or RGB format)
  * @param {number} [data.width = 0] Border width of this text element
+ * @since 1.4.6-alpha6
  */
 
 class UIBasicShapeElement extends UIBaseElement {

@@ -67,6 +67,7 @@ class ShipManager extends EntityManager {
 	 * @param {object} data - message data
 	 * @param {boolean} gameOver - to indicate if that intermission screen will gameover the player or not
 	 * @returns {ShipManager}
+	 * @since 1.0.4-alpha6
 	 */
 
 	intermission (data, gameOver) {
@@ -105,6 +106,7 @@ class ShipManager extends EntityManager {
 	 * The global UI Component Manager
 	 * @type {UIComponentManager}
 	 * @readonly
+	 * @since 1.4.2-alpha6
 	 */
 
 	get ui_components () {

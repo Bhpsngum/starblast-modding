@@ -9,6 +9,7 @@ const UITextElement = require("./Text.js");
  * The UI Text Element instance
  * @extends {UITextBasedElement}
  * @param {number} data.id - Ship ID to get info from
+ * @since 1.4.2-alpha6
  */
 
 class UIPlayerElement extends UITextBasedElement {
@@ -65,6 +66,7 @@ class UIPlayerElement extends UITextBasedElement {
 	 * @param {number | null} fontSize - Font size to set, non-negative (in {@link https://en.wikipedia.org/wiki/Point_(typography)|pt}) or `null`/`undefined` to inherit from previous text elements
 	 * @param {boolean} [strictMode = false] Whether strict mode will be enabled (invalid value will be silently replaced with default value) or throw an error instead
 	 * @returns {UIPlayerElement} The UI Player Element in question
+	 * @since 1.4.8-alpha6
 	 */
 
 	setFontSize (fontSize, strictMode = false) {

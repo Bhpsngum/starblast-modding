@@ -1,14 +1,16 @@
 # Changelog
 
-## 1.4.13
+## 1.4.14-alpha6
+- Add `BrowserClient#resetContext()` to reset mod context and `persistentContext` param for initializing `BrowserClient`
+## 1.4.13-alpha6
 - Strip formatting text from `BrowserClient` echo results
 - Fix an error where mod doesn't stop after 2nd start
-## 1.4.12
+## 1.4.12-alpha6
 - Small fix for `start` and `stop` command not working
-## 1.4.11
+## 1.4.11-alpha6
 - Remove asynchronous support totally from running mod code with `BrowserClient`, as it introduces various problems with NodeJS VM
 - Terminal commands `start` and `stop` in `BrowserClient` should work as expected now
-## 1.4.10
+## 1.4.10-alpha6
 - Fix mod context and `BrowserClient#execute()` doesn't share the same context during mod lifetime
 ## 1.4.9-alpha6
 - Change `BrowserClient#execute()` method to async to capture promise rejections

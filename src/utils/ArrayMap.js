@@ -2,7 +2,7 @@
 
 /**
  * The Map Instance with a few array methods
- * @extends {Map}
+ * @extends {Map} - The built-in {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map|Map} object.
  * @abstract
  */
 
