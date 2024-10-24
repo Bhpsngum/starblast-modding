@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.15-alpha6
+- Compatibility fixing
 ## 1.4.14-alpha6
 - Add `BrowserClient#resetContext()` to reset mod context and `persistentContext` param for initializing `BrowserClient`
 ## 1.4.13-alpha6

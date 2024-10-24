@@ -90,11 +90,15 @@ class UIComponent extends UIElementGroup {
 		// if ("visible" in data)
 		this.setVisible(data.visible, strictMode);
 
-		if ("clickable" in data) this.setClickable(data.clickable, strictMode);
+		// same with clickable
+		// if ("clickable" in data)
+		this.setClickable(data.clickable, strictMode);
 
 		if ("persistent" in data) this.setPersistent(data.persistent);
 
-		if ("shortcut" in data) this.setShortcut(data.shortcut, strictMode);
+		// shortcut also
+		// if ("shortcut" in data)
+		this.setShortcut(data.shortcut, strictMode);
 
 		return this;
 	}

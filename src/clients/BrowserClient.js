@@ -93,15 +93,17 @@ class BrowserClient {
 			if (logMessages) console.log("[In-game Log]", ...args)
 		});
 
-		node.on(ModdingEvents.MOD_STARTED, function (link) {
+		node.on(ModdingEvents.MOD_STARTED, (link) => {
 			node.log("Mod started");
 			node.log(link);
+			try { this.#modding.field_view = {}; } catch (e) {}
 			handle('event', {name: "mod_started", link})
 		});
 
 		node.on(ModdingEvents.MOD_STOPPED, () => {
 			this.#clearWatch();
 			this.#lastCode = null;
+			try { this.#modding.field_view = null; } catch (e) {}
 			node.log("Mod stopped");
 			handle('event', {name: "mod_stopped"})
 		});
