@@ -94,17 +94,14 @@ class BrowserClient {
 		});
 
 		node.on(ModdingEvents.MOD_STARTED, (link) => {
-			node.log("Mod started");
-			node.log(link);
-			try { this.#modding.field_view = {}; } catch (e) {}
+			try { this.#modding.modStarted?.(); } catch (e) {}
 			handle('event', {name: "mod_started", link})
 		});
 
 		node.on(ModdingEvents.MOD_STOPPED, () => {
 			this.#clearWatch();
 			this.#lastCode = null;
-			try { this.#modding.field_view = null; } catch (e) {}
-			node.log("Mod stopped");
+			try { this.#modding.stopped?.(); } catch (e) {}
 			handle('event', {name: "mod_stopped"})
 		});
 
@@ -235,6 +232,16 @@ class BrowserClient {
 					"help                      display this help\n\n" +
 					`starblast-modding BrowserClient v${this.#node.version}`
 				)
+			},
+			modStarted: function () {
+				this.terminal.echo("Mod started");
+				this.terminal.echo(this.game.link);
+				this.field_view = {};
+			},
+			stopped: function () {
+				this.terminal.echo("Mod stopped");
+				this.field_view = null;
+				this.context = null;
 			},
 			tick: function (tick) {
 				this.game.tick(tick);
@@ -450,7 +457,7 @@ class BrowserClient {
 			let cmdName = command.trim().split(" ")[0] || "";
 			let cmd, output;
 			if (cmdName && "function" === typeof (cmd = this.#modding.commands?.[cmdName])) {
-				output = await cmd.call(this.#game, command);
+				output = await cmd.call(this.#modding.commands, command);
 			}
 			else if (!allowEval) {
 				if (!cmdName) throw new Error("No terminal command specified");

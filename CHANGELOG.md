@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.16-alpha6
+- Fix invalid command binding
 ## 1.4.15-alpha6
 - Compatibility fixing
 ## 1.4.14-alpha6
