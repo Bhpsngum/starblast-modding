@@ -151,6 +151,40 @@ game.on('stop', function() {
 })
 ```
 ### BrowserClient usage
+#### From command line
+```bash
+npx starblast-modding [options] [mod_code]
+```
+To view list of options use `npx starblast-modding --help`
+
+For example:
+```bash
+npx starblast-modding -r Asia -k 12345-67890 'echo("Hello World!")'
+```
+You can also load from configuration file:
+```bash
+npx starblast-modding -c ./config.json'
+```
+Example configuration JSON file:
+```json
+{
+	"key": "12345-67890",
+	"region": "Asia",
+
+	"sourcemode": "local",
+	"sourcepath": "./modcode.js",
+
+	"watch": true,
+	"interval": 5000,
+	"timeout": 5000,
+
+	"compression": false,
+	"strict": false,
+	"silent": false,
+	"extended": false
+}
+```
+#### Using NodeJS
 Here is an example for running SDC code pulled from Neuronality's site:
 ```js
 const StarblastModding = require("starblast-modding");

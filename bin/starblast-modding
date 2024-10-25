@@ -1,0 +1,178 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+const path = require("path");
+const { BrowserClient } = require("../");
+
+const exit = function (message) {
+	console.error(message);
+	process.exit(1);
+}
+
+const command = require('yargs')
+	.usage("Usage: $0 [options] [mod_code]")
+	.example([
+		["$0 -r Asia -k 12345-67890 'echo(\"Hello World!\")'", "Start host using mod code in command-line"],
+		["$0 -c ./config.json", "Start hosting using configuration from file"]
+	])
+	.alias("h", "help")
+	.alias("v", "version")
+
+	.alias("c", "config")
+	.describe("c", "Load host configuration from JSON file")
+	
+	.option("key", {
+		alias: "k",
+		type: "string",
+		describe: "ECP Key used by the mod"
+	})
+
+	.option("sourcemode", {
+		alias: "s",
+		type: "string",
+		choices: ["local", "external"],
+		check: console.log,
+		describe: "Specify source mode:\n(leave blank to load from command line instead)\n- local    : load from local file\n- external : load from external URL"
+	})
+
+	.option("sourcepath", {
+		alias: "p",
+		type: "string",
+		describe: "Specify source path (if source mode is local or external)"
+	})
+
+	.option("region", {
+		alias: "r",
+		type: "string",
+		describe: "Region of this host"
+	})
+
+	.option("extended", {
+		alias: "e",
+		type: "boolean",
+		describe: "Enable extended mode"
+	})
+
+	.option("watch", {
+		alias: "w",
+		type: "boolean",
+		describe: "Watch changes (only for local and external source mode)"
+	})
+
+	.option("interval", {
+		alias: "i",
+		type: "number",
+		default: 5000,
+		describe: "Watch changes interval (only for local and external source mode)"
+	})
+
+	.option("timeout", {
+		alias: "t",
+		type: "number",
+		describe: "Mod code execution timeout"
+	})
+
+	.option("silent", {
+		type: "boolean",
+		describe: "Do not log in-game logs and errors"
+	})
+
+	.option("strict", {
+		type: "boolean",
+		describe: "Terminate host on any exceptions/errors"
+	})
+
+	.option("compression", {
+		type: "boolean",
+		describe: "Compress Websocket messages"
+	})
+
+	.argv
+
+
+let data = {};
+if (command.config) {
+	try {
+		Object.assign(data, JSON.parse(fs.readFileSync(path.resolve(command.config), "utf-8")));
+	}
+	catch (e) { console.error("Failed to read configuration file.") }
+}
+
+for (let k of ["key", "region", "extended", "silent", "watch", "interval", "timeout", "strict", "compression", "sourcemode", "sourcepath"]) {
+	if (k in command) data[k] = command[k];
+}
+
+if (!["local", "external"].includes(data.sourcemode)) {
+	data.sourcemode = "";
+	data.sourcepath = command._?.[0] || "";
+}
+
+if (!data.key) exit("No ECP key specified. (-k <ecp_key>)");
+if (!data.region) exit("Please select a region to host. (-r <region>)");
+
+if (data.sourcemode && !data.sourcepath) exit("Source mode has been specified but no source paths are found. (-p <resource_path>)");
+
+let browser = new BrowserClient({
+	compressWSMessages: data.compression,
+	extendedMode: data.extended,
+	crashOnException: data.strict,
+	logExceptions: !data.silent,
+	logMessages: !data.silent
+});
+
+browser.setECPKey(data.key).setRegion(data.region);
+
+let loadOptions = {
+	watchChanges: data.watch,
+	watchInterval: data.interval,
+	executionTimeout: data.timeout
+}
+
+switch (data.sourcemode) {
+	case "local":
+		browser.loadCodeFromLocal(data.sourcepath, loadOptions);
+		break;
+	case "external":
+		browser.loadCodeFromExternal(data.sourcepath, loadOptions);
+		break;
+	default:
+		browser.loadCodeFromString(data.sourcepath, loadOptions);
+}
+
+browser.start();
+
+console.log("Mod process started.");
+console.log("Hit CTRL-C to stop the host.");
+
+browser.getNode().on("stop", () => {
+	console.log("Mod hosting finished.");
+});
+
+if (process.platform === 'win32') {
+	require('readline').createInterface({
+		input: process.stdin,
+		output: process.stdout
+	}).on('SIGINT', function () {
+		process.emit('SIGINT');
+	});
+}
+
+for (let e of ["uncaughtException", "unhandledRejection"])
+	process.on(e, (err) => {
+		browser.stop();
+		console.error("A fatal error occured:", err);
+		console.log("Mod hosting terminated.");
+		process.exit(1);
+	});
+
+process.on('SIGINT', function () {
+	browser.stop();
+	console.log("Mod hosting terminated.");
+	process.exit();
+});
+
+process.on('SIGTERM', function () {
+	browser.stop();
+	console.log("Mod hosting terminated.");
+	process.exit();
+});
