@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.19-alpha6
+- Change options parameters format for some methods: `BrowserClient#loadCodeFromString(str, opts)`, `BrowserClient#loadCodeFromLocal(path, opts)`, `BrowserClient#loadCodeFromExternal(url, opts)` and `BrowserClient#execute(cmd, opts)`.
+- Adding `executionTimeout` options to methods listed above to allow limiting code execution time.
 ## 1.4.18-alpha6
 - Serialize classes when `toString()` is called on entity objects
 ## 1.4.17-alpha6

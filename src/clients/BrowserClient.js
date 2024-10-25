@@ -288,6 +288,7 @@ class BrowserClient {
 	#watchInterval = 5000;
 	#watchIntervalID = null;
 	#assignedWatch = false;
+	#executionTimeout;
 
 	#node;
 	#game;
@@ -321,26 +322,29 @@ class BrowserClient {
 		this.#watchIntervalID = setTimeout(watchFunc, this.#watchInterval);
 	}
 
-	#setWatchInterval (watchChanges, interval) {
+	#setWatchInterval (watchChanges, interval, timeout) {
 		this.#clearWatch();
 		this.#assignedWatch = false;
 		this.#watchChanges = !!watchChanges;
-		if (this.#watchChanges) this.#watchInterval = Math.max(1, Math.floor(interval)) || 5000;
+		if (this.#watchChanges) this.#watchInterval = Math.max(1, Math.floor(interval ?? 5000)) || 5000;
+		this.#executionTimeout = timeout;
 		return this
 	}
 
 	/**
 	 * Load the mod code from a script string
 	 * @param {string} text - The code string to execute
+	 * @param {Object} options - execution options
+	 * @param {number?} [options.executionTimeout = Infinity] - The timeout for executing this code
 	 * @returns {BrowserClient}
 	 */
 
-	async loadCodeFromString (text) {
+	async loadCodeFromString (text, options) {
 		this.#path = null;
 		this.#URL = null;
 		this.#code = text;
 
-		this.#setWatchInterval(false, null);
+		this.#setWatchInterval(false, null, options?.executionTimeout);
 
 		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
@@ -349,17 +353,19 @@ class BrowserClient {
 	/**
 	 * Load the mod code from a local file (File on your device)
 	 * @param {string} path - The path to the local file
-	 * @param {boolean} [watchChanges = false] - Whether to watch for changes on the file or not
-	 * @param {number} [interval = 5000] - The interval between watches (if `watchChanges` is set to `true`)
+	 * @param {Object} options - execution options
+	 * @param {boolean} [options.watchChanges = false] - Whether to watch for changes on the file or not
+	 * @param {number} [options.watchInterval = 5000] - The interval between watches (if `watchChanges` is set to `true`)
+	 * @param {number?} [options.executionTimeout = Infinity] - The timeout for executing this code
 	 * @returns {BrowserClient}
 	 */
 
-	async loadCodeFromLocal (path, watchChanges = false, interval = 5000) {
+	async loadCodeFromLocal (path, options) {
 		this.#path = path;
 		this.#URL = null;
 		this.#code = null;
 
-		this.#setWatchInterval(watchChanges, interval);
+		this.#setWatchInterval(options?.watchChanges, options?.watchInterval, options?.executionTimeout);
 
 		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
@@ -368,17 +374,19 @@ class BrowserClient {
 	/**
 	 * Load the mod code from an external URL file
 	 * @param {string} URL - The URL to the file
-	 * @param {boolean} [watchChanges = false] - Whether to watch for changes on the URL or not
-	 * @param {number} [interval = 5000] - The interval between watchs (if `watchChanges` is set to `true`)
+	 * @param {Object} options - execution options
+	 * @param {boolean} [options.watchChanges = false] - Whether to watch for changes on the file or not
+	 * @param {number} [options.watchInterval = 5000] - The interval between watches (if `watchChanges` is set to `true`)
+	 * @param {number?} [options.executionTimeout = Infinity] - The timeout for executing this code
 	 * @returns {BrowserClient}
 	 */
 
-	async loadCodeFromExternal (URL, watchChanges = false, interval = 5000) {
+	async loadCodeFromExternal (URL, options) {
 		this.#path = null;
 		this.#URL = URL;
 		this.#code = null;
 
-		this.#setWatchInterval(watchChanges, interval);
+		this.#setWatchInterval(options?.watchChanges, options?.watchInterval, options?.executionTimeout);
 
 		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
@@ -410,7 +418,11 @@ class BrowserClient {
 				
 				try { this.#modding.context = {} } catch (e) {};
 
+				let start = performance.now();
+
 				await this.#vmExec("(" + (new Function("game", this.#lastCode)).toString() + ").call(this.game?.modding?.context, this.game);");
+
+				this.#node.log(`Code initialization took ${performance.now() - start}ms`);
 			}
 		}
 		catch (e) {
@@ -418,13 +430,16 @@ class BrowserClient {
 		}
 	}
 
-	#vmExec (code) {
+	#vmExec (code, timeout) {
 		return new NodeVM.Script(code, {
 			filename: "VM.BrowserClient_ModContext",
 			importModuleDynamically: async function (moduleName) {
 				throw new Error("Module import is not supported.");
 			}
-		}).runInContext(this.#vmContext, { displayErrors: true });
+		}).runInContext(this.#vmContext, {
+			timeout: arguments.length > 1 ? timeout : this.#executionTimeout,
+			displayErrors: true
+		});
 	}
 
 	/**
@@ -452,13 +467,15 @@ class BrowserClient {
 	/**
 	 * Executes any terminal command on current running instance.
 	 * @param {string} command - Command to execute
-	 * @param {boolean} [allowEval = false] - Whether to allow eval the command as JavaScript or not.<br> WARNING: THIS MAY CAUSE SECURITY ISSUE TO YOUR INSTANCE
-	 * @param {boolean} [captureOutput = false] - Whether to capture execution output or pipe it to error/log events instead
+	 * @param {object} options - Options for this execution
+	 * @param {boolean} [options.allowEval = false] - Whether to allow eval the command as JavaScript or not.<br> WARNING: THIS MAY CAUSE SECURITY ISSUE TO YOUR INSTANCE
+	 * @param {boolean} [options.captureOutput = false] - Whether to capture execution output or pipe it to error/log events instead
+	 * @param {number?} [options.executionTimeout = Infinity] - Timeout for this execution
 	 * @returns {({ success: boolean, output: any })} Success status (boolean) and output of given execution (if ouput capturing is enabled)
 	 * @since 1.4.7-alpha6
 	 */
 
-	async execute (command, allowEval = false, captureOutput = false) {
+	async execute (command, options) {
 		command = toString(command);
 		try {
 			let cmdName = command.trim().split(" ")[0] || "";
@@ -466,19 +483,19 @@ class BrowserClient {
 			if (cmdName && "function" === typeof (cmd = this.#modding.commands?.[cmdName])) {
 				output = await cmd.call(this.#modding.commands, command);
 			}
-			else if (!allowEval) {
+			else if (!options?.allowEval) {
 				if (!cmdName) throw new Error("No terminal command specified");
 				throw new Error("Unknown terminal command: " + cmdName);
 			}
 			else {
-				output = await this.#vmExec(command);
+				output = await this.#vmExec(command, options?.executionTimeout);
 			}
 
-			if (captureOutput) return { success: true, output };
+			if (options?.captureOutput) return { success: true, output };
 			if (output !== undefined) this.#node.log(output);
 			return { success: true };
 		} catch (e) {
-			if (captureOutput) return { success: false, output: e };
+			if (options?.captureOutput) return { success: false, output: e };
 			this.#handle(() => { throw e });
 			return { success: false };
 		}
