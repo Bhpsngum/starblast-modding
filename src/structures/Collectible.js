@@ -23,7 +23,7 @@ class Collectible extends BaseEntity {
 		 * @readonly
 		 */
 
-		defineProperties(this, {code: options?.code ?? CollectibleCodes[0]});
+		defineProperties(this, {code: options?.code ?? CollectibleCodes[0]}, true);
 		let _this = this.modding.data;
 		_this.x = options?.x ?? 0;
 		_this.y = options?.y ?? 0;

@@ -6,6 +6,7 @@ const limitedJSON = require("../utils/limitedJSON.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const toString = require("../utils/toString.js");
 const defineProperties = require("../utils/defineProperties.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 
 /**
  * The Object3D Instance
@@ -27,7 +28,7 @@ class Object3D extends Structure {
 		 */
 
 		defineProperties(this, {id: toString(options?.id)});
-		this.assign(options, true)
+		this.assign(options, true);
 	}
 
 	#game;
@@ -167,5 +168,7 @@ defineProperties(Object3D.prototype, {
 });
 
 MassRename(Object3D, ["type", "position", "rotation", "scale"]);
+
+exposeProperties(Object3D.prototype, ["type", "position", "rotation", "scale"]);
 
 module.exports = Object3D

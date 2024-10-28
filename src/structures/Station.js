@@ -4,6 +4,7 @@ const BaseEntity = require("./BaseEntity.js");
 const StationModuleManager = require("../managers/StationModuleManager.js");
 const defineProperties = require("../utils/defineProperties.js");
 const limitedJSON = require("../utils/limitedJSON.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 const getAngle = function (phase, step) {
 	return (phase / 180 + step / 60 / 3600 % 1 * 2) * Math.PI
 }
@@ -22,8 +23,7 @@ class Station extends BaseEntity {
 		super(game, api);
 		this.#game = game;
 		this.#api = api;
-		let size = Math.trunc(this.#game.options.station_size), _this = this.modding.data;
-		_this.size = isNaN(size) || size < 1 || size > 5 ? 2 : size;
+		let size = Math.trunc(this.#game.options.station_size);
 		let modules = new StationModuleManager(this.#game, this.#api, this);
 		(Array.isArray(options?.modules) ? options.modules : []).forEach(modul => modules.insert(modules.create(modul, this)));
 
@@ -62,14 +62,21 @@ class Station extends BaseEntity {
 		 * @readonly
 		 */
 
+		/**
+		 * Station size
+		 * @type {number}
+		 * @readonly
+		 */
+
 		defineProperties(this, {
 			name: "string" == typeof options?.base_name ? options.base_name : "Unknown",
 			id: options?.id,
 			team: options?.team,
 			hue: options?.hue || 0,
 			modules,
-			phase: options?.phase * 180 / Math.PI
-		});
+			phase: options?.phase * 180 / Math.PI,
+			size: isNaN(size) || size < 1 || size > 5 ? 2 : size
+		}, true);
 		this.markAsSpawned();
 		this.updateInfo({
 			level: Math.max(Math.trunc(options?.level), 1) || 1,
@@ -110,16 +117,6 @@ class Station extends BaseEntity {
 	get vy () {
 		let phase = this.phase, step = this.lastAliveStep;
 		return getRadius(this.#game, this.#api) * (Math.sin(getAngle(phase, step + 1)) - Math.sin(getAngle(phase, step)))
-	}
-
-	/**
-	 * Station size
-	 * @type {number}
-	 * @readonly
-	 */
-
-	get size () {
-		return this.modding.data.size
 	}
 
 	/**
@@ -166,5 +163,7 @@ defineProperties(Station.prototype, {
 	structure_type: "station",
 	inactive_field: "destroyed"
 });
+
+exposeProperties(Station.prototype, ["level", "crystals", "crystals_max"]);
 
 module.exports = Station

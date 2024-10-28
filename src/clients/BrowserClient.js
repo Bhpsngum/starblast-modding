@@ -1,51 +1,17 @@
-const fs = require('fs').promises;
+const fs1 = require('fs');
+const fs = fs1.promises;
 
 const ModdingEvents = require("../resources/Events.js");
 
 const ModdingClient = require("./ModdingClient.js");
 
-const Game = require("../utils/Game.js");
+const GameCode = fs1.readFileSync(__dirname + "/../utils/GameCode.js", "utf8");
 
 const URLFetcher = require("../utils/URLFetcher.js");
 
 const toString = require("../utils/toString.js");
 
 const NodeVM = require("node:vm");
-
-const format_open_regex = /\[\[[usoibg!@]*;[^\[]*?;[^\[]*?\]/;
-const format_end_regex = /\\*\]/;
-
-const strip_formatting = function (str) {
-	// why do people love making text colors bruh
-	// strip formatting strings from text (e.g [[bg;#fff;]Example])
-
-	let match, stacks = 0, startIndex = -1;
-
-	// remove string format opener and count stacks
-	while (match = str.match(format_open_regex)) {
-		let { index } = match;
-		++stacks;
-		if (startIndex === -1) startIndex = index;
-		str = str.slice(0, index) + str.slice(index + match[0].length);
-	}
-
-	// replace string format ending
-	if (stacks > 0) {
-		let first = str.slice(0, startIndex), rest = str.slice(startIndex);
-		while (stacks > 0 && (match = rest.match(format_end_regex))) {
-			let { index } = match;
-			let sub = match[0].slice(0, -1);
-			first += rest.slice(0, index) + sub.slice(1);
-			if (sub.length % 2 == 0) --stacks;
-			else first += "]";
-			rest = rest.slice(index + match[0].length);
-		}
-		
-		str = first + rest;
-	}
-	
-	return str;
-}
 
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available. </li><li>Using Promise-related functionalities (including async/await) in your mod code is highly DISCOURAGED since NodeJS VM doesn't work well with Promise, and will likely crash or hang the running mod.</li>
@@ -74,18 +40,9 @@ class BrowserClient {
 
 		this.resetContext();
 
-		let handle = function (spec, ...params) {
-			let context = this.#modding.context;
-			this.#handle(context?.[spec]?.bind(context), ...params)
-		}.bind(this);
-
-		node.on(ModdingEvents.TICK, (tick) => {
-			this.#handle(this.#modding?.tick?.bind?.(this.#modding), tick);
-		});
-
 		// events
 
-		node.on(ModdingEvents.ERROR, function(error) {
+		if (!crashOnError) node.on(ModdingEvents.ERROR, function(error) {
 			if (logErrors) console.error("[In-game Error]", error)
 		});
 
@@ -93,75 +50,14 @@ class BrowserClient {
 			if (logMessages) console.log("[In-game Log]", ...args)
 		});
 
-		node.on(ModdingEvents.MOD_STARTED, (link) => {
-			try { this.#modding.modStarted?.(); } catch (e) {}
-			handle('event', {name: "mod_started", link})
-		});
-
 		node.on(ModdingEvents.MOD_STOPPED, () => {
 			this.#clearWatch();
 			this.#lastCode = null;
-			try { this.#modding.stopped?.(); } catch (e) {}
-			handle('event', {name: "mod_stopped"})
-		});
-
-		node.on(ModdingEvents.SHIP_RESPAWNED, function(ship) {
-			handle('event', {name: "ship_spawned", ship})
-		});
-
-		node.on(ModdingEvents.SHIP_SPAWNED, function(ship) {
-			handle('event', {name: "ship_spawned", ship})
-		});
-
-		node.on(ModdingEvents.SHIP_DESTROYED, function(ship, killer) {
-			handle('event', {name: "ship_destroyed", ship, killer})
-		});
-
-		node.on(ModdingEvents.SHIP_DISCONNECTED, function(ship) {
-			handle('event', {name: "ship_disconnected", ship})
-		});
-
-		node.on(ModdingEvents.ALIEN_CREATED, function(alien) {
-			handle('event', {name: "alien_created", alien})
-		});
-
-		node.on(ModdingEvents.ALIEN_DESTROYED, function(alien, killer) {
-			handle('event', {name: "alien_destroyed", alien, killer})
-		});
-
-		node.on(ModdingEvents.ASTEROID_CREATED, function(asteroid) {
-			handle('event', {name: "asteroid_created", asteroid})
-		});
-		node.on(ModdingEvents.ASTEROID_DESTROYED, function(asteroid, killer) {
-			handle('event', {name: "asteroid_destroyed", asteroid, killer})
-		});
-
-		node.on(ModdingEvents.COLLECTIBLE_CREATED, function(collectible) {
-			handle('event', {name: "collectible_created", collectible})
-		});
-
-		node.on(ModdingEvents.COLLECTIBLE_PICKED, function(collectible, ship) {
-			handle('event', {name: "collectible_picked", collectible, ship})
-		});
-
-		node.on(ModdingEvents.STATION_DESTROYED, function(station) {
-			handle('event', {name: "station_destroyed", station})
-		});
-
-		node.on(ModdingEvents.STATION_MODULE_DESTROYED, function(module) {
-			handle('event', {name: "station_module_destroyed", module})
-		});
-
-		node.on(ModdingEvents.STATION_MODULE_REPAIRED, function(module) {
-			handle('event', {name: "station_module_repaired", module})
-		});
-
-		node.on(ModdingEvents.UI_COMPONENT_CLICKED, function ({ id }, ship) {
-			handle('event', {name: "ui_component_clicked", id, ship})
 		});
 	}
 
 	#vmContext;
+	#contextBridge;
 	#modding;
 
 	/**
@@ -175,11 +71,6 @@ class BrowserClient {
 		return this
 	}
 
-	#createVMContext () {
-		this.#vmContext.game = this.#modding.game = this.#game = new Game(this.#node, this.#modding);
-		this.#vmContext.echo = (e) => void this.#modding.terminal?.echo?.(e);
-	}
-
 	/**
 	 * Destroy and recreate the context where mod and command execution is running on.
 	 * @since 1.4.14-alpha6
@@ -188,10 +79,21 @@ class BrowserClient {
 	resetContext () {
 		if (this.#node.processStarted) throw new Error("Context cannot be reset because mod/process is currently running.");
 
+		let compile = (code, timeout) => {
+			return this.#vmExec(code, timeout);
+		}
+
 		// apply a new environment
-		this.#vmContext = NodeVM.createContext({
-			console
-		}, {
+		this.#vmContext = NodeVM.createContext(Object.assign(Object.create(null), {
+			console,
+			node: this.#node,
+			ModdingEvents,
+			[Symbol.toStringTag]: "Window",
+			remoteCompile: async (code) => {
+				return await compile(`(${Function("game", code).toString()}).call(this.game.modding.context, this.game)`);
+			},
+			compile
+		}), {
 			name: "Mod Context (BrowserClient VM)"
 		});
 
@@ -202,52 +104,9 @@ class BrowserClient {
 			set (val) { return val }
 		});
 
-		// reset bound values
-		this.#modding = {
-			terminal: {
-				echo: (item) => this.#node.log(strip_formatting(toString(item))),
-				error: (item) => this.#node.error(item)
-			},
-			commands: {
-				clear: () => console.clear(),
-				start: async () => void await this.start(),
-				stop: async () => void await this.stop(),
-				test: () => {
-					if (!this.#node.started) throw new Error("Mod isn't started. Use 'start' first");
-					return "Test link: " + this.#node.link;
-				},
-				region: (e) => {
-					let region = e.split(" ")[1];
-					this.setRegion(region);
-					return "Region set to " + region;
-				},
-				help: () => ("\n" +
-					"-----------------------------CONSOLE HELP-----------------------------\n" +
-					"start                     launch modded game\n" +
-					"stop                      kill modded game\n" +
-					"region <region>           change server region.\n" +
-					"  ex: region Europe\n" +
-					"anything JavaScript       execute JavaScript code (permission required)\n" + 
-					"  ex: game.addAlien()\n" +
-					"help                      display this help\n\n" +
-					`starblast-modding BrowserClient v${this.#node.version}`
-				)
-			},
-			modStarted: function () {
-				this.terminal.echo("Mod started");
-				this.terminal.echo(this.game.link);
-				this.field_view = {};
-			},
-			stopped: function () {
-				this.terminal.echo("Mod stopped");
-				this.field_view = null;
-				this.context = null;
-			},
-			tick: function (tick) {
-				this.game.tick(tick);
-				this.context.tick?.(this.game);
-			}
-		};
+		// run setup script and get required parameters
+		this.#contextBridge = this.#vmExec(GameCode, 5000);
+		this.#modding = this.#contextBridge.modding;
 	}
 
 	/**
@@ -276,7 +135,7 @@ class BrowserClient {
 	 */
 
 	getGame () {
-		return this.#game
+		return this.#modding?.game;
 	}
 
 	#path;
@@ -300,14 +159,6 @@ class BrowserClient {
 	#logMessages;
 
 	#persistentContext;
-
-	#handle (func, ...params) {
-		try { func?.(...params, this.#game) }
-		catch (e) {
-			if (this.#crashOnError) throw e;
-			else this.#node.error(e)
-		}
-	}
 
 	#clearWatch () {
 		clearInterval(this.#watchIntervalID);
@@ -346,7 +197,7 @@ class BrowserClient {
 
 		this.#setWatchInterval(false, null, options?.executionTimeout);
 
-		if (this.#node.processStarted) await this.#applyChanges(true);
+		await this.#applyChanges(true);
 		return this
 	}
 
@@ -367,7 +218,7 @@ class BrowserClient {
 
 		this.#setWatchInterval(options?.watchChanges, options?.watchInterval, options?.executionTimeout);
 
-		if (this.#node.processStarted) await this.#applyChanges(true);
+		await this.#applyChanges(true);
 		return this
 	}
 
@@ -388,7 +239,7 @@ class BrowserClient {
 
 		this.#setWatchInterval(options?.watchChanges, options?.watchInterval, options?.executionTimeout);
 
-		if (this.#node.processStarted) await this.#applyChanges(true);
+		await this.#applyChanges(true);
 		return this
 	}
 
@@ -413,20 +264,13 @@ class BrowserClient {
 			if (!sameCode || (forced && this.#sameCodeExecution)) {
 				if (!this.#node.processStarted) {
 					if (!this.#persistentContext) this.resetContext();
-					this.#createVMContext();
 				}
 				
-				try { this.#modding.context = {} } catch (e) {};
-
-				let start = performance.now();
-
-				await this.#vmExec("(" + (new Function("game", this.#lastCode)).toString() + ").call(this.game?.modding?.context, this.game);");
-
-				this.#node.log(`Code initialization took ${performance.now() - start}ms`);
+				await this.#contextBridge.setCode(this.#lastCode, this.#node.processStarted);
 			}
 		}
 		catch (e) {
-			this.#handle(function () { throw e });
+			this.#node.error(e);
 		}
 	}
 
@@ -448,14 +292,9 @@ class BrowserClient {
 	 */
 
 	async start () {
-		let node = this.#node;
-		if (!node.processStarted) {
-			await this.#applyChanges(true);
-			node.setOptions(Object.assign({}, this.#modding.context?.options))
-		}
-		else if (!node.started) throw new Error("Mod is starting. Please be patience");
+		if (this.#node.processStarted) throw new Error("Mod already running, use stop first");
 		try {
-			return await node.start();
+			await this.#modding.run();
 		}
 		catch (e) {
 			this.#clearWatch();
@@ -468,35 +307,23 @@ class BrowserClient {
 	 * Executes any terminal command on current running instance.
 	 * @param {string} command - Command to execute
 	 * @param {object} options - Options for this execution
-	 * @param {boolean} [options.allowEval = false] - Whether to allow eval the command as JavaScript or not.<br> WARNING: THIS MAY CAUSE SECURITY ISSUE TO YOUR INSTANCE
+	 * @param {boolean} [options.allowEval = false] - Whether to allow eval the command as JavaScript or not.<br> WARNING: THIS MAY CAUSE SECURITY ISSUES TO YOUR INSTANCE
 	 * @param {boolean} [options.captureOutput = false] - Whether to capture execution output or pipe it to error/log events instead
-	 * @param {number?} [options.executionTimeout = Infinity] - Timeout for this execution
+	 * @param {number?} [options.executionTimeout] - Timeout for this execution, set to nullish to use default execution timeout from mod compilation
 	 * @returns {({ success: boolean, output: any })} Success status (boolean) and output of given execution (if ouput capturing is enabled)
 	 * @since 1.4.7-alpha6
 	 */
 
 	async execute (command, options) {
-		command = toString(command);
 		try {
-			let cmdName = command.trim().split(" ")[0] || "";
-			let cmd, output;
-			if (cmdName && "function" === typeof (cmd = this.#modding.commands?.[cmdName])) {
-				output = await cmd.call(this.#modding.commands, command);
-			}
-			else if (!options?.allowEval) {
-				if (!cmdName) throw new Error("No terminal command specified");
-				throw new Error("Unknown terminal command: " + cmdName);
-			}
-			else {
-				output = await this.#vmExec(command, options?.executionTimeout);
-			}
+			let output = await this.#contextBridge.execute(toString(command).replace(/^\s*\[\[([^]*)\]\]\s*$/, "$1"), options?.allowEval, options?.executionTimeout);
 
 			if (options?.captureOutput) return { success: true, output };
-			if (output !== undefined) this.#node.log(output);
+			if (output !== undefined && output !== "") this.#modding.terminal?.echo?.(output);
 			return { success: true };
 		} catch (e) {
 			if (options?.captureOutput) return { success: false, output: e };
-			this.#handle(() => { throw e });
+			this.#node.error(e);
 			return { success: false };
 		}
 	}

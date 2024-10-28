@@ -22,10 +22,10 @@ class ObjectType extends Structure {
 		defineProperties(physics, {
 			mass: pysics.mass ?? 0,
 			autoShape: !!pysics.autoShape
-		});
+		}, true);
 
-		if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape});
-		else if (!physics.autoShape) defineProperties(physics, {shape: []});
+		if (Array.isArray(pysics.shape)) defineProperties(physics, {shape: pysics.shape}, true);
+		else if (!physics.autoShape) defineProperties(physics, {shape: []}, true);
 		
 		/**
 		 * ObjectType ID
@@ -136,7 +136,7 @@ class ObjectType extends Structure {
 			transparent: !!(type?.transparent ?? true),
 			shininess: "number" == typeof type?.shininess ? type.shininess : 0,
 			physics
-		});
+		}, true);
 	}
 
 	#game;

@@ -35,7 +35,7 @@ class Coordinate {
 			x: +position?.x || 0,
 			y: +position?.y || 0,
 			z: +position?.z || 0
-		});
+		}, true);
 	}
 
 	toJSON () {

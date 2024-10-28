@@ -9,7 +9,7 @@ module.exports = function (game, data, manager, ...additionalValues) {
 		defineProperties(entity, {
 			id: data?.id,
 			createdStep: Math.max(game.timer.step, 0)
-		});
+		}, true);
 		entity.modding.data.lastUpdatedStep = Math.max(game.timer.step, 0);
 		manager.insert(entity)
 	}

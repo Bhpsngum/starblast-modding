@@ -6,6 +6,7 @@ const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
 const parseIntermission = require("../utils/parseIntermission.js");
 const UIComponentManager = require("../managers/UIComponentManager.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 const convertStats = function(data) {
 	if (isNaN(data)) return 0;
 	let stats = [];
@@ -411,5 +412,6 @@ defineProperties(Ship.prototype, {
 });
 
 MassRename(Ship, ["type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
+exposeProperties(Ship.prototype, ["alive", "name", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization"]);
 
 module.exports = Ship

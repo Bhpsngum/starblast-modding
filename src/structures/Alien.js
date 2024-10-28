@@ -5,6 +5,7 @@ const CollectibleCodes = require("../utils/collectibleCodes.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 const alien_types = new Map([
 	[10, {points: [10, 20, 50, 1000]}],
 	[11, {points: [30, 60, 120]}],
@@ -55,7 +56,7 @@ class Alien extends Entity {
 		defineProperties(this, {
 			weapon_drop: CollectibleCodes[weapon_drop] ?? null,
 			crystal_drop: "number" == options?.crystal_drop ? options.crystal_drop : 0
-		})
+		}, true);
 	}
 
 	#game;
@@ -148,5 +149,6 @@ defineProperties(Alien.prototype, {
 });
 
 MassRename(Alien, ["shield", "regen", "damage", ["laserSpeed", "laser_speed"], "rate"]);
+exposeProperties(Alien.prototype, ["shield", "regen", "points", "damage", "laser_speed", "rate", "code", "level"]);
 
 module.exports = Alien

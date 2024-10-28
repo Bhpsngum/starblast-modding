@@ -4,6 +4,7 @@ const Structure = require("./Structure.js");
 const Station = require("./Station.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 
 /**
  * The Team Instance
@@ -47,9 +48,9 @@ class Team extends Structure {
 				...(options.station || {}),
 				team: this
 			})
-		});
+		}, true);
 		let _this = this.modding.data;
-		_this.open = true
+		_this.open = true;
 	}
 
 	#game;
@@ -76,7 +77,7 @@ class Team extends Structure {
 	toJSON () {
 		return {
 			...super.toJSON(),
-			...limitedJSON(this, ["faction", "station", "open", "class", "offsetX", "offsetY", "offsetVx", "offsetVy", "angle", "shield", "finish"])
+			...limitedJSON(this, ["hue", "faction", "station", "open"])
 		}
 	}
 }
@@ -85,5 +86,7 @@ defineProperties(Team.prototype, {
 	structure_type: "team",
 	inactive_field: "eliminated"
 });
+
+exposeProperties(Team.prototype, ["open"]);
 
 module.exports = Team

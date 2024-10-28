@@ -1,5 +1,6 @@
 'use strict';
 
+const exposeProperties = require("../utils/exposeProperties.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const Structure = require("./Structure.js");
 const parseCoords = function (val, game) {
@@ -103,8 +104,13 @@ class BaseEntity extends Structure {
 	}
 
 	toJSON () {
-		return limitedJSON(this, ["x", "y", "vx", "vy"]);
+		return {
+			...super.toJSON(),
+			...limitedJSON(this, ["x", "y", "vx", "vy"])
+		}
 	}
 }
+
+exposeProperties(BaseEntity.prototype, ["x", "y", "vx", "vy"]);
 
 module.exports = BaseEntity

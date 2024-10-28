@@ -2,6 +2,8 @@
 
 const defineProperties = require("../utils/defineProperties.js");
 const createUUID = require("../utils/createUUID.js");
+const exposeProperties = require("../utils/exposeProperties.js");
+const limitedJSON = require("../utils/limitedJSON.js");
 
 /**
  * The Structure Instance - represents any structrure in the game
@@ -42,7 +44,7 @@ class Structure {
 		 */
 		
 		defineProperties(this, {modding: {data: {}}}, false);
-		defineProperties(this, {uuid: createUUID()});
+		defineProperties(this, {uuid: createUUID()}, true);
 	}
 
 	#game;
@@ -104,5 +106,7 @@ class Structure {
 		}
 	}
 }
+
+exposeProperties(Structure.prototype, ["alive", "lastAliveStep"]);
 
 module.exports = Structure

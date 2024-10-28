@@ -3,6 +3,7 @@
 const BaseEntity = require("./BaseEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
 const limitedJSON = require("../utils/limitedJSON.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 const typeMap = new Map([
 	["st", "structure"],
 	["d", "deposit"],
@@ -68,7 +69,7 @@ class StationModule extends BaseEntity {
 			_x: "number" == typeof options?.x ? options.x : 0,
 			_y: "number" == typeof options?.y ? options.y : 0,
 			_dir: "number" == typeof options?.dir ? options.dir : 0
-		})
+		});
 	}
 
 	#game;
@@ -196,5 +197,7 @@ defineProperties(StationModule.prototype, {
 	structure_type: "station_module",
 	inactive_field: "vaporized"
 });
+
+exposeProperties(StationModule.prototype, ["alive", "offsetX", "offsetY", "offsetVx", "offsetVy", "angle", "shield", "finish"]);
 
 module.exports = StationModule

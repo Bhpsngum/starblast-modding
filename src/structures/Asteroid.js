@@ -4,6 +4,7 @@ const Entity = require("./Entity.js");
 const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 
 /**
  * The Asteroid Instance
@@ -20,7 +21,7 @@ class Asteroid extends Entity {
 		_this.x = options?.x ?? 0;
 		_this.y = options?.y ?? 0;
 		_this.vx = options?.vx ?? 0;
-		_this.vy = options?.vy ?? 0
+		_this.vy = options?.vy ?? 0;
 	}
 
 	#game;
@@ -62,5 +63,6 @@ defineProperties(Asteroid.prototype, {
 });
 
 MassRename(Asteroid, ["size"]);
+exposeProperties(Asteroid.prototype, ["size"]);
 
 module.exports = Asteroid

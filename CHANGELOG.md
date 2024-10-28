@@ -1,7 +1,9 @@
 # Changelog
 
+## 1.4.21-alpha6
+- Improved security of running mod codes using `BrowserClient` interface.
 ## 1.4.20-alpha6
-- Add binary executable for modding version, `npx starblast-modding [options] [mod code]
+- Add binary executable for modding version, `npx starblast-modding [options] [mod code]`
 ## 1.4.19-alpha6
 - Change options parameters format for some methods: `BrowserClient#loadCodeFromString(str, opts)`, `BrowserClient#loadCodeFromLocal(path, opts)`, `BrowserClient#loadCodeFromExternal(url, opts)` and `BrowserClient#execute(cmd, opts)`.
 - Adding `executionTimeout` options to methods listed above to allow limiting code execution time.

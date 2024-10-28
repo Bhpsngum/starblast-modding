@@ -163,7 +163,7 @@ npx starblast-modding -r Asia -k 12345-67890 'echo("Hello World!")'
 ```
 You can also load from configuration file:
 ```bash
-npx starblast-modding -c ./config.json'
+npx starblast-modding -c ./config.json
 ```
 Example configuration JSON file:
 ```json
