@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.23-alpha6
+- Fix some collectibles or asteroids are not properly destroyed in `BrowserClient`
 ## 1.4.22-alpha6
 - Fix abnormal auto-updating code of `BrowserClient`
 ## 1.4.21-alpha6

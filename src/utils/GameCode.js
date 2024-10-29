@@ -294,7 +294,7 @@
 			node.on(ModdingEvents.ASTEROID_DESTROYED, (asteroid, killer) => {
 				this.#handle(() => {
 					asteroid = locateEntity(this.game, asteroid, "asteroid");
-					if (!asteroid) asteroid.killed = true; 
+					if (asteroid) asteroid.killed = true; 
 					this.context?.event?.({
 						name: "asteroid_destroyed",
 						asteroid,
@@ -310,7 +310,7 @@
 			node.on(ModdingEvents.COLLECTIBLE_PICKED, (collectible, ship) => {
 				this.#handle(() => {
 					collectible = locateEntity(this.game, collectible, "collectible");
-					if (!collectible) collectible.killed = true; 
+					if (collectible) collectible.killed = true; 
 					this.context?.event?.({
 						name: "collectible_picked",
 						collectible,
