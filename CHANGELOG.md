@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.22-alpha6
+- Fix abnormal auto-updating code of `BrowserClient`
 ## 1.4.21-alpha6
 - Improved security of running mod codes using `BrowserClient` interface.
 ## 1.4.20-alpha6

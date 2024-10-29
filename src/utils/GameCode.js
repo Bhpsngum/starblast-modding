@@ -2,7 +2,7 @@
 	// open | macro | close
 	const tokenizer_regex = /(\[\[[usoibg!@]*;[^\[]*?;[^\[]*?\])|(\[\[([^\]]+)\]\])|(\\{0,1}\])/;
 
-	const { compile } = window;
+	const { compile, getValue } = window;
 
 	const execute = function (command, allowEval = false, timeout) {
 		let cmdName = command.trim().split(" ")[0] || "";
@@ -59,9 +59,7 @@
 	}
 	const cloneObject = obj => JSON.parse(JSON.stringify(obj));
 
-	let code;
-	const setCode = async function (newCode, exec = false) {
-		code = newCode;
+	const setCode = async function (exec = false) {
 		if (exec) await modding.editorContentsChanged();
 	}
 
@@ -412,7 +410,7 @@
 
 		async compile () {
 			this.context = {};
-			await this.#remoteCompile(code);
+			await this.#remoteCompile(await getValue());
 		}
 
 		tick (data) {
@@ -602,6 +600,7 @@
 	delete this.ModdingEvents;
 	delete this.remoteCompile;
 	delete this.compile;
+	delete this.getValue;
 
 	return { setCode, modding, execute };
 })();

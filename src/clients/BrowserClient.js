@@ -92,7 +92,11 @@ class BrowserClient {
 			remoteCompile: async (code) => {
 				return await compile(`(${Function("game", code).toString()}).call(this.game.modding.context, this.game)`);
 			},
-			compile
+			compile,
+			getValue: async () => {
+				if (this.#lastCode == null) await this.#applyChanges(true, false);
+				return this.#lastCode;
+			}
 		}), {
 			name: "Mod Context (BrowserClient VM)"
 		});
@@ -193,11 +197,11 @@ class BrowserClient {
 	async loadCodeFromString (text, options) {
 		this.#path = null;
 		this.#URL = null;
-		this.#code = text;
+		this.#code = toString(text);
 
 		this.#setWatchInterval(false, null, options?.executionTimeout);
 
-		await this.#applyChanges(true);
+		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
 	}
 
@@ -218,7 +222,7 @@ class BrowserClient {
 
 		this.#setWatchInterval(options?.watchChanges, options?.watchInterval, options?.executionTimeout);
 
-		await this.#applyChanges(true);
+		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
 	}
 
@@ -239,7 +243,7 @@ class BrowserClient {
 
 		this.#setWatchInterval(options?.watchChanges, options?.watchInterval, options?.executionTimeout);
 
-		await this.#applyChanges(true);
+		if (this.#node.processStarted) await this.#applyChanges(true);
 		return this
 	}
 
@@ -251,7 +255,7 @@ class BrowserClient {
 		return URLFetcher(this.#URL)
 	}
 
-	async #applyChanges (forced) {
+	async #applyChanges (forced, exec) {
 		try {
 			let lastCode = this.#lastCode;
 			this.#lastCode = this.#URL ? (await this.#fromExternal()) : (this.#path ? (await this.#fromLocal()) : this.#code);
@@ -266,7 +270,7 @@ class BrowserClient {
 					if (!this.#persistentContext) this.resetContext();
 				}
 				
-				await this.#contextBridge.setCode(this.#lastCode, this.#node.processStarted);
+				await this.#contextBridge.setCode(exec ?? this.#node.processStarted);
 			}
 		}
 		catch (e) {
