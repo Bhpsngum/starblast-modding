@@ -13,11 +13,14 @@ const toString = require("../utils/toString.js");
 
 const NodeVM = require("node:vm");
 
+const { decode } = require("html-entities");
+
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available. </li><li>Using Promise-related functionalities (including async/await) in your mod code is highly DISCOURAGED since NodeJS VM doesn't work well with Promise, and will likely crash or hang the running mod.</li>
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
  * @param {boolean} [options.cacheECPKey = false] - same with option specified at {@link ModdingClient}
  * @param {boolean} [options.extendedMode = false] - same with option specified at {@link ModdingClient}
+ * @param {boolean} [options.strictMode = false] - Commands that affect the instance configuration (e.g `region`) won't be allowed to execute
  * @param {boolean} [options.persistentContext = true] - context where mod and command is executing on will be persistent across mod runs
  * @param {boolean} [options.sameCodeExecution = false] - loading the same code will trigger the execution or not. <br><b>Note:</b> This feature only works when you call `loadCodeFromString`, `loadCodeFromLocal` or `loadCodeFromExternal` methods, and not during the auto-update process
  * @param {boolean} [options.crashOnException = false] - when tick or event function, or mod code execution fails, the mod will crash
@@ -32,6 +35,7 @@ const NodeVM = require("node:vm");
 class BrowserClient {
 	constructor(options) {
 		this.#sameCodeExecution = !!options?.sameCodeExecution;
+		this.#strictMode = !!options?.strictMode;
 		let logErrors = this.#logErrors = !!(options?.logErrors ?? options.logExceptions ?? true);
 		let logMessages = this.#logMessages = !!(options?.logMessages ?? true);
 		this.#persistentContext = !!(options?.persistentContext ?? true);
@@ -88,10 +92,12 @@ class BrowserClient {
 			console,
 			node: this.#node,
 			ModdingEvents,
+			strictMode: this.#strictMode,
 			[Symbol.toStringTag]: "Window",
 			remoteCompile: async (code) => {
 				return await compile(`(${Function("game", code).toString()}).call(this.game.modding.context, this.game)`);
 			},
+			remoteLog: (e) => void this.#node.log(decode(e)),
 			compile,
 			getValue: async () => {
 				if (this.#lastCode == null) await this.#applyChanges(true, false);
@@ -158,6 +164,7 @@ class BrowserClient {
 
 	#sameCodeExecution;
 	#crashOnError;
+	#strictMode;
 
 	#logErrors;
 	#logMessages;

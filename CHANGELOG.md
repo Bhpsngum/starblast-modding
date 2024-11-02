@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.24-alpha6
+- Allow parsing some HTML entities on `echo` in `BrowserClient`
+- Add `options.strictMode` in `BrowserClient` to prevent commands from changing instance configuration (e.g region)
 ## 1.4.23-alpha6
 - Fix some collectibles or asteroids are not properly destroyed in `BrowserClient`
 ## 1.4.22-alpha6

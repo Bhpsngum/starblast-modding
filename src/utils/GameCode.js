@@ -2,7 +2,8 @@
 	// open | macro | close
 	const tokenizer_regex = /(\[\[[usoibg!@]*;[^\[]*?;[^\[]*?\])|(\[\[([^\]]+)\]\])|(\\{0,1}\])/;
 
-	const { compile, getValue } = window;
+	const { compile, getValue, remoteLog, strictMode } = window;
+	const { defineProperty } = Object;
 
 	const execute = function (command, allowEval = false, timeout) {
 		let cmdName = command.trim().split(" ")[0] || "";
@@ -83,8 +84,7 @@
 				}
 			}
 		}
-
-		modding = {};
+		
 		custom = {};
 		#killed;
 
@@ -185,9 +185,9 @@
 		let creator = creators.get(ns);
 		let gEntity = game["find" + creator.name](entity.id);
 
-		if (gEntity == null && create) {
+		if (gEntity == null && (create || !entity.modding.data.browser_proxy_initialized)) {
 			gEntity = new creator.f(game, entity);
-			game[ns + "s"].push(gEntity);
+			if (create || !gEntity.killed) game[ns + "s"].push(gEntity);
 		}
 
 		return gEntity;
@@ -328,6 +328,13 @@
 					}, this.game);
 				})
 			});
+
+			if (strictMode) {
+				this.commands.region = (e) => {
+					throw new Error("Changing region through commands is disabled because this client is in strict mode");
+				}
+				defineProperty(this, 'run', { value: runMod, writable: false, configurable: false });
+			}
 		}
 
 		#handle (func) {
@@ -340,8 +347,8 @@
 		#remoteCompile;
 
 		terminal = {
-			echo: (item) => this.#node.log(strip_formatting(String(item))),
-			error: (item) => this.#node.error(String(item))
+			echo: (item) => void remoteLog(strip_formatting(String(item))),
+			error: (item) => void this.#node.error(String(item))
 		};
 
 		commands = {
@@ -361,7 +368,7 @@
 				"-----------------------------CONSOLE HELP-----------------------------\n" +
 				"start                     launch modded game\n" +
 				"stop                      kill modded game\n" +
-				"region <region>           change server region.\n" +
+				"region <region>           change server region (permission required)\n" +
 				"  ex: region Europe\n" +
 				"anything JavaScript       execute JavaScript code (permission required)\n" + 
 				"  ex: game.addAlien()\n" +
@@ -420,6 +427,12 @@
 			});
 		}
 	}
+
+	if (strictMode) {
+		defineProperty(Modding.prototype, 'run', { ...Object.getOwnPropertyDescriptor(Modding.prototype, 'run'), writable: false, configurable: false });
+	}
+
+	const runMod = Modding.prototype.run;
 
 	class Game {
 		constructor (node, modding) {
@@ -601,6 +614,8 @@
 	delete this.remoteCompile;
 	delete this.compile;
 	delete this.getValue;
+	delete this.remoteLog;
+	delete this.strictMode;
 
 	return { setCode, modding, execute };
 })();

@@ -1,6 +1,6 @@
 {
 	"name": "starblast-modding",
-	"version": "1.4.23-alpha6",
+	"version": "1.4.24-alpha6",
 	"description": "A powerful library for interacting with the Starblast Modding API",
 	"main": "./src/index.js",
 	"author": "Bhpsngum <bhpsngumproductions@gmail.com> (https://github.com/Bhpsngum)",
@@ -25,7 +25,8 @@
 	"license": "MIT",
 	"dependencies": {
 		"axios": "^1.7.7",
-		"three": "^0.169.0",
+		"html-entities": "^2.5.2",
+		"three": "^0.170.0",
 		"ws": "^8.18.0",
 		"yargs": "^17.7.2"
 	},
