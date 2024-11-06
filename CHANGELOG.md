@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.25-alpha6
+- Fix problem with ship IDs being reused by modding server
+- Rework `ShipManager#findById`, this method no longer searches for disconnected ships
+- Add `StructureManager#get(uuid, includeInactive)` to get structure with UUID
 ## 1.4.24-alpha6
 - Allow parsing some HTML entities on `echo` in `BrowserClient`
 - Add `options.strictMode` in `BrowserClient` to prevent commands from changing instance configuration (e.g region)

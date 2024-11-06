@@ -19,6 +19,27 @@ class ShipManager extends EntityManager {
 		this.#ui_components = new UIComponentManager(game, api, null);
 	}
 
+	/**
+	 * Find an active ship inside the manager with the given ID.<br>
+	 * Due to resuability of ship ID, This method cannot find ships which are already disconnected from the game.<br>
+	 * Use {@link StructureManager#get} with UUID instead for more consistent search.
+	 * @param {number} - The ship ID to be search for
+	 * @param {includeInactive} - To show whether it should search for not-yet-spawned ship 
+	 * @returns {Ship} The ship object, `null` if not found any
+	 * @since 1.4.25
+	 */
+	
+	findById (id, includeInactive = false) {
+		// Ship IDs are reusable within range [0, 255]
+		if (id == null) return null;
+		this.update();
+		let ships;
+		if (includeInactive) ships = this.array(true).filter(ship => !ship.modding.data[ship.inactive_field]);
+		else ships = this.array();
+		
+		return ships.filter(entity => Object.is(entity.id, id)).at(-1) ?? null;
+	}
+
 	#game;
 	#api;
 	#ui_components;

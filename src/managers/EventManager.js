@@ -166,15 +166,16 @@ module.exports.create = function (api, address, token) {
 					case "event":
 						switch (data.name) {
 							case "ship_destroyed": {
-								data.id = data.ship;
-								let ship = getEntity(api.game, data, this.ships);
+								let ship = this.ships.findById(data.ship, true);
 								let killer = this.ships.findById(data.killer, true);
-								ship.modding.data.alive = false;
-								ship.modding.data.lastAliveStep = this.timer.step;
-								let uuid = ship.uuid, handler = api.handlers.destroy, resolve = handler.get(uuid)?.resolve;
-								handler.delete(uuid);
-								resolve?.(ship);
-								this.emit(events.SHIP_DESTROYED, ship, killer);
+								if (ship != null) {
+									ship.modding.data.alive = false;
+									ship.modding.data.lastAliveStep = this.timer.step;
+									let uuid = ship.uuid, handler = api.handlers.destroy, resolve = handler.get(uuid)?.resolve;
+									handler.delete(uuid);
+									resolve?.(ship);
+								}
+								if (ship != null || killer != null) this.emit(events.SHIP_DESTROYED, ship, killer);
 								break;
 							}
 							case "alien_destroyed":
@@ -206,8 +207,7 @@ module.exports.create = function (api, address, token) {
 							case "collectible_picked": {
 								data.id = data.collectible;
 								let collectible = getEntity(api.game, data, this.collectibles);
-								data.id = data.ship;
-								let ship = getEntity(api.game, data, this.ships);
+								let ship = this.ships.findById(data.ship, true);
 								collectible.markAsInactive();
 								this.emit(events.COLLECTIBLE_PICKED, collectible, ship);
 								break;
@@ -215,15 +215,16 @@ module.exports.create = function (api, address, token) {
 							case "ui_component_clicked": {
 								let id = data.id;
 								if (["scoreboard", "radar_background"].includes(id)) break;
-								data.id = data.ship;
-								let ship = getEntity(api.game, data, this.ships);
-								let ship_component = ship.ui_components.findById(id);
-								if (ship_component?.raw?.lastClickable) {
-									this.emit(events.UI_COMPONENT_CLICKED, ship_component, ship);
-								}
-								else {
-									let global_component = this.ships.ui_components.findById(id);
-									if (global_component?.raw?.lastClickable) this.emit(events.UI_COMPONENT_CLICKED, global_component, ship);
+								let ship = this.ships.findById(data.ship, true);
+								if (ship != null) {
+									let ship_component = ship.ui_components.findById(id);
+									if (ship_component?.raw?.lastClickable) {
+										this.emit(events.UI_COMPONENT_CLICKED, ship_component, ship);
+									}
+									else {
+										let global_component = this.ships.ui_components.findById(id);
+										if (global_component?.raw?.lastClickable) this.emit(events.UI_COMPONENT_CLICKED, global_component, ship);
+									}
 								}
 								break;
 							}

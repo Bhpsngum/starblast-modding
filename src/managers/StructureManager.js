@@ -75,6 +75,19 @@ class StructureManager extends ArrayMap {
 		return this.array(includeInactive).find(entity => Object.is(entity.id, id)) ?? null
 	}
 
+	/**
+	 * Get a structure by its UUID
+	 * @param {string} uuid UUID of structure to lookup
+	 * @param {boolean} [includeInactive=false] Whether to also search for inactive structures
+	 * @returns {Structure} The structure, null if not found
+	 * @since 1.4.25
+	 */
+
+	get (uuid, includeInactive = false) {
+		if (includeInactive) return this.all.get(uuid) ?? null;
+		return ArrayMap.prototype.get.call(this, uuid) ?? null;
+	}
+
 	filterList () {
 		let x = this.array(true).filter(structure => this.isInstance(structure));
 		this.all.clear();
