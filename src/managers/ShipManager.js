@@ -37,7 +37,7 @@ class ShipManager extends EntityManager {
 		if (includeInactive) ships = this.array(true).filter(ship => !ship.modding.data[ship.inactive_field]);
 		else ships = this.array();
 		
-		return ships.filter(entity => Object.is(entity.id, id)).at(-1) ?? null;
+		return ships.findLast(entity => Object.is(entity.id, id)) ?? null;
 	}
 
 	#game;

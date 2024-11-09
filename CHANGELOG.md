@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.26-alpha6
+- Hotfix: `Alien#crystal_drop` always returns 0
 ## 1.4.25-alpha6
 - Fix problem with ship IDs being reused by modding server
 - Rework `ShipManager#findById`, this method no longer searches for disconnected ships

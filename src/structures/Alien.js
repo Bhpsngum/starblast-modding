@@ -55,7 +55,7 @@ class Alien extends Entity {
 
 		defineProperties(this, {
 			weapon_drop: CollectibleCodes[weapon_drop] ?? null,
-			crystal_drop: "number" == options?.crystal_drop ? options.crystal_drop : 0
+			crystal_drop: "number" == typeof options?.crystal_drop ? options.crystal_drop : 0
 		}, true);
 	}
 
