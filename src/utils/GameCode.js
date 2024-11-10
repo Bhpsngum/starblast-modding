@@ -398,7 +398,7 @@
 		}
 
 		async run () {
-			if (this.#node.processStarted) this.terminal.error("Mod already running, use stop first");
+			if (this.#node.processStarted) throw new Error("Mod already running, use stop first");
 
 			this.game = new Game(this.#node, this);
 			window.game = this.game;

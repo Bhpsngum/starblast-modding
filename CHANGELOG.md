@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.27-alpha6
+- Fix problem with reusing `start` command while mod is running will hang the instance
 ## 1.4.26-alpha6
 - Hotfix: `Alien#crystal_drop` always returns 0
 ## 1.4.25-alpha6
