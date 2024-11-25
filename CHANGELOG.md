@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.29-alpha6
+- Hotfix for wrong resolve path
 ## 1.4.28-alpha6
 - Polyfill missing features for BrowserClient VM, including `fetch()` API
 ## 1.4.27-alpha6

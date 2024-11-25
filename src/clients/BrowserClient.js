@@ -16,9 +16,9 @@ const NodeVM = require("node:vm");
 const { decode } = require("html-entities");
 
 const required_codes = {
-	"core-js": fs1.readFileSync(__dirname + "/../../node_modules/core-js-bundle/minified.js", "utf8"),
-	"xhr": fs1.readFileSync(__dirname + "/../../node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js", "utf8"),
-	"fetch": fs1.readFileSync(__dirname + "/../../node_modules/whatwg-fetch/fetch.js", "utf8")
+	"core-js": fs1.readFileSync(require.resolve("core-js-bundle/minified.js"), "utf8"),
+	"xhr": fs1.readFileSync(require.resolve("xmlhttprequest-ssl/lib/XMLHttpRequest.js"), "utf8"),
+	"fetch": fs1.readFileSync(require.resolve("whatwg-fetch/fetch.js"), "utf8")
 }
 
 /**
