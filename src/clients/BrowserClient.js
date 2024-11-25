@@ -15,6 +15,12 @@ const NodeVM = require("node:vm");
 
 const { decode } = require("html-entities");
 
+const required_codes = {
+	"core-js": fs1.readFileSync(__dirname + "/../../node_modules/core-js-bundle/minified.js", "utf8"),
+	"xhr": fs1.readFileSync(__dirname + "/../../node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js", "utf8"),
+	"fetch": fs1.readFileSync(__dirname + "/../../node_modules/whatwg-fetch/fetch.js", "utf8")
+}
+
 /**
  * The Browser Client Instance for supporting mod codes running in Browser Modding. <br><b>Warning: </b><br><ul><li>This client doesn't support undocumented features like accessing through `game.modding`, etc. </li><li>Some of the latest features of the new ModdingClient (which may not work in browsers) will be available. </li><li>Using Promise-related functionalities (including async/await) in your mod code is highly DISCOURAGED since NodeJS VM doesn't work well with Promise, and will likely crash or hang the running mod.</li>
  * @param {object} options - options for calling the object. <br><b>Note that</b> if both one property and its aliases exist on the object, the value of the main one will be chosen
@@ -63,6 +69,31 @@ class BrowserClient {
 	#vmContext;
 	#contextBridge;
 	#modding;
+	#timer_pool = {
+		id: 0,
+		data: new Map(),
+		add: function (timer, interval) {
+			this.data.set(++this.id, { timer, interval });
+
+			return this.id;
+		},
+		remove: function (timerID, noRemove = false) {
+			let timer = this.data.get(timerID);
+			if (!timer) return;
+			if (!noRemove) this.manualRemove(timer);
+
+			this.data.delete(timerID);
+		},
+		manualRemove: function (timer) {
+			if (timer.interval) clearInterval(timer.timer);
+			else clearTimeout(timer.timer);
+		},
+		reset: function () {
+			for (let timer of this.data.values()) this.manualRemove(timer);
+			this.id = 0;
+			this.data.clear();
+		}
+	}
 
 	/**
 	 * Set the region of the client.
@@ -83,17 +114,21 @@ class BrowserClient {
 	resetContext () {
 		if (this.#node.processStarted) throw new Error("Context cannot be reset because mod/process is currently running.");
 
+		this.#timer_pool.reset();
+
 		let compile = (code, timeout) => {
 			return this.#vmExec(code, timeout);
 		}
 
 		// apply a new environment
 		this.#vmContext = NodeVM.createContext(Object.assign(Object.create(null), {
-			console,
+			require,
+			required_codes,
+			parentGlobal: globalThis,
+			timer_pool: this.#timer_pool,
 			node: this.#node,
 			ModdingEvents,
 			strictMode: this.#strictMode,
-			[Symbol.toStringTag]: "Window",
 			remoteCompile: async (code) => {
 				return await compile(`(${Function("game", code).toString()}).call(this.game.modding.context, this.game)`);
 			},
@@ -110,8 +145,7 @@ class BrowserClient {
 		Object.defineProperty(this.#vmContext, 'window', {
 			enumerable: true,
 			configurable: false,
-			get () { return this },
-			set (val) { return val }
+			get: function window () { return this }
 		});
 
 		// run setup script and get required parameters

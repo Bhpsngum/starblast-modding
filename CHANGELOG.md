@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.28-alpha6
+- Polyfill missing features for BrowserClient VM, including `fetch()` API
 ## 1.4.27-alpha6
 - Fix problem with reusing `start` command while mod is running will hang the instance
 ## 1.4.26-alpha6

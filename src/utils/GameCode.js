@@ -1,9 +1,383 @@
 (function setup () {
+	const { defineProperty, getOwnPropertyDescriptor } = Object;
+	const { set, get } = WeakMap.prototype, { apply } = Reflect;
+	const { includes } = Array.prototype;
+	const call = function (func, thisArg, ...args) {
+		return apply(func, thisArg, args);
+	}
+	const timeouts = ["setTimeout", "setInterval", "clearTimeout", "clearInterval"];
+	const { compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise } = this;
+	const { console, Buffer } = parentGlobal;
+	let coreJsShared;
+
+	const natifyFunc = function (func, name) {
+		defineProperty(func, 'name', {
+			...getOwnPropertyDescriptor(func, 'name'),
+			value: name
+		});
+
+		if ("function" === typeof coreJsShared?.state?.set) coreJsShared.state.set(func, {
+			source: `function ${func.name || name || "anonymous"}() { [native code] }`,
+			facade: func
+		});
+
+		return func;
+	}
+
+	const protofy = function (mClass, key, value, newName = key) {
+		defineProperty(mClass.prototype, key, {
+			writable: true,
+			configurable: true,
+			enumerable: true,
+			value: natifyFunc(value, newName)
+		});
+	}
+
+	const renameClass = function (obj, origin, name) {
+		defineProperty(obj, Symbol.toStringTag, {
+			...getOwnPropertyDescriptor(origin, Symbol.toStringTag),
+			value: name
+		});
+	}
+
+	renameClass(window, parentGlobal, "Window");
+
+	delete this.timer_pool;
+	delete this.parentGlobal;
+
+	// timeout functionality polyfill
+	for (let t of timeouts) {
+		if (t.startsWith("set")) {
+			let interval = t === "setInterval";
+			let timerFunc = function (FunctionOrCode, ...params) {
+				let exec = FunctionOrCode;
+				if ("string" === typeof exec) exec = () => compile(FunctionOrCode);
+
+				let o = timer_pool.add(parentGlobal[t].call(this, function(...args) {
+					try { exec.call(this, ...args) }
+					finally { if (!interval) timer_pool.remove(o, true); }
+				}, ...params), interval);
+
+				return o;
+			}.bind(this);
+
+			this[t] = function (handler, delay, ...params) {
+				return timerFunc(handler, delay, ...params);
+			}
+		}
+		else this[t] = function (timerID) {
+			timer_pool.remove(timerID);
+		}
+	}
+
+	let xhrSuccess = false, fetchSuccess = false;
+
+	// basic functionality polyfill
+	try {
+		eval(required_codes["core-js"]);
+		// remove core-js shared entrypoint (it should still work right)
+		coreJsShared = this['__core-js_shared__'];
+		delete this['__core-js_shared__'];
+
+		for (let i of timeouts) natifyFunc(this[i], i);
+
+		// polyfill XMLHttpRequest
+		try {
+			let mod = { exports: {} };
+			Function("module", "Buffer", "require", required_codes.xhr.replaceAll("settings = ", "settings = this.settings = ").replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`))(mod, Buffer, this.require);
+			this.XMLHttpRequest = mod.exports.XMLHttpRequest;
+			xhrSuccess = true;
+			try {
+				// finally, fetch() polyfill
+				eval(required_codes.fetch.replaceAll("\nexport ", "\n").replace("this.map = {}", `
+					var actualMap = new Map();
+					this.map = new Proxy({}, {
+						get: function (target, prop, receiver) {
+							if (actualMap.has(prop)) return actualMap.get(prop);
+							return Reflect.get(target, prop, receiver);
+						},
+						set: function (target, prop, newValue) {
+							actualMap.set(prop, newValue)
+							return true;
+						},
+						ownKeys: function (target) {
+							return [...actualMap.keys()]
+						},
+						getOwnPropertyDescriptor: function (target, prop) {
+							if (!actualMap.has(prop)) return undefined;
+							return { enumerable: true, writable: true, configurable: true, value: actualMap.get(prop) }
+						}
+					});
+				`));
+				fetchSuccess = true;
+			}
+			catch (e) {
+				console.warn("'fetch()' API is unavailable due to polyfill failure.");
+			}
+		}
+		catch (e) {
+			console.warn("Failed to polyfill XMLHttpRequest. This feature along with 'fetch()' API will be unavailable.");
+		}
+	}
+	catch (e) {
+		console.warn("Basic polyfill has failed. Some features might not be available.");
+	}
+	delete this.require;
+	delete this.required_codes;
+
+	if (xhrSuccess) {
+		// proxy some class in order not to return some leaked values
+
+		const { TypeError, WeakMap } = this, maps = {}, internals = {};
+		const proxiedClasses = [
+			{
+				name: "XMLHttpRequest",
+				functions: ["abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader"], // missing overrideMimeType
+				getters: ["readyState", "responseText", "responseType", "responseXML", ["status", 0], ["statusText", ""], "upload"],
+				setters: [["timeout", 0], ["withCredentials", false], "onabort", "onerror", "onload", "onloadend", "onloadstart", "onprogress", "onreadystatechange", "ontimeout"],
+				customCaller: function (mClass, map) {
+					protofy(mClass, "overrideMimeType", function () {
+						
+					});
+
+					defineProperty(mClass.prototype, 'responseURL', {
+						enumerable: true,
+						configurable: true,
+						get: natifyFunc(function() {
+							let obj = getObj(map, this, { name: "", method: "", promise: false });
+							return obj.settings?.url || "";
+						}, `get body`)
+					});
+
+					defineProperty(mClass.prototype, 'response', {
+						enumerable: true,
+						configurable: true,
+						get: natifyFunc(function() {
+							let obj = getObj(map, this, { name: "", method: "", promise: false });
+							return obj.response instanceof Buffer ? null : obj.response;
+						}, `get body`)
+					});
+				}
+			}
+		];
+
+		if (fetchSuccess) proxiedClasses.push(
+			{
+				name: "Headers",
+				functions: ["append", "delete", "entries", "forEach", "get", "has", "keys", "set", "values", [Symbol.iterator, false, "entries"]],
+				getters: [],
+				invoke: false,
+				customCaller: function (mClass, map) {
+					protofy(mClass, "getSetCookie", function () {
+						let object = getObj(map, this, { name: "", method: "", promise: false });
+						return call(object.get, object, "Set-Cookie")?.split?.(", ") || [];
+					});
+				}
+			},
+			{
+				name: "Request",
+				functions: [["arrayBuffer", true], ["blob", true], ["bytes", true], ["formData", true], ["json", true], ["text", true]],
+				getters: ["bodyUsed", "cache", "credentials", "destination", "headers", "integrity", "isHistoryNavigation", "keepalive", "method", "mode", "redirect", "referrer", "referrerPolicy", "signal", "url"],
+				preCall: function (newConst, map, ...args) {
+					if (args[0] instanceof newConst) args[0] = getObj(map, args[0], { name: "", method: "", promise: false });
+				},
+				postCall: function (instance) {
+					let oldheader = instance.headers;
+					instance.headers = new nativeHeader();
+					for (let entries of oldheader) call(headerSet, instance.headers, ...entries);
+				},
+				customCaller: function (mClass, map) {
+					protofy(mClass, "clone", function () {
+						let object = getObj(map, this, { name: "", method: "", promise: false });
+						return new nativeRequest(object, {body: object._bodyInit});
+					});
+
+					defineProperty(mClass.prototype, 'body', {
+						enumerable: true,
+						configurable: true,
+						get: natifyFunc(function() {
+							let obj = getObj(map, this, { name: "", method: "", promise: false });
+							return obj._noBody ? null : (obj._bodyInit ?? obj._bodyArrayBuffer ?? obj._bodyBlob ?? obj._bodyText ?? obj._bodyFormData ?? null);
+						}, `get body`)
+					});
+				}
+			},
+			{
+				name: "Response",
+				functions: [["arrayBuffer", true], ["blob", true], ["bytes", true], ["formData", true], ["json", true], ["text", true]],
+				getters: ["bodyUsed", "headers", "ok", "status", "statusText", "type", "url"],
+				preCall: function (newConst, map, ...args) {
+					if (args[0] instanceof newConst) args[0] = getObj(map, args[0], { name: "", method: "", promise: false });
+				},
+				postCall: function (instance) {
+					let oldheader = instance.headers;
+					instance.headers = new nativeHeader();
+					for (let entries of oldheader) call(headerSet, instance.headers, ...entries);
+				},
+				customCaller: function (mClass, map) {
+					protofy(mClass, "clone", function () {
+						let object = getObj(map, this, { name: "", method: "", promise: false });
+						return new nativeResponse(object._bodyInit, {
+							status: object.status,
+							statusText: object.statusText || '',
+							headers: new Headers(object.headers),
+							url: object.url
+						});
+					});
+
+					defineProperty(mClass.prototype, 'body', {
+						enumerable: true,
+						configurable: true,
+						get: natifyFunc(function() {
+							let obj = getObj(map, this, { name: "", method: "", promise: false });
+							return obj._noBody ? null : (obj._bodyInit ?? obj._bodyArrayBuffer ?? obj._bodyBlob ?? obj._bodyText ?? obj._bodyFormData ?? null);
+						}, `get body`)
+					});
+
+					defineProperty(mClass.prototype, 'redirected', {
+						enumerable: true,
+						configurable: true,
+						get: natifyFunc(function() {
+							let obj = getObj(map, this, { name: "", method: "", promise: false });
+							return call(includes, [301, 302, 303, 307, 308], obj.status);
+						}, `get redirected`)
+					});
+				}
+			},
+		); 
+
+		const getObj = function (map, instance, { name, method, promise }) {
+			let val = call(get, map, instance);
+			if (!val) {
+				let err_msg = "Illegal invocation";
+				if (promise) err_msg = `Failed to execute '${method}' on '${name}': ` + err_msg;
+				let err = new TypeError(err_msg);
+				if (promise) return new Promise((rs, rj) => rj(err));
+				throw err;
+			}
+			return val;
+		}
+
+		for (let { name, functions, getters, setters, customCaller, postCall } of proxiedClasses) {
+			let internal = this[name];
+			internals[name] = internal;
+			let classMap = maps[name] = new WeakMap();
+			let modified = function FetchAPIComponent (...params) {
+				if (!(this instanceof modified)) {
+					throw new TypeError(`Failed to construct '${name}': Please use the 'new' operator, this DOM object constructor cannot be called as a function.`);
+				}
+
+				if ("function" === typeof preCall) preCall(modified, params);
+
+				let o = new internal(...params);
+				if ("function" === typeof postCall) postCall(o);
+				// renameClass(o, o, name);
+				
+				call(set, classMap, this, o);
+			}
+
+			for (let k of functions) {
+				let promise = false, mName = k;
+				if ("string" !== typeof k) {
+					promise = k[1],
+					mName = k[2] || k[0];
+					k = k[0];
+				}
+				protofy(modified, k, function (...args) {
+					let object = getObj(classMap, this, { name, method: mName, promise });
+					return call(object[k], object, ...args);
+				}, mName);
+			}
+
+			for (let k of getters) {
+				let defaultVal = null;
+				if ("string" !== typeof k) {
+					defaultVal = k[1];
+					k = k[0];
+				}
+				defineProperty(modified.prototype, k, {
+					enumerable: true,
+					configurable: true,
+					get: natifyFunc(function() {
+						return getObj(classMap, this, { name: "", method: "", promise: false })[k] ?? defaultVal;
+					}, `get ${k}`)
+				});
+			}
+
+			if (setters) for (let k of setters) {
+				let defaultVal = null;
+				if ("string" !== typeof k) {
+					defaultVal = k[1];
+					k = k[0];
+				}
+				defineProperty(modified.prototype, k, {
+					enumerable: true,
+					configurable: true,
+					get: natifyFunc(function() {
+						return getObj(classMap, this, { name: "", method: "", promise: false })[k] ?? defaultVal;
+					}, `get ${k}`),
+					set: natifyFunc(function(v) {
+						getObj(classMap, this, { name: "", method: "", promise: false })[k] = v;
+					}, `set ${k}`)
+				});
+			}
+
+			if ("function" === typeof customCaller) customCaller(modified, classMap);
+
+			renameClass(modified.prototype, modified.prototype, name);
+
+			this[name] = natifyFunc(modified, name);
+		}
+
+		let fakeXhr = new internals.XMLHttpRequest;
+
+		for (let i of ["UNSENT", "OPENED", "HEADERS_RECEIVED", "LOADING", "DONE"]) defineProperty(this.XMLHttpRequest, i, {
+			writable: false,
+			configurable: false,
+			enumerable: true,
+			value: fakeXhr[i]
+		});
+
+		let nativeHeader = this.Headers, headerSet = nativeHeader?.prototype?.set;
+		let nativeRequest = this.Request, nativeResponse = this.Response;
+
+		if (fetchSuccess) {
+			this.Response.error = natifyFunc(function () {
+				let newRes = new nativeResponse(null, { status: 200, statusText: '' });
+				let ref = getObj(maps.Response, newRes, { name: "", method: "", promise: false });
+				ref.type = "error";
+				ref.status = 0;
+				ref.ok = false;
+				return newRes;
+			}, "error");
+
+			this.Response.redirect = natifyFunc(function (url, status) {
+				if (!call(includes, [301, 302, 303, 307, 308], status)) {
+					throw new RangeError('Invalid status code');
+				}
+
+				return new nativeResponse(null, {status: status, headers: {location: url}});
+			}, "redirect");
+
+			this.Response.json = natifyFunc(function (data, options) {
+				return new nativeResponse(data == null ? null : JSON.stringify(data), options);
+			}, "json");
+			
+			let iFetch = this.fetch;
+
+			this.fetch = natifyFunc(function(resource, options) {
+				return new Promise((rs, rj) => iFetch(resource, options).then(res => rs(new nativeResponse(res._bodyInit, {
+					status: res.status,
+    				statusText: res.statusText || '',
+    				headers: new Headers(res.headers),
+    				url: res.url
+				}))).catch(rj));
+			});
+		}
+	}
+
 	// open | macro | close
 	const tokenizer_regex = /(\[\[[usoibg!@]*;[^\[]*?;[^\[]*?\])|(\[\[([^\]]+)\]\])|(\\{0,1}\])/;
-
-	const { compile, getValue, remoteLog, strictMode } = window;
-	const { defineProperty } = Object;
 
 	const execute = function (command, allowEval = false, timeout) {
 		let cmdName = command.trim().split(" ")[0] || "";
@@ -75,12 +449,12 @@
 
 			for (let k in baseEntity) {
 				if (!excludeList.includes(k) && "function" !== typeof baseEntity[k]) {
-					Object.defineProperty(this, k, {
+					defineProperty(this, k, {
 						enumerable: true,
 						configurable: false,
 						get () { return baseEntity[k] },
 						set (v) {}
-					})
+					});
 				}
 			}
 		}
@@ -352,7 +726,7 @@
 		};
 
 		commands = {
-			clear: () => console.clear(),
+			clear: () => void console.clear(),
 			start: async () => void await this.run(),
 			stop: async () => void await this.stop(),
 			test: () => {
@@ -586,24 +960,22 @@
 		}
 	}
 
-	(function hideConsole () {
-		let { console } = this;
-		this.console = {
-			[Symbol.toStringTag]: "console"
-		};
+	// hide the console
+	this.console = {};
 
-		for (let k of Object.keys(console)) {
-			if ("function" === typeof console[k]) this.console[k] = function (...args) {
-				console[k](...args);
-			}
-			else Object.defineProperty(this.console, k, {
-				enumerable: true,
-				configurable: false,
-				get () { return cloneObject(console[k]) },
-				set (v) {}
-			});
-		}
-	})();
+	renameClass(this.console, parentGlobal.console, "console");
+
+	for (let k of Object.keys(console)) {
+		if (k === "Console") continue;
+		if ("function" === typeof console[k]) this.console[k] = natifyFunc(function (...args) {
+			console[k](...args);
+		}, k);
+		else Object.defineProperty(this.console, k, {
+			enumerable: true,
+			configurable: false,
+			get: natifyFunc(function () { return cloneObject(console[k]) }, `get ${k}`)
+		});
+	}
 
 	// start modding session
 	const modding = new Modding(this.node, this.remoteCompile);
@@ -618,4 +990,4 @@
 	delete this.strictMode;
 
 	return { setCode, modding, execute };
-})();
+}).call(window);
