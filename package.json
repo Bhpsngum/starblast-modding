@@ -1,6 +1,6 @@
 {
 	"name": "starblast-modding",
-	"version": "1.4.29-alpha6",
+	"version": "1.4.30-alpha6",
 	"description": "A powerful library for interacting with the Starblast Modding API",
 	"main": "./src/index.js",
 	"author": "Bhpsngum <bhpsngumproductions@gmail.com> (https://github.com/Bhpsngum)",
@@ -26,6 +26,7 @@
 	"dependencies": {
 		"axios": "^1.7.7",
 		"core-js-bundle": "^3.39.0",
+		"data-uri-to-buffer": "^6.0.2",
 		"html-entities": "^2.5.2",
 		"three": "^0.170.0",
 		"whatwg-fetch": "^3.6.20",

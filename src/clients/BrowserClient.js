@@ -14,6 +14,7 @@ const toString = require("../utils/toString.js");
 const NodeVM = require("node:vm");
 
 const { decode } = require("html-entities");
+const dataUriParser = require('../utils/dataUriParser.js');
 
 const required_codes = {
 	"core-js": fs1.readFileSync(require.resolve("core-js-bundle/minified.js"), "utf8"),
@@ -124,6 +125,7 @@ class BrowserClient {
 		this.#vmContext = NodeVM.createContext(Object.assign(Object.create(null), {
 			require,
 			required_codes,
+			uriParse: dataUriParser,
 			parentGlobal: globalThis,
 			timer_pool: this.#timer_pool,
 			node: this.#node,

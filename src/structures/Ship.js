@@ -7,6 +7,7 @@ const defineProperties = require("../utils/defineProperties.js");
 const parseIntermission = require("../utils/parseIntermission.js");
 const UIComponentManager = require("../managers/UIComponentManager.js");
 const exposeProperties = require("../utils/exposeProperties.js");
+const ObjectManager = require("../managers/ObjectManager.js");
 const convertStats = function(data) {
 	if (isNaN(data)) return 0;
 	let stats = [];
@@ -29,6 +30,7 @@ class Ship extends Entity {
 		this.#game = game;
 		this.#api = api;
 		this.modding.data.ui_components = new UIComponentManager(game, api, this);
+		this.modding.data.objects = new ObjectManager(game, api, this);
 	}
 
 	#game;
@@ -149,6 +151,17 @@ class Ship extends Entity {
 
 	get ui_components () {
 		return this.modding.data.ui_components.update();
+	}
+
+	/**
+	 * The Object Manager for this ship
+	 * @type {ObjectManager}
+	 * @readonly
+	 * @since 1.4.30-alpha6
+	 */
+
+	get objects () {
+		return this.modding.data.objects.update();
 	}
 
 	/**
@@ -412,6 +425,6 @@ defineProperties(Ship.prototype, {
 });
 
 MassRename(Ship, ["type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "collider", "hue"]);
-exposeProperties(Ship.prototype, ["alive", "name", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization"]);
+exposeProperties(Ship.prototype, ["alive", "name", "type", "angle", "score", "idle", "shield", "generator", "healing", "crystals", "stats", "team", "hue", "customization", "ui_components", "objects"]);
 
 module.exports = Ship

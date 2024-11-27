@@ -6,10 +6,11 @@ const Object3D = require("../structures/Object.js");
 const getEntity = require("../utils/getEntity.js");
 const defineProperties = require("../utils/defineProperties.js");
 const toString = require("../utils/toString.js");
-const setObject = function (game, data) {
-	let object = getEntity(game, data, this);
+const exposeProperties = require("../utils/exposeProperties.js");
+const setObject = async function (game, data, api) {
+	let object = getEntity(game, data, this, this, api);
 	if (!object.spawned) object.markAsSpawned();
-	return object.set(data)
+	return await object.set(data);
 }
 
 /**
@@ -19,34 +20,54 @@ const setObject = function (game, data) {
  */
 
 class ObjectManager extends StructureManager {
-	constructor(game, api) {
+	constructor(game, api, parent) {
 		super(game, api);
 		this.#game = game;
 		this.#api = api;
+		this.#parent = parent;
 		defineProperties(this, {types: new ObjectTypeManager(game)})
 	}
 
 	#game;
 	#api;
+	#parent;
+	#toServer = this.#sendToServer.bind(this);
+
+	#sendToServer (object) {
+		let api = this.#api;
+		if (this.#parent == null) api.name("set_server_object").data(object).send();
+		api.clientMessage(this.#parent?.id ?? null, "set_object", { object }).send();
+	}
 
 	/**
-	 * Add a new object to the game
+	 * Parent object (ship or modding client) of this manager
+	 * @type {Ship|ModdingClient}
+	 * @readonly
+	 * @since 1.4.30-alpha6
+	 */
+
+	get parent () {
+		return this.#parent ?? this.#game;
+	}
+
+	/**
+	 * Add a new object to the game. Note that physics is only available on global object.
 	 * @param {object} data - object creation options
 	 * @returns {Object3D} - The newly created object
 	 */
 
-	add (data) {
-		return setObject.call(this, this.#game, data)
+	async add (data) {
+		return setObject.call(this, this.#game, data, this.#toServer);
 	}
 
 	/**
-	 * Set options to an object; can also be used to add a new object with given data to the game
+	 * Set options to an object; can also be used to add a new object with given data to the game. Note that physics is only available on global object.
 	 * @param {object} data - Options to be set on the object including the object ID itself
 	 * @returns {Object3D}
 	 */
 
-	set (data) {
-		return setObject.call(this, this.#game, data)
+	async set (data) {
+		return setObject.call(this, this.#game, data, this.#toServer);
 	}
 
 	/**
@@ -84,5 +105,7 @@ class ObjectManager extends StructureManager {
 	manager_name = "object";
 	StructureConstructor = Object3D;
 }
+
+exposeProperties(ObjectManager.prototype, ["parent"]);
 
 module.exports = ObjectManager

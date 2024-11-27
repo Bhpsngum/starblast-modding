@@ -1,12 +1,14 @@
 'use strict';
 
 const UIComponent = require("../structures/UI/Component.js");
+const exposeProperties = require("../utils/exposeProperties.js");
 const StructureManager = require("./StructureManager.js");
 
 /**
  * The UI Components Manager.
  * @abstract
  * @extends {StructureManager}
+ * @since 1.4.2-alpha6
  */
 class UIComponentManager extends StructureManager {
 	constructor (game, api, parent) {
@@ -45,6 +47,17 @@ class UIComponentManager extends StructureManager {
 		}
 	
 		return this.update();
+	}
+
+	/**
+	 * Parent object (ship or modding client) of this manager
+	 * @type {Ship|ModdingClient}
+	 * @readonly
+	 * @since 1.4.30-alpha6
+	 */
+
+	get parent () {
+		return this.#parent ?? this.#game;
 	}
 
 	/**
@@ -135,5 +148,7 @@ class UIComponentManager extends StructureManager {
 	manager_name = "ui_component";
 	StructureConstructor = UIComponent;
 }
+
+exposeProperties(UIComponentManager.prototype, ["parent"]);
 
 module.exports = UIComponentManager;

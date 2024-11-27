@@ -7,6 +7,7 @@ const MassRename = require("../utils/MassivePrototypeDefinition.js");
 const toString = require("../utils/toString.js");
 const defineProperties = require("../utils/defineProperties.js");
 const exposeProperties = require("../utils/exposeProperties.js");
+const ModdingClient = require("../clients/ModdingClient.js");
 
 /**
  * The Object3D Instance
@@ -15,10 +16,12 @@ const exposeProperties = require("../utils/exposeProperties.js");
  */
 
 class Object3D extends Structure {
-	constructor (game, api, options) {
+	constructor (game, api, options, parent, send) {
 		super(game, api);
 		this.#game = game;
 		this.#api = api;
+		this.#parent = parent;
+		this.#send = send;
 
 		/**
 		 * Object ID
@@ -32,7 +35,9 @@ class Object3D extends Structure {
 	}
 
 	#game;
+	#parent;
 	#api;
+	#send;
 
 	markAsActive () {
 		let _this = this.modding.data;
@@ -58,20 +63,21 @@ class Object3D extends Structure {
 	}
 
 	/**
-	 * Set the object with given data
+	 * Set the object with given data. Note that physics is only available on global object.
 	 * @param {object} data - options to set to the object
 	 * @returns {Object3D}
 	 */
 
-	set (data) {
+	async set (data) {
 		this.assign(data);
-		let send = function () {
-			this.#api.name("set_server_object").data(this).send().globalMessage("set_object", {object: this}).send()
-		}.bind(this);
-		if (this.type.physics.autoShape && this.type.physics.shape == null) this.type.getShape()
-		.then(shape => (defineProperties(this.type.physics, {shape}), send()))
-		.catch(e => (defineProperties(this.type.physics, {shape: []}), send()));
-		else send()
+		if (this.type.physics.autoShape && this.type.physics.shape == null) try {
+			if (!(this.#parent.parent instanceof ModdingClient) || "string" !== typeof this.type.obj) throw "Invalid obj";
+			defineProperties(this.type.physics, { shape: await this.type.getShape() });
+		}
+		catch (e) {
+			defineProperties(this.type.physics, { shape: [] })
+		}
+		this.#send(this);
 		this.markAsActive();
 		this.#game.objects.update();
 		return this
@@ -130,6 +136,17 @@ class Object3D extends Structure {
 	}
 
 	/**
+	 * Parent manager of this object
+	 * @type {ObjectManager}
+	 * @readonly
+	 * @since 1.4.30-alpha6
+	 */
+
+	get parent () {
+		return this.#parent;
+	}
+
+	/**
 	 * Set object type
 	 * @method Object3D#setType
 	 * @param {object} type - The type object to set
@@ -169,6 +186,6 @@ defineProperties(Object3D.prototype, {
 
 MassRename(Object3D, ["type", "position", "rotation", "scale"]);
 
-exposeProperties(Object3D.prototype, ["type", "position", "rotation", "scale"]);
+exposeProperties(Object3D.prototype, ["type", "position", "rotation", "scale", "parent"]);
 
 module.exports = Object3D

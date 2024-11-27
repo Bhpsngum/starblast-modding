@@ -6,7 +6,7 @@
 		return apply(func, thisArg, args);
 	}
 	const timeouts = ["setTimeout", "setInterval", "clearTimeout", "clearInterval"];
-	const { compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise } = this;
+	const { compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise, uriParse } = this;
 	const { console, Buffer } = parentGlobal;
 	let coreJsShared;
 
@@ -44,6 +44,7 @@
 
 	delete this.timer_pool;
 	delete this.parentGlobal;
+	delete this.uriParse;
 
 	// timeout functionality polyfill
 	for (let t of timeouts) {
@@ -84,7 +85,29 @@
 		// polyfill XMLHttpRequest
 		try {
 			let mod = { exports: {} };
-			Function("module", "Buffer", "require", required_codes.xhr.replaceAll("settings = ", "settings = this.settings = ").replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`))(mod, Buffer, this.require);
+			Function("module", "Buffer", "require", "parseURI", required_codes.xhr
+				.replaceAll("settings = ", "settings = this.settings = ")
+				.replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`)
+				.replace("case 'file:'", `
+					case 'data:':
+						local = { dataURI: true };
+						break;
+					case 'file:'`)
+				.replace("if (local)", `
+					if (local?.dataURI) {
+						try {
+							this.status = 200;
+							const syncData = parseURI(url.href);
+							// Use self.responseType to create the correct self.responseType, self.response.
+							this.createFileOrSyncResponse(syncData);
+							setState(self.DONE);
+						} catch(e) {
+							this.handleError(e, e.errno || -1);
+						}
+						return;
+					}
+					if (local)`)
+			)(mod, Buffer, this.require, uriParse);
 			this.XMLHttpRequest = mod.exports.XMLHttpRequest;
 			xhrSuccess = true;
 			try {
@@ -135,6 +158,16 @@
 				functions: ["abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader"], // missing overrideMimeType
 				getters: ["readyState", "responseText", "responseType", "responseXML", ["status", 0], ["statusText", ""], "upload"],
 				setters: [["timeout", 0], ["withCredentials", false], "onabort", "onerror", "onload", "onloadend", "onloadstart", "onprogress", "onreadystatechange", "ontimeout"],
+				postCall: function (instance) {
+					let { getResponseHeader, getAllResponseHeaders } = instance;
+					instance.getAllResponseHeaders = function () {
+						try { return call(getAllResponseHeaders, this, ...arguments) } catch (e) { return "" };
+					}
+
+					instance.getResponseHeader = function () {
+						try { return call(getResponseHeader, this, ...arguments) } catch (e) { return null };
+					}
+				},
 				customCaller: function (mClass, map) {
 					protofy(mClass, "overrideMimeType", function () {
 						
@@ -372,7 +405,7 @@
     				headers: new Headers(res.headers),
     				url: res.url
 				}))).catch(rj));
-			});
+			}, "fetch");
 		}
 	}
 
@@ -493,7 +526,7 @@
 	// polyfill classes
 	class Ship extends Entity {
 		constructor (game, baseEntity) {
-			super(game, baseEntity, ["ui_components", "customization", "stats", "angle"]);
+			super(game, baseEntity, ["objects", "ui_components", "customization", "stats", "angle"]);
 
 			this.#ship = baseEntity;
 		}
@@ -541,6 +574,14 @@
 		intermission (data) {
 			safeHandler(() => this.#ship.intermission(data));
 			return dataLength(data);
+		}
+
+		setObject (obj) {
+			safeHandler(() => {
+				if (obj?.type?.physics && obj.type.physics.shape == null) obj.type.physics.autoShape = true;
+				this.#ship.objects.set(obj);
+			});
+			return dataLength(obj);
 		}
 	};
 	class Alien extends Entity {};
@@ -871,8 +912,6 @@
 			return this.#addEntity(data, "aliens", Alien);
 		}
 
-		setObject () {}
-
 		addAsteroid (data) {
 			return this.#addEntity(data, "asteroids", Asteroid);
 		}
@@ -890,18 +929,20 @@
 			safeHandler(() => {
 				if (data?.type?.physics && data.type.physics.shape == null) data.type.physics.autoShape = true;
 
-				let result = cloneObject(this.#node.objects.set(data));
-				let found = this.objects.find(o => o.object.id === result.id);
+				this.#node.objects.set(data).then(obj => {
+					let result = cloneObject(obj);
+					let found = this.objects.find(o => o.object.id === result.id);
 
-				if (found != null) found.set(result);
-				else {
-					found = new ModObject(result);
-					this.objects.push(found);
-					this.objects_by_id[result.id] = found;
-				}
+					if (found != null) found.set(result);
+					else {
+						found = new ModObject(result);
+						this.objects.push(found);
+						this.objects_by_id[result.id] = found;
+					}
 
-				let { type } = found.object;
-				if (!this.shaping_list[type.id]) this.shaping_list[type.id] = new ModObjectType(type);
+					let { type } = found.object;
+					if (!this.shaping_list[type.id]) this.shaping_list[type.id] = new ModObjectType(type);
+				});
 			});
 		}
 
@@ -990,4 +1031,4 @@
 	delete this.strictMode;
 
 	return { setCode, modding, execute };
-}).call(window);
+}).call(globalThis);

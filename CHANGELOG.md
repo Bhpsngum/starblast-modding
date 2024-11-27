@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.30-alpha6
+- Add `Ship#objects`, which is an ObjectManager for each individual ship. Note that physics don't work on such managers.
+- `ObjectManager#set`, `ObjectManager#add` and `Object3D#set` are now async, which always resolve
+- Support fetching Data URI for `ObjectType#obj` in order to determine physics and `fetch()` API in emulation environment
+- Expose `Ship#setObject(obj)` method inside BrowserClient VM
+- Add `Object3D#parent` and `UIComponent#parent` to indicate parent manager of given 3D Object / UI Component
+- Add `ObjectManager#parent` and `UIComponentManager#parent` to indicate parent ship or modding client of given manager
 ## 1.4.29-alpha6
 - Hotfix for wrong resolve path
 ## 1.4.28-alpha6
