@@ -88,13 +88,9 @@
 			Function("module", "Buffer", "require", "parseURI", required_codes.xhr
 				.replaceAll("settings = ", "settings = this.settings = ")
 				.replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`)
-				.replace("case 'file:'", `
-					case 'data:':
-						local = { dataURI: true };
-						break;
-					case 'file:'`)
-				.replace("if (local)", `
-					if (local?.dataURI) {
+				.replace("case 'file:'", "case 'data:'")
+				.replace(/(\n(\s|\t)*)if \(local\)[^]+?\1}/, `
+					if (local) {
 						try {
 							this.status = 200;
 							const syncData = parseURI(url.href);
@@ -105,8 +101,7 @@
 							this.handleError(e, e.errno || -1);
 						}
 						return;
-					}
-					if (local)`)
+					}`)
 			)(mod, Buffer, this.require, uriParse);
 			this.XMLHttpRequest = mod.exports.XMLHttpRequest;
 			xhrSuccess = true;

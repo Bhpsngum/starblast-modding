@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.31-alpha6
+- Remove capability of reading local files from BrowserClient `XMLHttpRequest`
 ## 1.4.30-alpha6
 - Add `Ship#objects`, which is an ObjectManager for each individual ship. Note that physics don't work on such managers.
 - `ObjectManager#set`, `ObjectManager#add` and `Object3D#set` are now async, which always resolve
