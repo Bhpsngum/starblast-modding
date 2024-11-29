@@ -578,6 +578,13 @@
 			});
 			return dataLength(obj);
 		}
+
+		removeObject (id) {
+			safeHandler(() => {
+				this.#ship.objects.remove(id);
+			});
+			return dataLength(id);
+		}
 	};
 	class Alien extends Entity {};
 	class Asteroid extends Entity {};

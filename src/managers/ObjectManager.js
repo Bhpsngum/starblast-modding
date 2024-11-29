@@ -33,10 +33,15 @@ class ObjectManager extends StructureManager {
 	#parent;
 	#toServer = this.#sendToServer.bind(this);
 
-	#sendToServer (object) {
+	#sendToServer (object, action = "set") {
 		let api = this.#api;
-		if (this.#parent == null) api.name("set_server_object").data(object).send();
-		api.clientMessage(this.#parent?.id ?? null, "set_object", { object }).send();
+		if (this.#parent == null) {
+			api.name(`${action}_server_object`);
+			if (action === "set") api.data(object);
+			else api.prop("id", object.id);
+			api.send();
+		}
+		api.clientMessage(this.#parent?.id ?? null, `${action}_object`, action === "set" ? ({ object }) : ({ id: object.id })).send();
 	}
 
 	/**
@@ -88,10 +93,16 @@ class ObjectManager extends StructureManager {
 	 */
 
 	remove (id) {
-		if (id != null) id = toString(id);
-		this.#api.name("remove_server_object").prop("id", id).send().globalMessage("remove_object", {id}).send();
-		if (id == null) this.filterList().all.forEach(object => (object.isActive() || !object.isSpawned()) && object.markAsInactive())
-		else this.findById(id, true)?.markAsInactive?.();
+		if (id == null) {
+			this.filterList().all.forEach(object => (object.isActive() || !object.isSpawned()) && object.markAsInactive());
+			this.#sendToServer({ id: null }, "remove");
+		}
+		else {
+			id = toString(id);
+			let object = this.findById(id, true);
+			if (object) object.remove();
+			else this.#sendToServer({ id }, "remove");
+		}
 		return this.update()
 	}
 

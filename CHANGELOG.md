@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.32-alpha6
+- Add `Ship#removeObject(id)` method in BrowserClient
 ## 1.4.31-alpha6
 - Remove capability of reading local files from BrowserClient `XMLHttpRequest`
 ## 1.4.30-alpha6
