@@ -476,7 +476,7 @@
 			call(push, excludeList, "id", "uuid", "custom", "__proto__", "inactive_field", "structure_type", "lastAliveStep", "createdStep");
 
 			for (let k in baseEntity) {
-				if (call(includes, excludeList, k) && "function" !== typeof baseEntity[k]) {
+				if (!call(includes, excludeList, k) && "function" !== typeof baseEntity[k]) {
 					defineProperty(this, k, {
 						enumerable: true,
 						configurable: false,
