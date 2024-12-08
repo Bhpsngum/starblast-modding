@@ -390,11 +390,11 @@ class BrowserClient {
 			let output = await this.#contextBridge.execute(toString(command).replace(/^\s*\[\[([^]*)\]\]\s*$/, "$1"), options?.allowEval, options?.executionTimeout);
 
 			if (options?.captureOutput) return { success: true, output };
-			if (output !== undefined && output !== "") this.#modding.terminal?.echo?.(output);
+			if (output !== undefined && output !== "") this.#contextBridge.echo(output);
 			return { success: true };
 		} catch (e) {
 			if (options?.captureOutput) return { success: false, output: e };
-			this.#modding.terminal?.error?.(e);
+			this.#contextBridge.error(e);
 			return { success: false };
 		}
 	}

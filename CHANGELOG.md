@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.34-alpha6
+- Hotfix for some small problems
 ## 1.4.33-alpha6
 - Update dependencies to reflect new polyfilled `XMLHttpRequest` and `fetch` API changes
 - `ModdingClient#setCustomMap(map)` now ignores `undefined` and `null` maps

@@ -2,6 +2,7 @@
 	const { defineProperty, getOwnPropertyDescriptor } = Object;
 	const { set, get } = WeakMap.prototype, { apply } = Reflect;
 	const { includes, splice, push } = Array.prototype;
+	const { split, trim } = String.prototype;
 	const call = function (func, thisArg, ...args) {
 		return apply(func, thisArg, args);
 	}
@@ -84,10 +85,9 @@
 		// polyfill XMLHttpRequest
 		try {
 			let mod = { exports: {} };
-			Function("module", "Buffer", "require", required_codes.xhr
-				.replaceAll("settings = ", "settings = this.settings = ")
+			Function("module", "Buffer", "require", "process", required_codes.xhr
 				.replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`)
-			)(mod, Buffer, this.require);
+			)(mod, Buffer, this.require, this.require("process"));
 			this.XMLHttpRequest = mod.exports.XMLHttpRequest;
 			xhrSuccess = true;
 			try {
@@ -136,7 +136,7 @@
 			{
 				name: "XMLHttpRequest",
 				functions: ["addEventListener", "removeEventListener", "dispatchEvent", "abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader"], // missing overrideMimeType
-				getters: ["readyState", "responseText", "responseType", "responseXML", ["status", 0], ["statusText", ""], "upload"],
+				getters: ["readyState", "responseURL", "responseText", "responseType", "responseXML", ["status", 0], ["statusText", ""], "upload"],
 				setters: [["timeout", 0], ["withCredentials", false], "onabort", "onerror", "onload", "onloadend", "onloadstart", "onprogress", "onreadystatechange", "ontimeout"],
 				preCall: function (newConst, map, args) {
 					call(splice, args, 0, args.length, {
@@ -389,10 +389,28 @@
 	// open | macro | close
 	const tokenizer_regex = /(\[\[[usoibg!@]*;[^\[]*?;[^\[]*?\])|(\[\[([^\]]+)\]\])|(\\{0,1}\])/;
 
+	let echo = (item) => {
+		item += "";
+		remoteLog({
+			type: "log",
+			raw: item,
+			content: strip_formatting(item)
+		});
+	};
+
+	let error = (item) => {
+		item += "";
+		remoteLog({
+			type: "error",
+			raw: item,
+			content: strip_formatting(item)
+		});
+	}
+
 	const execute = function (command, allowEval = false, timeout) {
-		let cmdName = command.trim().split(" ")[0] || "";
+		let cmdName = call(split, call(trim, command), " ")[0] || "";
 		if (cmdName && "function" === typeof (cmd = modding.commands?.[cmdName])) {
-			return cmd.call(modding.commands, command);
+			return call(cmd, modding.commands, command);
 		}
 		else if (!allowEval) {
 			if (!cmdName) throw "No terminal command specified";
@@ -417,10 +435,10 @@
 			else if (match[2]) {
 				// macro
 				try {
-					newStr += `${strip_formatting(String(execute(match[3], true)))}\n`;
+					newStr += `${strip_formatting(execute(match[3], true) + "")}\n`;
 				}
 				catch (e) {
-					modding.terminal.error(e);
+					error(e);
 					newStr += "\n";
 				}
 			}
@@ -744,24 +762,7 @@
 		#node;
 		#remoteCompile;
 
-		terminal = {
-			echo: (item) => {
-				item = String(item);
-				remoteLog({
-					type: "log",
-					raw: item,
-					content: strip_formatting(item)
-				})
-			},
-			error: (item) => {
-				item = String(item);
-				remoteLog({
-					type: "error",
-					raw: item,
-					content: strip_formatting(item)
-				});
-			}
-		};
+		terminal = { echo, error };
 
 		commands = {
 			clear: () => void console.clear(),
@@ -820,10 +821,12 @@
 			try {
 				await this.compile();
 			}
-			catch (e) { this.#node.error(e) }
+			catch (e) {
+				this.#node.error(e);
+			}
 			this.terminal.echo("Code initialization took " + (Date.now() - t) + "ms");
 
-			this.#node.setOptions(Object.assign({}, this.context?.options ?? {}));
+			this.#node.setOptions(cloneObject(Object.assign({}, this.context?.options ?? {})));
 			await this.#node.start();
 		}
 
@@ -1027,5 +1030,5 @@
 	delete this.remoteLog;
 	delete this.strictMode;
 
-	return { setCode, modding, execute };
+	return { setCode, modding, execute, echo, error };
 }).call(globalThis);
