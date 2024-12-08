@@ -14,7 +14,6 @@ const toString = require("../utils/toString.js");
 const NodeVM = require("node:vm");
 
 const { decode } = require("html-entities");
-const dataUriParser = require('../utils/dataUriParser.js');
 
 const required_codes = {
 	"core-js": fs1.readFileSync(require.resolve("core-js-bundle/minified.js"), "utf8"),
@@ -96,6 +95,18 @@ class BrowserClient {
 		}
 	}
 
+	#remoteLog (e) {
+		if ("function" === typeof this.#messageHandler) try {
+			this.#messageHandler({
+				content: decode(e.content),
+				raw: e.raw,
+				type: e.type
+			});
+		}
+		finally {}
+		else this.#node[e.type](decode(e.content));
+	}
+
 	/**
 	 * Set the region of the client.
 	 * @param {string} regionName - region name, must be either Asia, America or Europe
@@ -125,7 +136,6 @@ class BrowserClient {
 		this.#vmContext = NodeVM.createContext(Object.assign(Object.create(null), {
 			require,
 			required_codes,
-			uriParse: dataUriParser,
 			parentGlobal: globalThis,
 			timer_pool: this.#timer_pool,
 			node: this.#node,
@@ -134,7 +144,9 @@ class BrowserClient {
 			remoteCompile: async (code) => {
 				return await compile(`(${Function("game", code).toString()}).call(this.game.modding.context, this.game)`);
 			},
-			remoteLog: (e) => void this.#node.log(decode(e)),
+			remoteLog: (e) => {
+				this.#remoteLog(e);
+			},
 			compile,
 			getValue: async () => {
 				if (this.#lastCode == null) await this.#applyChanges(true, false);
@@ -290,6 +302,18 @@ class BrowserClient {
 		return this
 	}
 
+	#messageHandler = null;
+
+	/**
+	 * Poll messages (logs and errors) from browser client.
+	 * Defaults to logging parsed content/errors if no handler is present.
+	 * @param {({type: String, content: String, raw: String}) => undefined} handler Message handler
+	 */
+
+	pollMessages (handler) {
+		this.#messageHandler = handler;
+	}
+
 	#fromLocal () {
 		return fs.readFile(this.#path, 'utf-8')
 	}
@@ -370,7 +394,7 @@ class BrowserClient {
 			return { success: true };
 		} catch (e) {
 			if (options?.captureOutput) return { success: false, output: e };
-			this.#node.error(e);
+			this.#modding.terminal?.error?.(e);
 			return { success: false };
 		}
 	}

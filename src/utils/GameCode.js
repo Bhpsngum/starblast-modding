@@ -1,12 +1,12 @@
 (function setup () {
 	const { defineProperty, getOwnPropertyDescriptor } = Object;
 	const { set, get } = WeakMap.prototype, { apply } = Reflect;
-	const { includes } = Array.prototype;
+	const { includes, splice, push } = Array.prototype;
 	const call = function (func, thisArg, ...args) {
 		return apply(func, thisArg, args);
 	}
 	const timeouts = ["setTimeout", "setInterval", "clearTimeout", "clearInterval"];
-	const { compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise, uriParse } = this;
+	const { compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise } = this;
 	const { console, Buffer } = parentGlobal;
 	let coreJsShared;
 
@@ -44,7 +44,6 @@
 
 	delete this.timer_pool;
 	delete this.parentGlobal;
-	delete this.uriParse;
 
 	// timeout functionality polyfill
 	for (let t of timeouts) {
@@ -85,24 +84,10 @@
 		// polyfill XMLHttpRequest
 		try {
 			let mod = { exports: {} };
-			Function("module", "Buffer", "require", "parseURI", required_codes.xhr
+			Function("module", "Buffer", "require", required_codes.xhr
 				.replaceAll("settings = ", "settings = this.settings = ")
 				.replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`)
-				.replace("case 'file:'", "case 'data:'")
-				.replace(/(\n(\s|\t)*)if \(local\)[^]+?\1}/, `
-					if (local) {
-						try {
-							this.status = 200;
-							const syncData = parseURI(url.href);
-							// Use self.responseType to create the correct self.responseType, self.response.
-							this.createFileOrSyncResponse(syncData);
-							setState(self.DONE);
-						} catch(e) {
-							this.handleError(e, e.errno || -1);
-						}
-						return;
-					}`)
-			)(mod, Buffer, this.require, uriParse);
+			)(mod, Buffer, this.require);
 			this.XMLHttpRequest = mod.exports.XMLHttpRequest;
 			xhrSuccess = true;
 			try {
@@ -150,9 +135,15 @@
 		const proxiedClasses = [
 			{
 				name: "XMLHttpRequest",
-				functions: ["abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader"], // missing overrideMimeType
+				functions: ["addEventListener", "removeEventListener", "dispatchEvent", "abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader"], // missing overrideMimeType
 				getters: ["readyState", "responseText", "responseType", "responseXML", ["status", 0], ["statusText", ""], "upload"],
 				setters: [["timeout", 0], ["withCredentials", false], "onabort", "onerror", "onload", "onloadend", "onloadstart", "onprogress", "onreadystatechange", "ontimeout"],
+				preCall: function (newConst, map, args) {
+					call(splice, args, 0, args.length, {
+						allowFileSystemResources: false,
+						origin: "https://starblast.data.neuronality.com/modding/moddingcontent.html"
+					});
+				},
 				postCall: function (instance) {
 					let { getResponseHeader, getAllResponseHeaders } = instance;
 					instance.getAllResponseHeaders = function () {
@@ -166,15 +157,6 @@
 				customCaller: function (mClass, map) {
 					protofy(mClass, "overrideMimeType", function () {
 						
-					});
-
-					defineProperty(mClass.prototype, 'responseURL', {
-						enumerable: true,
-						configurable: true,
-						get: natifyFunc(function() {
-							let obj = getObj(map, this, { name: "", method: "", promise: false });
-							return obj.settings?.url || "";
-						}, `get body`)
 					});
 
 					defineProperty(mClass.prototype, 'response', {
@@ -206,7 +188,7 @@
 				name: "Request",
 				functions: [["arrayBuffer", true], ["blob", true], ["bytes", true], ["formData", true], ["json", true], ["text", true]],
 				getters: ["bodyUsed", "cache", "credentials", "destination", "headers", "integrity", "isHistoryNavigation", "keepalive", "method", "mode", "redirect", "referrer", "referrerPolicy", "signal", "url"],
-				preCall: function (newConst, map, ...args) {
+				preCall: function (newConst, map, args) {
 					if (args[0] instanceof newConst) args[0] = getObj(map, args[0], { name: "", method: "", promise: false });
 				},
 				postCall: function (instance) {
@@ -234,7 +216,7 @@
 				name: "Response",
 				functions: [["arrayBuffer", true], ["blob", true], ["bytes", true], ["formData", true], ["json", true], ["text", true]],
 				getters: ["bodyUsed", "headers", "ok", "status", "statusText", "type", "url"],
-				preCall: function (newConst, map, ...args) {
+				preCall: function (newConst, map, args) {
 					if (args[0] instanceof newConst) args[0] = getObj(map, args[0], { name: "", method: "", promise: false });
 				},
 				postCall: function (instance) {
@@ -286,7 +268,7 @@
 			return val;
 		}
 
-		for (let { name, functions, getters, setters, customCaller, postCall } of proxiedClasses) {
+		for (let { name, functions, getters, setters, customCaller, postCall, preCall } of proxiedClasses) {
 			let internal = this[name];
 			internals[name] = internal;
 			let classMap = maps[name] = new WeakMap();
@@ -295,7 +277,7 @@
 					throw new TypeError(`Failed to construct '${name}': Please use the 'new' operator, this DOM object constructor cannot be called as a function.`);
 				}
 
-				if ("function" === typeof preCall) preCall(modified, params);
+				if ("function" === typeof preCall) preCall(modified, classMap, params);
 
 				let o = new internal(...params);
 				if ("function" === typeof postCall) postCall(o);
@@ -413,8 +395,8 @@
 			return cmd.call(modding.commands, command);
 		}
 		else if (!allowEval) {
-			if (!cmdName) throw new Error("No terminal command specified");
-			throw new Error("Unknown terminal command: " + cmdName);
+			if (!cmdName) throw "No terminal command specified";
+			throw "Unknown terminal command: " + cmdName;
 		}
 		else {
 			return compile(command, timeout);
@@ -473,10 +455,10 @@
 			this.#baseEntity = baseEntity;
 			baseEntity.modding.data.browser_proxy_initialized = true;
 
-			excludeList.push("id", "uuid", "custom", "__proto__", "inactive_field", "structure_type", "lastAliveStep", "createdStep");
+			call(push, excludeList, "id", "uuid", "custom", "__proto__", "inactive_field", "structure_type", "lastAliveStep", "createdStep");
 
 			for (let k in baseEntity) {
-				if (!excludeList.includes(k) && "function" !== typeof baseEntity[k]) {
+				if (call(includes, excludeList, k) && "function" !== typeof baseEntity[k]) {
 					defineProperty(this, k, {
 						enumerable: true,
 						configurable: false,
@@ -573,7 +555,6 @@
 
 		setObject (obj) {
 			safeHandler(() => {
-				if (obj?.type?.physics && obj.type.physics.shape == null) obj.type.physics.autoShape = true;
 				this.#ship.objects.set(obj);
 			});
 			return dataLength(obj);
@@ -748,7 +729,7 @@
 
 			if (strictMode) {
 				this.commands.region = (e) => {
-					throw new Error("Changing region through commands is disabled because this client is in strict mode");
+					throw "Changing region through commands is disabled because this client is in strict mode";
 				}
 				defineProperty(this, 'run', { value: runMod, writable: false, configurable: false });
 			}
@@ -764,8 +745,22 @@
 		#remoteCompile;
 
 		terminal = {
-			echo: (item) => void remoteLog(strip_formatting(String(item))),
-			error: (item) => void this.#node.error(String(item))
+			echo: (item) => {
+				item = String(item);
+				remoteLog({
+					type: "log",
+					raw: item,
+					content: strip_formatting(item)
+				})
+			},
+			error: (item) => {
+				item = String(item);
+				remoteLog({
+					type: "error",
+					raw: item,
+					content: strip_formatting(item)
+				});
+			}
 		};
 
 		commands = {
@@ -773,7 +768,7 @@
 			start: async () => void await this.run(),
 			stop: async () => void await this.stop(),
 			test: () => {
-				if (!this.#node.started) throw new Error("Mod isn't started. Use 'start' first");
+				if (!this.#node.started) throw "Mod isn't started. Use 'start' first";
 				return "Test link: " + this.#node.link;
 			},
 			region: (e) => {
@@ -815,7 +810,7 @@
 		}
 
 		async run () {
-			if (this.#node.processStarted) throw new Error("Mod already running, use stop first");
+			if (this.#node.processStarted) throw "Mod already running, use stop first";
 
 			this.game = new Game(this.#node, this);
 			window.game = this.game;

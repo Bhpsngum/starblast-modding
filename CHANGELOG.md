@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.33-alpha6
+- Update dependencies to reflect new polyfilled `XMLHttpRequest` and `fetch` API changes
+- `ModdingClient#setCustomMap(map)` now ignores `undefined` and `null` maps
+- Add method `BrowserClient#pollMessages` to poll messages and errors from BrowserClient, defaults to emitting them to ModdingClient's `error` and `log` events
 ## 1.4.32-alpha6
 - Add `Ship#removeObject(id)` method in BrowserClient
 ## 1.4.31-alpha6

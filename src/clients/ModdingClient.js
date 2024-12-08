@@ -163,7 +163,7 @@ class ModdingClient extends EventEmitter {
 	 */
 
 	setCustomMap (map) {
-		this.#api.name("set_custom_map").data(map).send();
+		if (map != null) this.#api.name("set_custom_map").data(map).send();
 		return this
 	}
 
