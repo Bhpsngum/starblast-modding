@@ -129,12 +129,12 @@ class ObjectType extends Structure {
 			emissive: type?.emissive ?? null,
 			specular: type?.specular ?? null,
 			bump: type?.bump ?? null,
-			diffuseColor: type?.diffuseColor ?? 0xFFFFFF,
-			emissiveColor: type?.emissiveColor ?? 0xFFFFFF,
-			specularColor: type?.specularColor ?? 0xFFFFFF,
-			bumpScale: "number" == typeof type?.bumpScale ? type.bumpScale : 1,
+			diffuseColor: type?.diffuse != null ? type?.diffuseColor ?? 0xFFFFFF : 0,
+			emissiveColor: type?.emissive != null ? type?.emissiveColor ?? 0xFFFFFF : 0,
+			specularColor: type?.specular != null ? type?.specularColor ?? 0xFFFFFF : 0,
+			bumpScale: "number" == typeof type?.bumpScale ? type.bumpScale : 0.1,
 			transparent: !!(type?.transparent ?? true),
-			shininess: "number" == typeof type?.shininess ? type.shininess : 0,
+			shininess: "number" == typeof type?.shininess ? type.shininess : 30,
 			physics
 		}, true);
 	}

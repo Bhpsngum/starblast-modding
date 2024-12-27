@@ -778,7 +778,6 @@
 				return "Region set to " + region;
 			},
 			help: () => ("\n" +
-				"-----------------------------CONSOLE HELP-----------------------------\n" +
 				"start                     launch modded game\n" +
 				"stop                      kill modded game\n" +
 				"region <region>           change server region (permission required)\n" +

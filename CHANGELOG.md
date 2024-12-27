@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.36-alpha6
+- Minor fixes for 3D object type:
+	+ Object specular color is inconsistent when the type does not have a specular map
+	+ Incorrect default bump scale
 ## 1.4.35-alpha6
 - Hotfix: condition typo
 ## 1.4.34-alpha6
