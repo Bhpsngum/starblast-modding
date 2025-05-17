@@ -315,7 +315,7 @@ class UIComponent extends UIElementGroup {
 		
 		if (!this.isActive()) raw.visible = raw.clickable = false;
 
-		if (!raw.visible || (raw.position[2] === 0 && raw.position[3] === 0)) {
+		if (!raw.visible || (!raw.position[2] && !raw.position[3])) {
 			raw.components = [];
 		}
 		
@@ -335,6 +335,10 @@ class UIComponent extends UIElementGroup {
 		else if (raw.shortcut == null) delete raw.shortcut;
 
 		if (specialComponents.has(this.id)) delete raw.position;
+		else {
+			// hide UIs with zero width and height so they won't prompt warning
+			if (!raw.position[2] && !raw.position[3]) raw.position = [-1, 0, 0, 0];
+		}
 
 		return raw;
 	}
