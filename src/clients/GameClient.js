@@ -92,7 +92,7 @@ class GameClient {
 		let teams = JSON.parse(JSON.stringify(this.#game.options.teams ?? null));
 		if (Array.isArray(teams)) {
 			let teamManager = new TeamManager(this.#game, this.#api);
-			teamManager.insert(...teams.map((team, i) => Object.assign({}, team, {id: i})));
+			teamManager.insert(...teams.map((team, i) => Object.assign(Object.create(null), team, {id: i})));
 			this.#api.mod_data.teams = teamManager
 		}
 	}

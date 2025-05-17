@@ -5,6 +5,16 @@ const getObjectShapeFromURL = require("../utils/getObjectShapeFromURL.js");
 const toString = require("../utils/toString.js");
 const limitedJSON = require("../utils/limitedJSON.js");
 const defineProperties = require("../utils/defineProperties.js");
+const { Color } = require("three");
+
+const parseColor = function (value) {
+	return (new Color(value))?.getHex?.() ?? 0xFFFFFF;
+}
+
+const isNumber = function (value) {
+	// finite check also fails with NaN so we're safe
+	return "number" === typeof value && Number.isFinite(value);
+}
 
 /**
  * The ObjectType Instance
@@ -70,30 +80,30 @@ class ObjectType extends Structure {
 		 */
 
 		/**
-		 * ObjectType diffuse color
+		 * ObjectType diffuse hex color code
 		 * @name ObjectType#diffuseColor
-		 * @type {(string|number)}
+		 * @type {number}
 		 * @readonly
 		 */
 
 		/**
-		 * ObjectType emissive color
+		 * ObjectType emissive hex color code
 		 * @name ObjectType#emissiveColor
-		 * @type {(string|number)}
+		 * @type {number}
 		 * @readonly
 		 */
 
 		/**
-		 * ObjectType specular color
+		 * ObjectType specular hex color code
 		 * @name ObjectType#specularColor
-		 * @type {(string|number)}
+		 * @type {number}
 		 * @readonly
 		 */
 
 		/**
 		 * ObjectType bump scale
 		 * @name ObjectType#bumpScale
-		 * @type {(string|number)}
+		 * @type {number}
 		 * @readonly
 		 */
 
@@ -129,12 +139,12 @@ class ObjectType extends Structure {
 			emissive: type?.emissive ?? null,
 			specular: type?.specular ?? null,
 			bump: type?.bump ?? null,
-			diffuseColor: type?.diffuse != null ? type?.diffuseColor ?? 0xFFFFFF : 0,
-			emissiveColor: type?.emissive != null ? type?.emissiveColor ?? 0xFFFFFF : 0,
-			specularColor: type?.specular != null ? type?.specularColor ?? 0xFFFFFF : 0,
-			bumpScale: "number" == typeof type?.bumpScale ? type.bumpScale : 0.1,
+			diffuseColor: type?.diffuse != null ? parseColor(type?.diffuseColor) : 0,
+			emissiveColor: type?.emissive != null ? parseColor(type?.emissiveColor) : 0,
+			specularColor: type?.specular != null ? parseColor(type?.specularColor) : 0,
+			bumpScale: isNumber(type?.bumpScale) ? type.bumpScale : 0.1,
 			transparent: !!(type?.transparent ?? true),
-			shininess: "number" == typeof type?.shininess ? type.shininess : 30,
+			shininess: isNumber(type?.shininess) ? type.shininess : 30,
 			physics
 		}, true);
 	}
@@ -154,7 +164,25 @@ class ObjectType extends Structure {
 	}
 
 	toJSON () {
-		let raw = Object.assign(limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess"]), {physics: limitedJSON(this.physics, ["mass", "shape"])});
+		// copy specs
+		let raw = Object.assign(
+			limitedJSON(this, ["id", "obj", "diffuse", "emissive", "specular", "bump", "diffuseColor", "emissiveColor", "specularColor", "bumpScale", "transparent", "shininess"]),
+			{ physics: limitedJSON(this.physics, ["mass", "shape"]) }
+		);
+		
+		// check maps and colors
+		for (let i of ["diffuse", "emissive", "specular"]) {
+			// remove any color field if their respective map is not set or color is set to white
+			if (raw[i] == null || raw[`${i}Color`] === 0xFFFFFF) {
+				delete raw[`${i}Color`];
+			}
+		}
+
+		// remove other fields if they are at default value
+		if (raw.transparent) delete raw.transparent;
+		if (raw.bumpScale === 0.1) delete raw.bumpScale;
+		if (raw.shininess === 30) delete raw.shininess;
+
 		// remove any fields with nullish value since it causes client to completely ignore this object
 		for (let i in raw) if (raw[i] == null) delete raw[i];
 		return raw;

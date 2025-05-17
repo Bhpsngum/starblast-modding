@@ -54,7 +54,7 @@ class Entity extends BaseEntity {
 	 */
 
 	set (data) {
-		data = Object.assign({}, data);
+		data = Object.assign(Object.create(null), data);
 		data.id = this.id;
 		data.sx = data.vx;
 		data.sy = data.vy;

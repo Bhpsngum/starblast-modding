@@ -5,6 +5,15 @@
   </p>
 </div>
 
+## (MUST READ) Terms Of Use
+By installing, importing, or otherwise using this library, you agree to comply with the following terms:
+
+### 1. No Malicious Activity
+You must not use this library to perform attacks, spamming, or any other disruptive actions against Starblast servers.
+
+### 2. Respect User Eligibility
+You must not use this library to host or direct activities toward users deemed inappropriate for the intended use of the platform, including players without an [ECP](https://starblast.fandom.com/wiki/Elite_Commander_Pass).
+
 ## A Brief Profile
 **starblast-modding** is the JavaScript library for hosting modded Starblast games on NodeJS.
 * Introducing OOP (Object-Oriented Programming) into Starblast Modding
@@ -13,7 +22,7 @@
 * Regularly updates to catch up with latest Starblast server updates and bugs fixes
 
 ## Credits
-* Thanks Caramel#8789 for making the banner for this npm.
+* Thanks Caramel (Discord: Caramel#8789 or catramel) for making the banner for this library.
 
 ## Installation
 **Node.js >= 16.6.0 and NPM >= 6.0.0 are required.**
@@ -36,9 +45,9 @@ This is an example on how to run a team-mode modded game:
 
 (along with available events to listen on)
 ```js
-const StarblastModding = require("starblast-modding");
+const { Client } = require("starblast-modding");
 
-const game = new StarblastModding.Client({
+const game = new Client({
   cacheECPKey: true,
   cacheEvents: false,
   cacheOptions: true
@@ -187,16 +196,16 @@ Example configuration JSON file:
 #### Using NodeJS
 Here is an example for running SDC code pulled from Neuronality's site:
 ```js
-const StarblastModding = require("starblast-modding");
+const { BrowserClient } = require("starblast-modding");
 
-let container = new StarblastModding.BrowserClient({
+let container = new BrowserClient({
   cacheECPKey: true,
   cacheOptions: true
 });
 
 container.setRegion("Asia");
 
-container.setECPKey("12345-6789");
+container.setECPKey("12345-67890");
 
 container.loadCodeFromExternal("https://starblast.data.neuronality.com/mods/sdc.js");
 

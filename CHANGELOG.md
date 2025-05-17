@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.37-alpha6
+- Minor fix for color parsing in 3D object type, now any color-related fields only returns number
+- Update dependencies
 ## 1.4.36-alpha6
 - Minor fixes for 3D object type:
 	+ Object specular color is inconsistent when the type does not have a specular map

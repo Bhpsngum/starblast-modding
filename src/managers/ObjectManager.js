@@ -83,7 +83,7 @@ class ObjectManager extends StructureManager {
 	 */
 
 	setById (id, data) {
-		this.set(Object.assign({}, data, {id}))
+		this.set(Object.assign(Object.create(null), data, {id}))
 	}
 
 	/**

@@ -114,7 +114,7 @@ class ModdingAPI {
 	}
 
 	set (data) {
-		this.pending_request = Object.assign({}, data);
+		this.pending_request = Object.assign(Object.create(null), data);
 		return this
 	}
 
@@ -131,7 +131,7 @@ class ModdingAPI {
 
 	clientMessage (id, name, data) {
 		this.name("client_message");
-		data = Object.assign({}, data, { name });
+		data = Object.assign(Object.create(null), data, { name });
 		return this.data({id, data})
 	}
 

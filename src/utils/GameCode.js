@@ -135,7 +135,7 @@
 		const proxiedClasses = [
 			{
 				name: "XMLHttpRequest",
-				functions: ["addEventListener", "removeEventListener", "dispatchEvent", "abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader"], // missing overrideMimeType
+				functions: ["addEventListener", "removeEventListener", "dispatchEvent", "abort", "getAllResponseHeaders", "getResponseHeader", "open", "send", "setRequestHeader", "overrideMimeType"],
 				getters: ["readyState", "responseURL", "responseText", "responseType", "responseXML", ["status", 0], ["statusText", ""], "upload"],
 				setters: [["timeout", 0], ["withCredentials", false], "onabort", "onerror", "onload", "onloadend", "onloadstart", "onprogress", "onreadystatechange", "ontimeout"],
 				preCall: function (newConst, map, args) {
@@ -765,7 +765,7 @@
 		terminal = { echo, error };
 
 		commands = {
-			clear: () => void console.clear(),
+			clear: () => {},
 			start: async () => void await this.run(),
 			stop: async () => void await this.stop(),
 			test: () => {
@@ -825,7 +825,7 @@
 			}
 			this.terminal.echo("Code initialization took " + (Date.now() - t) + "ms");
 
-			this.#node.setOptions(cloneObject(Object.assign({}, this.context?.options ?? {})));
+			this.#node.setOptions(cloneObject(Object.assign(Object.create(null), this.context?.options ?? {})));
 			await this.#node.start();
 		}
 
