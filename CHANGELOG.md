@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.38-alpha6
+- Fix problem with timer functions within BrowserClient context can crash the whole process
+- Fix problem with some event handlers are being duplicated after calling `BrowserClient#resetContext()`
 ## 1.4.37-alpha6
 - Minor fix for color parsing in 3D object type, now any color-related fields only returns number
 - Update dependencies

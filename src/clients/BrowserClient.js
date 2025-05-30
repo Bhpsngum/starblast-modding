@@ -64,11 +64,20 @@ class BrowserClient {
 			this.#clearWatch();
 			this.#lastCode = null;
 		});
+
+		for (let event of Object.values(ModdingEvents)) {
+			node.on(event, (...args) => {
+				// errors should not be thrown on this since the game code is carefully handled
+				// if any errors have stack trace on this part, please contact author (@bhpsngum)
+				this.#listeners[event].call(this.#modding.context, ...args);
+			});
+		}
 	}
 
 	#vmContext;
 	#contextBridge;
 	#modding;
+	#listeners = Object.create(null);
 	#timer_pool = {
 		id: 0,
 		data: new Map(),
@@ -128,6 +137,12 @@ class BrowserClient {
 
 		this.#timer_pool.reset();
 
+		this.#listeners = Object.create(null);
+
+		for (let event of Object.values(ModdingEvents)) {
+			this.#listeners[event] = () => {}
+		}
+
 		let compile = (code, timeout) => {
 			return this.#vmExec(code, timeout);
 		}
@@ -144,6 +159,7 @@ class BrowserClient {
 			remoteCompile: async (code) => {
 				return await compile(`(${Function("game", code).toString()}).call(this.game.modding.context, this.game)`);
 			},
+			registerEvent: (event, listener) => void (this.#listeners[event] = listener),
 			remoteLog: (e) => {
 				this.#remoteLog(e);
 			},
@@ -346,7 +362,7 @@ class BrowserClient {
 				if (!this.#node.processStarted) {
 					if (!this.#persistentContext) this.resetContext();
 				}
-				
+
 				await this.#contextBridge.setCode(exec ?? this.#node.processStarted);
 			}
 		}

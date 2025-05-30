@@ -7,7 +7,7 @@
 		return apply(func, thisArg, args);
 	}
 	const timeouts = ["setTimeout", "setInterval", "clearTimeout", "clearInterval"];
-	const { compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise } = this;
+	const { node, compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise, registerEvent } = this;
 	const { console, Buffer } = parentGlobal;
 	let coreJsShared;
 
@@ -55,8 +55,9 @@
 				if ("string" === typeof exec) exec = () => compile(FunctionOrCode);
 
 				let o = timer_pool.add(parentGlobal[t].call(this, function(...args) {
-					try { exec.call(this, ...args) }
-					finally { if (!interval) timer_pool.remove(o, true); }
+					try { if ("function" === typeof exec) exec.call(this, ...args) }
+					catch (e) { node.error(e); }
+					if (!interval) timer_pool.remove(o, true);
 				}, ...params), interval);
 
 				return o;
@@ -155,10 +156,6 @@
 					}
 				},
 				customCaller: function (mClass, map) {
-					protofy(mClass, "overrideMimeType", function () {
-						
-					});
-
 					defineProperty(mClass.prototype, 'response', {
 						enumerable: true,
 						configurable: true,
@@ -254,7 +251,7 @@
 					});
 				}
 			},
-		); 
+		);
 
 		const getObj = function (map, instance, { name, method, promise }) {
 			let val = call(get, map, instance);
@@ -282,7 +279,7 @@
 				let o = new internal(...params);
 				if ("function" === typeof postCall) postCall(o);
 				// renameClass(o, o, name);
-				
+
 				call(set, classMap, this, o);
 			}
 
@@ -372,7 +369,7 @@
 			this.Response.json = natifyFunc(function (data, options) {
 				return new nativeResponse(data == null ? null : JSON.stringify(data), options);
 			}, "json");
-			
+
 			let iFetch = this.fetch;
 
 			this.fetch = natifyFunc(function(resource, options) {
@@ -486,7 +483,7 @@
 				}
 			}
 		}
-		
+
 		custom = {};
 		#killed;
 
@@ -595,7 +592,7 @@
 		["collectible", { f: Collectible, name: "Collectible" }],
 		["asteroid", { f: Asteroid, name: "Asteroid" }]
 	]);
-	
+
 	const locateEntity = function (game, entity, ns, create = false) {
 		if (entity == null) return null;
 		let creator = creators.get(ns);
@@ -635,24 +632,24 @@
 			this.#node = node;
 			this.#remoteCompile = remoteCompile;
 
-			node.on(ModdingEvents.TICK, (tick) => {
+			registerEvent(ModdingEvents.TICK, (tick) => {
 				this.#handle(() => this.tick({ step: tick }));
 			});
-	
-			node.on(ModdingEvents.MOD_STARTED, (link) => {
+
+			registerEvent(ModdingEvents.MOD_STARTED, (link) => {
 				this.#handle(() => {
 					this.game.options = cloneObject(this.#node.options);
 					this.modStarted(link);
 				});
 			});
-	
-			node.on(ModdingEvents.MOD_STOPPED, () => {
+
+			registerEvent(ModdingEvents.MOD_STOPPED, () => {
 				this.#handle(() => {
 					this.stopped();
 				})
 			});
-	
-			node.on(ModdingEvents.SHIP_RESPAWNED, (ship) => {
+
+			registerEvent(ModdingEvents.SHIP_RESPAWNED, (ship) => {
 				this.#handle(() => {
 					this.context?.event?.({
 						name: "ship_spawned",
@@ -660,8 +657,8 @@
 					}, this.game);
 				})
 			});
-	
-			node.on(ModdingEvents.SHIP_SPAWNED, (ship) => {
+
+			registerEvent(ModdingEvents.SHIP_SPAWNED, (ship) => {
 				this.#handle(() => {
 					this.context?.event?.({
 						name: "ship_spawned",
@@ -669,8 +666,8 @@
 					}, this.game);
 				})
 			});
-	
-			node.on(ModdingEvents.SHIP_DESTROYED, (ship, killer) => {
+
+			registerEvent(ModdingEvents.SHIP_DESTROYED, (ship, killer) => {
 				this.#handle(() => {
 					this.context?.event?.({
 						name: "ship_destroyed",
@@ -680,18 +677,18 @@
 				})
 			});
 
-			node.on(ModdingEvents.SHIP_DISCONNECTED, (ship) => {
+			registerEvent(ModdingEvents.SHIP_DISCONNECTED, (ship) => {
 				this.#handle(() => {
 					ship = locateEntity(this.game, ship, "ship");
 					if (ship) ship.killed = true;
 				})
 			});
-	
-			node.on(ModdingEvents.ALIEN_CREATED, (alien) => {
+
+			registerEvent(ModdingEvents.ALIEN_CREATED, (alien) => {
 				this.#handle(() => this.game.alienCreated(alien.request_id, alien.id));
 			});
-	
-			node.on(ModdingEvents.ALIEN_DESTROYED, (alien, killer) => {
+
+			registerEvent(ModdingEvents.ALIEN_DESTROYED, (alien, killer) => {
 				this.#handle(() => {
 					alien = locateEntity(this.game, alien, "alien");
 					if (alien) alien.killed = true;
@@ -702,15 +699,15 @@
 					})
 				});
 			});
-	
-			node.on(ModdingEvents.ASTEROID_CREATED, (asteroid) => {
+
+			registerEvent(ModdingEvents.ASTEROID_CREATED, (asteroid) => {
 				this.#handle(() => this.game.asteroidCreated(asteroid.request_id, asteroid.id));
 			});
 
-			node.on(ModdingEvents.ASTEROID_DESTROYED, (asteroid, killer) => {
+			registerEvent(ModdingEvents.ASTEROID_DESTROYED, (asteroid, killer) => {
 				this.#handle(() => {
 					asteroid = locateEntity(this.game, asteroid, "asteroid");
-					if (asteroid) asteroid.killed = true; 
+					if (asteroid) asteroid.killed = true;
 					this.context?.event?.({
 						name: "asteroid_destroyed",
 						asteroid,
@@ -718,15 +715,15 @@
 					})
 				})
 			});
-	
-			node.on(ModdingEvents.COLLECTIBLE_CREATED, (collectible) => {
+
+			registerEvent(ModdingEvents.COLLECTIBLE_CREATED, (collectible) => {
 				this.#handle(() => this.game.collectibleCreated(collectible.request_id, collectible.id));
 			});
-	
-			node.on(ModdingEvents.COLLECTIBLE_PICKED, (collectible, ship) => {
+
+			registerEvent(ModdingEvents.COLLECTIBLE_PICKED, (collectible, ship) => {
 				this.#handle(() => {
 					collectible = locateEntity(this.game, collectible, "collectible");
-					if (collectible) collectible.killed = true; 
+					if (collectible) collectible.killed = true;
 					this.context?.event?.({
 						name: "collectible_picked",
 						collectible,
@@ -735,7 +732,7 @@
 				})
 			});
 
-			node.on(ModdingEvents.UI_COMPONENT_CLICKED, (component, ship) => {
+			registerEvent(ModdingEvents.UI_COMPONENT_CLICKED, (component, ship) => {
 				this.#handle(() => {
 					this.context?.event?.({
 						name: "ui_component_clicked",
@@ -782,7 +779,7 @@
 				"stop                      kill modded game\n" +
 				"region <region>           change server region (permission required)\n" +
 				"  ex: region Europe\n" +
-				"anything JavaScript       execute JavaScript code (permission required)\n" + 
+				"anything JavaScript       execute JavaScript code (permission required)\n" +
 				"  ex: game.addAlien()\n" +
 				"help                      display this help\n\n" +
 				`starblast-modding BrowserClient v${this.#node.version}`
@@ -1018,7 +1015,7 @@
 	}
 
 	// start modding session
-	const modding = new Modding(this.node, this.remoteCompile);
+	const modding = new Modding(node, this.remoteCompile);
 
 	// cleanup
 	delete this.node;
@@ -1028,6 +1025,7 @@
 	delete this.getValue;
 	delete this.remoteLog;
 	delete this.strictMode;
+	delete this.registerEvent;
 
 	return { setCode, modding, execute, echo, error };
 }).call(globalThis);
