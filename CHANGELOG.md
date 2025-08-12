@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.4.39-alpha6
+- Add new option: `disableNetworkRequests` (boolean) to disable some basic (and the only) network API requests like `fetch` or `XMLHttpRequest`.
 ## 1.4.38-alpha6
 - Fix problem with timer functions within BrowserClient context can crash the whole process
 - Fix problem with some event handlers are being duplicated after calling `BrowserClient#resetContext()`

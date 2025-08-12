@@ -35,12 +35,14 @@ const required_codes = {
  * @param {boolean} options.logExceptions - alias of the property `options.logErrors`
  * @param {boolean} [options.logMessages = true] - game will log any in-game logs or not
  * @param {boolean} [options.compressWSMessages = false] - same with option specified at {@link ModdingClient}
+ * @param {boolean} [options.disableNetworkRequests = false] - disable network requests (e.g. `fetch`, `XMLHttpRequest`, etc.) or not
  * @since 1.1.0-alpha6
  */
 
 class BrowserClient {
 	constructor(options) {
 		this.#sameCodeExecution = !!options?.sameCodeExecution;
+		this.#disableNetworkRequests = !!options?.disableNetworkRequests;
 		this.#strictMode = !!options?.strictMode;
 		let logErrors = this.#logErrors = !!(options?.logErrors ?? options.logExceptions ?? true);
 		let logMessages = this.#logMessages = !!(options?.logMessages ?? true);
@@ -151,6 +153,7 @@ class BrowserClient {
 		this.#vmContext = NodeVM.createContext(Object.assign(Object.create(null), {
 			require,
 			required_codes,
+			disableNetwork: this.#disableNetworkRequests,
 			parentGlobal: globalThis,
 			timer_pool: this.#timer_pool,
 			node: this.#node,
@@ -232,6 +235,8 @@ class BrowserClient {
 
 	#logErrors;
 	#logMessages;
+
+	#disableNetworkRequests = false;
 
 	#persistentContext;
 

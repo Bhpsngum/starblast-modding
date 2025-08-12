@@ -7,7 +7,7 @@
 		return apply(func, thisArg, args);
 	}
 	const timeouts = ["setTimeout", "setInterval", "clearTimeout", "clearInterval"];
-	const { node, compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise, registerEvent } = this;
+	const { disableNetwork, node, compile, getValue, remoteLog, strictMode, timer_pool, parentGlobal, Promise, registerEvent } = this;
 	const { console, Buffer } = parentGlobal;
 	let coreJsShared;
 
@@ -84,7 +84,7 @@
 		for (let i of timeouts) natifyFunc(this[i], i);
 
 		// polyfill XMLHttpRequest
-		try {
+		if (!disableNetwork) try {
 			let mod = { exports: {} };
 			Function("module", "Buffer", "require", "process", required_codes.xhr
 				.replace(/Error\("(INVALID_STATE_ERR|SecurityError): ([^"])([^"]*?)"/g, (v, a, b, c) => `DomException("${b.toUpperCase()}${c}", "${a == "SecurityError" ? a : "InvalidStateError"}"`)
@@ -129,7 +129,7 @@
 	delete this.require;
 	delete this.required_codes;
 
-	if (xhrSuccess) {
+	if (!disableNetwork && xhrSuccess) {
 		// proxy some class in order not to return some leaked values
 
 		const { TypeError, WeakMap } = this, maps = {}, internals = {};
@@ -1026,6 +1026,7 @@
 	delete this.remoteLog;
 	delete this.strictMode;
 	delete this.registerEvent;
+	delete this.disableNetwork;
 
 	return { setCode, modding, execute, echo, error };
 }).call(globalThis);

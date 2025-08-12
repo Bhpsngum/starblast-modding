@@ -48,7 +48,7 @@ class Alien extends Entity {
 
 		/**
 		 * The amount of crystals dropped after the alien is killed
-		 * @name Alien#crytal_drop
+		 * @name Alien#crystal_drop
 		 * @type {number}
 		 * @readonly
 		 */
