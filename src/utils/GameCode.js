@@ -405,7 +405,7 @@
 	}
 
 	const execute = function (command, allowEval = false, timeout) {
-		let cmdName = call(split, call(trim, command), " ")[0] || "";
+		let cmdName = call(split, call(trim, command), /\s+/)[0] || "";
 		if (cmdName && "function" === typeof (cmd = modding.commands?.[cmdName])) {
 			return call(cmd, modding.commands, command);
 		}
@@ -818,6 +818,7 @@
 				await this.compile();
 			}
 			catch (e) {
+				error(e);
 				this.#node.error(e);
 			}
 			this.terminal.echo("Code initialization took " + (Date.now() - t) + "ms");

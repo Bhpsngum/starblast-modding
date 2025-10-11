@@ -1,7 +1,19 @@
 # Changelog
 
+## 1.4.40-alpha6
+- Command parser now splits by any space character to get command name.
+
+	For example: Command name from input `mycommand\ntest`
+	- Before: `mycommand\ntest`
+	- After: `mycommand`
+- Mod compilation error will now sent through both streams:
+	- ModdingClient event stream (where `logErrors` and `crashOnError` are effective)
+	- BrowserClient message stream (`pollMessages()` method)
+
+	BrowserClient message stream always receive this error first, to prevent verbosal loss when the instance is set to crash on exception (`crashOnError` set to `true`).
+- Bump minimum Node.js version requirement up to Node v23.
 ## 1.4.39-alpha6
-- Add new option: `disableNetworkRequests` (boolean) to disable some basic (and the only) network API requests like `fetch` or `XMLHttpRequest`.
+- BrowserClient: Add new option: `disableNetworkRequests` (boolean) to disable some basic (and the only) network API requests like `fetch` or `XMLHttpRequest`.
 ## 1.4.38-alpha6
 - Fix problem with timer functions within BrowserClient context can crash the whole process
 - Fix problem with some event handlers are being duplicated after calling `BrowserClient#resetContext()`
