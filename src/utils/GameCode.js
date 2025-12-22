@@ -404,6 +404,15 @@
 		});
 	}
 
+	let warn = (item) => {
+		item += "";
+		remoteLog({
+			type: "warning",
+			raw: item,
+			content: strip_formatting(item)
+		});
+	}
+
 	const execute = function (command, allowEval = false, timeout) {
 		let cmdName = call(split, call(trim, command), /\s+/)[0] || "";
 		if (cmdName && "function" === typeof (cmd = modding.commands?.[cmdName])) {
@@ -759,7 +768,7 @@
 		#node;
 		#remoteCompile;
 
-		terminal = { echo, error };
+		terminal = { echo, error, warn };
 
 		commands = {
 			clear: () => {},

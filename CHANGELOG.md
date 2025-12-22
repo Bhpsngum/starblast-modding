@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.41-alpha6
+- Add support for "warn" log type in Browser Client
+- ModdingClient#setRegion and BrowserClient's `region` command now throws/outputs error if the region if not recognised.
+
+	Currently, allowed regions are (case-sensitive): Asia, America and Europe.
 ## 1.4.40-alpha6
 - Command parser now splits by any space character to get command name.
 

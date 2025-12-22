@@ -2,6 +2,9 @@
 
 const runMod = require("../utils/runMod.js");
 const deepFreeze = require("../utils/deepFreeze.js");
+const toString = require("../utils/toString.js");
+
+const ALLOWED_REGIONS = ["Asia", "America", "Europe"];
 
 class ModdingAPI {
 	constructor(game, options) {
@@ -36,6 +39,8 @@ class ModdingAPI {
 	}
 
 	setRegion (region) {
+		region = toString(region);
+		if (!ALLOWED_REGIONS.includes(region)) throw new Error("Unknown region: " + region);
 		let setup = (this.processStarted ? this.instanced : this.configuration);
 		return setup.region = region;
 	}

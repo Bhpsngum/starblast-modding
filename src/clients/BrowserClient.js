@@ -330,7 +330,7 @@ class BrowserClient {
 	 * @name abstract_message_handler
 	 * @function
 	 * @param {Object} data Message data
-	 * @param {"error" | "log"} data.type Type of message
+	 * @param {"error" | "log" | "warning"} data.type Type of message
 	 * @param {String} data.content Parsed content of the message
 	 * @param {String} data.raw Raw content of the message
 	*/
